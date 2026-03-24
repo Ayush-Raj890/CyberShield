@@ -29,26 +29,26 @@ export default function CreateReport() {
       <Navbar />
 
       <div className="p-6 max-w-md mx-auto">
-        <h2 className="text-xl mb-4">Create Report</h2>
+        <form className="card" onSubmit={handleSubmit}>
+          <h2 className="text-lg mb-4 font-semibold">Create Report</h2>
 
-        <form onSubmit={handleSubmit}>
           <input
             name="title"
             placeholder="Title"
-            className="w-full mb-3 p-2 border"
+            className="input"
             onChange={handleChange}
           />
 
           <textarea
             name="description"
             placeholder="Description"
-            className="w-full mb-3 p-2 border"
+            className="input"
             onChange={handleChange}
           />
 
           <select
             name="category"
-            className="w-full mb-3 p-2 border"
+            className="input"
             onChange={handleChange}
           >
             <option value="SCAM">Scam</option>
@@ -57,8 +57,8 @@ export default function CreateReport() {
             <option value="OTHER">Other</option>
           </select>
 
-          <button className="w-full bg-blue-500 text-white p-2">
-            Submit
+          <button className="btn btn-primary w-full">
+            Submit Report
           </button>
         </form>
       </div>

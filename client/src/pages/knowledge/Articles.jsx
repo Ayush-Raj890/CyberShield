@@ -30,11 +30,11 @@ export default function Articles() {
         {articles.map((a) => (
           <div
             key={a._id}
-            className="border p-3 mb-3 cursor-pointer"
+            className="card mb-3 cursor-pointer hover:shadow-lg"
             onClick={() => navigate(`/articles/${a._id}`)}
           >
-            <h3 className="font-bold">{a.title}</h3>
-            <p className="text-sm">{a.category}</p>
+            <h3 className="font-semibold">{a.title}</h3>
+            <p className="text-sm text-gray-500">{a.category}</p>
           </div>
         ))}
       </div>

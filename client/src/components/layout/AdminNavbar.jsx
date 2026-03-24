@@ -9,15 +9,15 @@ export default function AdminNavbar() {
   };
 
   return (
-    <div className="bg-black text-white p-3 flex justify-between">
-      <h1 className="font-bold">Admin Panel</h1>
+    <div className="bg-white shadow px-6 py-3 flex justify-between items-center">
+      <h1 className="text-lg font-semibold text-blue-600">Admin Panel</h1>
 
-      <div className="space-x-4">
-        <button onClick={() => navigate("/admin")}>Dashboard</button>
-        <button onClick={() => navigate("/admin/reports")}>Reports</button>
-        <button onClick={() => navigate("/admin/users")}>Users</button>
-        <button onClick={() => navigate("/admin/articles")}>Articles</button>
-        <button onClick={logout}>Logout</button>
+      <div className="space-x-4 text-sm">
+        <button className="hover:text-blue-500" onClick={() => navigate("/admin")}>Dashboard</button>
+        <button className="hover:text-blue-500" onClick={() => navigate("/admin/reports")}>Reports</button>
+        <button className="hover:text-blue-500" onClick={() => navigate("/admin/users")}>Users</button>
+        <button className="hover:text-blue-500" onClick={() => navigate("/admin/articles")}>Articles</button>
+        <button className="hover:text-blue-500" onClick={logout}>Logout</button>
       </div>
     </div>
   );

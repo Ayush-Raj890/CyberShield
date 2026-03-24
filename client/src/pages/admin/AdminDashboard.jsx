@@ -22,18 +22,22 @@ export default function AdminDashboard() {
     <>
       <AdminNavbar />
 
-      <div className="p-6 grid grid-cols-2 gap-4">
-        <div className="bg-blue-100 p-4">
-          Users: {stats.totalUsers}
+      <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="card text-center">
+          <p className="text-sm text-gray-500">Users</p>
+          <h2 className="text-xl font-bold">{stats.totalUsers}</h2>
         </div>
-        <div className="bg-green-100 p-4">
-          Reports: {stats.totalReports}
+        <div className="card text-center">
+          <p className="text-sm text-gray-500">Reports</p>
+          <h2 className="text-xl font-bold">{stats.totalReports}</h2>
         </div>
-        <div className="bg-yellow-100 p-4">
-          Pending: {stats.pendingReports}
+        <div className="card text-center">
+          <p className="text-sm text-gray-500">Pending</p>
+          <h2 className="text-xl font-bold">{stats.pendingReports}</h2>
         </div>
-        <div className="bg-purple-100 p-4">
-          Articles: {stats.totalArticles}
+        <div className="card text-center">
+          <p className="text-sm text-gray-500">Articles</p>
+          <h2 className="text-xl font-bold">{stats.totalArticles}</h2>
         </div>
       </div>
     </>
