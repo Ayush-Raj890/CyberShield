@@ -8,6 +8,10 @@ import ViewReports from "../pages/reports/ViewReports";
 import ScamDetector from "../pages/ai/ScamDetector";
 import Articles from "../pages/knowledge/Articles";
 import ArticleDetail from "../pages/knowledge/ArticleDetail";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import ManageReports from "../pages/admin/ManageReports";
+import ManageUsers from "../pages/admin/ManageUsers";
+import ManageArticles from "../pages/admin/ManageArticles";
 import PrivateRoute from "../components/PrivateRoute";
 
 export default function AppRoutes() {
@@ -39,6 +43,22 @@ export default function AppRoutes() {
         <Route
           path="/articles/:id"
           element={<PrivateRoute><ArticleDetail /></PrivateRoute>}
+        />
+        <Route
+          path="/admin"
+          element={<PrivateRoute adminOnly={true}><AdminDashboard /></PrivateRoute>}
+        />
+        <Route
+          path="/admin/reports"
+          element={<PrivateRoute adminOnly={true}><ManageReports /></PrivateRoute>}
+        />
+        <Route
+          path="/admin/users"
+          element={<PrivateRoute adminOnly={true}><ManageUsers /></PrivateRoute>}
+        />
+        <Route
+          path="/admin/articles"
+          element={<PrivateRoute adminOnly={true}><ManageArticles /></PrivateRoute>}
         />
       </Routes>
     </BrowserRouter>

@@ -59,7 +59,7 @@
 - [ ] Mobile responsiveness
 - [x] Add AI Detector frontend page (`/ai`)
 - [x] Add Knowledge Hub list/detail frontend routes (`/articles`, `/articles/:id`)
-- [ ] Split admin frontend into pages (ManageReports, ManageUsers, ManageArticles)
+- [x] Split admin frontend into pages (ManageReports, ManageUsers, ManageArticles)
 
 ---
 

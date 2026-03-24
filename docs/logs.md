@@ -70,6 +70,13 @@
 - Connected protected routes for `/ai`, `/articles`, and `/articles/:id`
 - Verified Vite startup after route integration
 
+## Day 13
+- Added admin frontend pages under `pages/admin` (AdminDashboard, ManageReports, ManageUsers, ManageArticles)
+- Added reusable `AdminNavbar` for admin navigation
+- Added protected admin routes (`/admin`, `/admin/reports`, `/admin/users`, `/admin/articles`)
+- Upgraded `PrivateRoute` to support `adminOnly` access control
+- Verified frontend startup after admin module integration
+
 ---
 
 ## Notes

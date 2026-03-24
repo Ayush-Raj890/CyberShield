@@ -24,9 +24,11 @@ Implemented frontend modules:
 - Report pages (Create Report, View Reports)
 - AI Detector page (`/ai`)
 - Knowledge Hub pages (Articles list + Article detail)
+- Admin pages (Dashboard, Manage Reports, Manage Users, Manage Articles)
 - Protected routing with PrivateRoute
 - Shared API service with auth interceptor
 - Reusable Navbar layout component
+- Reusable AdminNavbar layout component
 
 ## Active Services
 
@@ -86,6 +88,10 @@ Admin:
 - /ai (protected)
 - /articles (protected)
 - /articles/:id (protected)
+- /admin (protected, admin only)
+- /admin/reports (protected, admin only)
+- /admin/users (protected, admin only)
+- /admin/articles (protected, admin only)
 
 ## Environment
 

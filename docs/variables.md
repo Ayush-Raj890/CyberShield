@@ -54,6 +54,10 @@ DELETE /api/admin/articles/:id
 /ai
 /articles
 /articles/:id
+/admin
+/admin/reports
+/admin/users
+/admin/articles
 
 ---
 
