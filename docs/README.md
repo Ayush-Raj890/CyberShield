@@ -6,14 +6,25 @@ This folder contains project planning, tracking, and implementation notes for Cy
 
 Implemented backend modules:
 
-- Authentication API (register/login)
+- Authentication API (register/login with role + token response)
 - Incident Reporting API (create/get/update status)
 - AI detection integration route
+- Knowledge Hub API (create/get article, get article by id)
+- Admin APIs (stats, users, reports, article deletion)
 
 Implemented AI module:
 
 - FastAPI service with /api/predict
 - MVP scam classifier (keyword-based)
+
+Implemented frontend modules:
+
+- Auth pages (Login/Register)
+- User Dashboard (navigation hub)
+- Report pages (Create Report, View Reports)
+- Protected routing with PrivateRoute
+- Shared API service with auth interceptor
+- Reusable Navbar layout component
 
 ## Active Services
 
@@ -27,6 +38,10 @@ AI Service (FastAPI):
 - Base URL: http://localhost:8000
 - Health: GET /
 - Predict: POST /api/predict
+
+Frontend (Vite + React):
+
+- Base URL: http://localhost:3000 (or next available port)
 
 ## Backend API Summary
 
@@ -44,6 +59,20 @@ Reports:
 AI (backend proxy):
 
 - POST /api/ai/predict
+
+Knowledge Hub:
+
+- GET /api/articles
+- GET /api/articles/:id
+- POST /api/articles (ADMIN)
+
+Admin:
+
+- GET /api/admin/stats
+- GET /api/admin/users
+- DELETE /api/admin/users/:id
+- GET /api/admin/reports
+- DELETE /api/admin/articles/:id
 
 ## Environment
 

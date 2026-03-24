@@ -3,14 +3,10 @@
 ## 🔴 High Priority
 
 ### Phase 1: Setup
-
-
-### Phase 2: Authentication
-### Phase 1: Setup
 - [x] Setup project structure
 - [x] Initialize React app with Vite
 - [x] Initialize Express server
-- [ ] Connect frontend with backend
+- [x] Connect frontend with backend
 
 ---
 
@@ -59,8 +55,11 @@
 ---
 
 ## 🟡 Medium Priority
-- [ ] UI improvements
+- [x] UI improvements (basic functional layout)
 - [ ] Mobile responsiveness
+- [ ] Add AI Detector frontend page (`/ai`)
+- [ ] Add Knowledge Hub list/detail frontend routes (`/articles`, `/articles/:id`)
+- [ ] Split admin frontend into pages (ManageReports, ManageUsers, ManageArticles)
 
 ---
 
