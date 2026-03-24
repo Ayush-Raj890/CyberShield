@@ -3,18 +3,22 @@
 ## 🔴 High Priority
 
 ### Phase 1: Setup
+
+
+### Phase 2: Authentication
+### Phase 1: Setup
 - [x] Setup project structure
-- [ ] Initialize React app
-- [ ] Initialize Express server
+- [x] Initialize React app with Vite
+- [x] Initialize Express server
 - [ ] Connect frontend with backend
 
 ---
 
 ### Phase 2: Authentication
-- [ ] User registration API
-- [ ] Login API
-- [ ] JWT authentication
-- [ ] Protected routes
+- [x] User registration API
+- [x] Login API
+- [x] JWT authentication
+- [x] Protected routes
 
 ---
 
@@ -62,3 +66,4 @@
 
 ## 🟢 Low Priority
 - [ ] Forum (optional)
+- [ ] RBAC enhancements (role seeding, granular permissions, audit logging)
