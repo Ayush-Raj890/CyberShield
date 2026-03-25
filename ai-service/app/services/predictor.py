@@ -1,27 +1,22 @@
-from app.utils.preprocess import clean_text
-
-# Simple keyword-based detection (MVP)
 SCAM_KEYWORDS = [
-    "win money",
-    "free prize",
-    "click link",
-    "urgent",
-    "bank otp",
-    "lottery",
-    "claim now"
+    "win", "lottery", "prize", "claim",
+    "urgent", "click", "verify", "otp",
+    "bank", "free", "offer", "link",
+    "account", "suspended"
 ]
 
 def predict_scam(text):
-    text = clean_text(text)
+    text = text.lower()
 
-    for keyword in SCAM_KEYWORDS:
-        if keyword in text:
-            return {
-                "label": "MALICIOUS",
-                "confidence": 0.9
-            }
+    score = 0
 
-    return {
-        "label": "SAFE",
-        "confidence": 0.7
-    }
+    for word in SCAM_KEYWORDS:
+        if word in text:
+            score += 1
+
+    if score >= 3:
+        return {"label": "MALICIOUS", "confidence": 0.9}
+    elif score == 2:
+        return {"label": "SUSPICIOUS", "confidence": 0.6}
+    else:
+        return {"label": "SAFE", "confidence": 0.8}
