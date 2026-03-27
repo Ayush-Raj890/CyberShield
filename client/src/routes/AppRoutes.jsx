@@ -14,6 +14,8 @@ import ManageReports from "../pages/admin/ManageReports";
 import ManageUsers from "../pages/admin/ManageUsers";
 import ManageArticles from "../pages/admin/ManageArticles";
 import Notifications from "../pages/admin/Notifications";
+import NotFound from "../pages/errors/NotFound";
+import ServerError from "../pages/errors/ServerError";
 import PrivateRoute from "../components/PrivateRoute";
 
 export default function AppRoutes() {
@@ -67,6 +69,8 @@ export default function AppRoutes() {
           path="/admin/notifications"
           element={<PrivateRoute adminOnly={true}><Notifications /></PrivateRoute>}
         />
+        <Route path="/500" element={<ServerError />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

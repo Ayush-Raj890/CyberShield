@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 export default function Navbar() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
+  const isAdmin = ["ADMIN", "SUPER_ADMIN"].includes(user?.role);
 
   const logout = () => {
     localStorage.clear();
@@ -18,6 +19,12 @@ export default function Navbar() {
         {user && (
           <button onClick={() => navigate("/dashboard")} className="flex items-center gap-1 hover:text-indigo-500">
             <Home size={16} /> Dashboard
+          </button>
+        )}
+
+        {isAdmin && (
+          <button onClick={() => navigate("/admin")} className="flex items-center gap-1 hover:text-indigo-500">
+            <Shield size={16} /> Admin
           </button>
         )}
 
