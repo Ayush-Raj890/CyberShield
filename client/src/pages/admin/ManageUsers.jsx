@@ -6,6 +6,8 @@ import AdminNavbar from "../../components/layout/AdminNavbar";
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
   const [deletingId, setDeletingId] = useState(null);
+  const [processingId, setProcessingId] = useState(null);
+  const currentUser = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     fetchUsers();
@@ -34,6 +36,48 @@ export default function ManageUsers() {
     }
   };
 
+  const promoteUser = async (id) => {
+    setProcessingId(id);
+    try {
+      await API.put(`/admin/promote/${id}`);
+      toast.success("User promoted to admin");
+      fetchUsers();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to promote user");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const suspendUser = async (id) => {
+    setProcessingId(id);
+    try {
+      await API.put(`/admin/suspend/${id}`);
+      toast.success("User suspended");
+      fetchUsers();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to suspend user");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const demoteAdmin = async (id) => {
+    setProcessingId(id);
+    try {
+      await API.put(`/admin/demote/${id}`);
+      toast.success("Admin role removed");
+      fetchUsers();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to remove admin role");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
   return (
     <>
       <AdminNavbar />
@@ -49,15 +93,50 @@ export default function ManageUsers() {
               <div>
                 <p className="font-semibold">{u.name}</p>
                 <p className="text-sm text-gray-500">{u.email}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Role: {u.role} | Suspended: {u.isSuspended ? "Yes" : "No"}
+                </p>
               </div>
 
-              <button
-                onClick={() => deleteUser(u._id)}
-                className="btn btn-danger"
-                disabled={deletingId === u._id}
-              >
-                {deletingId === u._id ? "Processing..." : "Delete"}
-              </button>
+              <div className="flex flex-wrap gap-2 justify-end">
+                {u.role === "USER" && !u.isSuspended && (
+                  <button
+                    onClick={() => promoteUser(u._id)}
+                    className="btn btn-primary"
+                    disabled={processingId === u._id}
+                  >
+                    {processingId === u._id ? "Processing..." : "Make Admin"}
+                  </button>
+                )}
+
+                {u.role !== "SUPER_ADMIN" && !u.isSuspended && (
+                  <button
+                    onClick={() => suspendUser(u._id)}
+                    className="btn btn-danger"
+                    disabled={processingId === u._id}
+                  >
+                    {processingId === u._id ? "Processing..." : "Suspend"}
+                  </button>
+                )}
+
+                {currentUser?.role === "SUPER_ADMIN" && u.role === "ADMIN" && (
+                  <button
+                    onClick={() => demoteAdmin(u._id)}
+                    className="btn"
+                    disabled={processingId === u._id}
+                  >
+                    {processingId === u._id ? "Processing..." : "Remove Admin"}
+                  </button>
+                )}
+
+                <button
+                  onClick={() => deleteUser(u._id)}
+                  className="btn btn-danger"
+                  disabled={deletingId === u._id || processingId === u._id}
+                >
+                  {deletingId === u._id ? "Processing..." : "Delete"}
+                </button>
+              </div>
             </div>
           ))
         )}

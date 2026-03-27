@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import Home from "../pages/public/Home";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import UserDashboard from "../pages/dashboard/UserDashboard";
@@ -18,7 +19,8 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route
           path="/dashboard"
@@ -30,19 +32,19 @@ export default function AppRoutes() {
         />
         <Route
           path="/reports"
-          element={<PrivateRoute><ViewReports /></PrivateRoute>}
+          element={<ViewReports />}
         />
         <Route
           path="/ai"
-          element={<PrivateRoute><ScamDetector /></PrivateRoute>}
+          element={<ScamDetector />}
         />
         <Route
           path="/articles"
-          element={<PrivateRoute><Articles /></PrivateRoute>}
+          element={<Articles />}
         />
         <Route
           path="/articles/:id"
-          element={<PrivateRoute><ArticleDetail /></PrivateRoute>}
+          element={<ArticleDetail />}
         />
         <Route
           path="/admin"

@@ -40,7 +40,7 @@ export default function Login() {
       toast.success("Login successful");
 
       // Redirect based on role
-      if (data.role === "ADMIN") {
+      if (["ADMIN", "SUPER_ADMIN"].includes(data.role)) {
         navigate("/admin");
       } else {
         navigate("/dashboard");
