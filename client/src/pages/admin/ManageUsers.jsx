@@ -10,6 +10,8 @@ export default function ManageUsers() {
   const [deletingId, setDeletingId] = useState(null);
   const [processingId, setProcessingId] = useState(null);
   const currentUser = JSON.parse(localStorage.getItem("user"));
+  const isAdmin = ["ADMIN", "SUPER_ADMIN"].includes(currentUser?.role);
+  const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
 
   useEffect(() => {
     fetchUsers();
@@ -118,7 +120,7 @@ export default function ManageUsers() {
               </div>
 
               <div className="flex flex-wrap gap-2 justify-end">
-                {u.role === "USER" && !u.isSuspended && (
+                {isAdmin && u.role === "USER" && !u.isSuspended && (
                   <button
                     onClick={() => promoteUser(u._id)}
                     className="btn btn-primary"
@@ -128,7 +130,7 @@ export default function ManageUsers() {
                   </button>
                 )}
 
-                {u.role !== "SUPER_ADMIN" && !u.isSuspended && (
+                {isAdmin && u.role !== "SUPER_ADMIN" && !u.isSuspended && (
                   <button
                     onClick={() => suspendUser(u._id)}
                     className="btn btn-danger"
@@ -138,7 +140,7 @@ export default function ManageUsers() {
                   </button>
                 )}
 
-                {currentUser?.role === "SUPER_ADMIN" && u.role === "ADMIN" && (
+                {isSuperAdmin && u.role === "ADMIN" && (
                   <button
                     onClick={() => demoteAdmin(u._id)}
                     className="btn"
@@ -148,13 +150,15 @@ export default function ManageUsers() {
                   </button>
                 )}
 
-                <button
-                  onClick={() => deleteUser(u._id)}
-                  className="btn btn-danger"
-                  disabled={deletingId === u._id || processingId === u._id}
-                >
-                  {deletingId === u._id ? "Processing..." : "Delete"}
-                </button>
+                {isSuperAdmin && (
+                  <button
+                    onClick={() => deleteUser(u._id)}
+                    className="btn btn-danger"
+                    disabled={deletingId === u._id || processingId === u._id}
+                  >
+                    {deletingId === u._id ? "Processing..." : "Delete"}
+                  </button>
+                )}
               </div>
             </div>
           ))
