@@ -8,6 +8,18 @@ const isValidEmail = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
+const checkStrength = (password) => {
+  if (password.length < 6) return "Weak";
+
+  let score = 0;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+
+  if (score >= 2) return "Strong";
+  return "Medium";
+};
+
 export default function Register() {
   const [form, setForm] = useState({
     name: "",
@@ -83,6 +95,10 @@ export default function Register() {
           className="input mb-3"
           onChange={handleChange}
         />
+
+        <p className="text-xs text-gray-600 mb-3">
+          Password Strength: {checkStrength(form.password)}
+        </p>
 
         <button className="btn btn-primary w-full">
           {loading ? "Processing..." : "Register"}
