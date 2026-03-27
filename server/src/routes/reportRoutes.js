@@ -21,7 +21,9 @@ router.post(
     body("description").trim().escape().notEmpty().withMessage("Description required"),
     body("category").isIn(["PHISHING", "SCAM", "HARASSMENT", "OTHER"]).withMessage("Invalid category"),
     body("severity").optional().isIn(["LOW", "MEDIUM", "HIGH"]).withMessage("Invalid severity"),
-    body("contactEmail").optional().isEmail().withMessage("Invalid email")
+    body("contactEmail").optional().isEmail().withMessage("Invalid email"),
+    body("isAnonymous").optional().isBoolean().toBoolean().withMessage("Invalid anonymous flag"),
+    body("isSensitive").optional().isBoolean().toBoolean().withMessage("Invalid sensitive flag")
   ],
   createReport
 );

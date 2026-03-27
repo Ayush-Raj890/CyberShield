@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
-import { AlertCircle, Shield, Mail, Image as ImageIcon } from "lucide-react";
+import { AlertCircle, Shield, Mail, Image as ImageIcon, EyeOff, TriangleAlert } from "lucide-react";
 
 export default function ViewReports() {
   const [reports, setReports] = useState([]);
@@ -70,6 +70,19 @@ export default function ViewReports() {
                 </span>
               </div>
 
+              <div className="flex flex-wrap gap-2 mb-3">
+                {r.isAnonymous && (
+                  <span className="px-2 py-1 rounded text-xs font-semibold bg-gray-100 text-gray-700 inline-flex items-center gap-1">
+                    <EyeOff size={14} /> Anonymous
+                  </span>
+                )}
+                {r.isSensitive && (
+                  <span className="px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-700 inline-flex items-center gap-1">
+                    <TriangleAlert size={14} /> Sensitive
+                  </span>
+                )}
+              </div>
+
               <p className="text-gray-600 mb-4">{r.description}</p>
 
               <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
@@ -112,6 +125,17 @@ export default function ViewReports() {
                       View Evidence Document
                     </a>
                   )}
+                </div>
+              )}
+
+              {Array.isArray(r.history) && r.history.length > 0 && (
+                <div className="mt-4 text-xs text-gray-500">
+                  <p className="font-semibold mb-1">Status History</p>
+                  {r.history.map((h, idx) => (
+                    <p key={`${r._id}-history-${idx}`}>
+                      {h.status} - {new Date(h.date).toLocaleString()}
+                    </p>
+                  ))}
                 </div>
               )}
 

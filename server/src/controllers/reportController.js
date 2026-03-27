@@ -9,18 +9,35 @@ export const createReport = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, description, category, severity, contactEmail } = req.body;
+    const {
+      title,
+      description,
+      category,
+      severity,
+      contactEmail,
+      isAnonymous,
+      isSensitive
+    } = req.body;
     const evidencePath = req.file ? `/uploads/${req.file.filename}` : null;
+    const anonymousFlag = isAnonymous === true || isAnonymous === "true";
+    const sensitiveFlag = isSensitive === true || isSensitive === "true";
 
     const report = await Report.create({
-      user: req.user._id,
+      user: anonymousFlag ? null : req.user._id,
       title,
       description,
       category,
       severity: severity || "LOW",
       contactEmail,
-      evidence: evidencePath
+      evidence: evidencePath,
+      isAnonymous: anonymousFlag,
+      isSensitive: sensitiveFlag,
+      history: [{ status: "PENDING" }]
     });
+
+    if (report.isAnonymous) {
+      report.user = null;
+    }
 
     res.status(201).json(report);
   } catch (error) {
@@ -53,6 +70,7 @@ export const updateReportStatus = async (req, res) => {
     }
 
     report.status = status;
+    report.history.push({ status });
     await report.save();
 
     res.json(report);

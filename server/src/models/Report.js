@@ -4,8 +4,7 @@ const reportSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
+      ref: "User"
     },
     title: {
       type: String,
@@ -31,11 +30,28 @@ const reportSchema = new mongoose.Schema(
     contactEmail: {
       type: String
     },
+    isAnonymous: {
+      type: Boolean,
+      default: false
+    },
+    isSensitive: {
+      type: Boolean,
+      default: false
+    },
     status: {
       type: String,
       enum: ["PENDING", "REVIEWED", "RESOLVED"],
       default: "PENDING"
-    }
+    },
+    history: [
+      {
+        status: String,
+        date: {
+          type: Date,
+          default: Date.now
+        }
+      }
+    ]
   },
   { timestamps: true }
 );
