@@ -6,7 +6,7 @@ This folder contains project planning, tracking, and implementation notes for Cy
 
 Implemented backend modules:
 
-- Authentication API (register/login with role + token response)
+- Authentication API (register/login + email OTP verification + resend OTP)
 - Incident Reporting API (create/get/update status + evidence upload)
 - AI detection integration route (public prediction endpoint)
 - Knowledge Hub API (user submission + approval-based publishing)
@@ -44,6 +44,7 @@ Implemented frontend modules:
 - Backend auth validation for register/login (required fields + email format + minimum password length)
 - Frontend input sanitization utility for XSS prevention (light layer)
 - Backend global security middleware: helmet (secure headers), xss-clean, express-mongo-sanitize
+- Backend global security middleware: helmet + custom XSS sanitizer + custom NoSQL sanitizer
 - Backend request validation/sanitization on auth and report endpoints using express-validator
 - NoSQL injection prevention with express-mongo-sanitize middleware
 - File upload system via multer for report evidence (images/PDFs)
@@ -79,6 +80,8 @@ Auth:
 
 - POST /api/auth/register
 - POST /api/auth/login
+- POST /api/auth/verify-otp
+- POST /api/auth/resend-otp
 
 Reports:
 
@@ -137,6 +140,9 @@ Backend .env expected keys:
 - MONGO_URI=your_mongodb_uri
 - JWT_SECRET=supersecretkey
 - AI_SERVICE_URL=http://localhost:8000
+- EMAIL_USER=your_gmail_address
+- EMAIL_PASS=your_gmail_app_password
+- EMAIL_MOCK=false
 
 ## Tracking Files
 

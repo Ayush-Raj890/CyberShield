@@ -1,6 +1,6 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
-import { registerUser, loginUser, verifyOTP } from "../controllers/authController.js";
+import { registerUser, loginUser, verifyOTP, resendOTP } from "../controllers/authController.js";
 
 const router = express.Router();
 
@@ -34,6 +34,14 @@ router.post(
       .withMessage("Valid 6-digit OTP required")
   ],
   verifyOTP
+);
+
+router.post(
+  "/resend-otp",
+  [
+    body("email").isEmail().normalizeEmail().withMessage("Valid email required")
+  ],
+  resendOTP
 );
 
 export default router;

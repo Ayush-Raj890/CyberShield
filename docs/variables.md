@@ -8,6 +8,9 @@ PORT=5000
 MONGO_URI=your_mongodb_uri
 JWT_SECRET=supersecretkey
 AI_SERVICE_URL=http://localhost:8000
+EMAIL_USER=your_gmail_address
+EMAIL_PASS=your_gmail_app_password
+EMAIL_MOCK=false
 
 ---
 
@@ -17,6 +20,8 @@ AI_SERVICE_URL=http://localhost:8000
 
 POST /api/auth/register
 POST /api/auth/login
+POST /api/auth/verify-otp
+POST /api/auth/resend-otp
 
 ### Reports
 
@@ -54,6 +59,7 @@ DELETE /api/admin/articles/:id
 /
 /login
 /register
+/verify
 /dashboard
 /create-report
 /reports
@@ -121,6 +127,9 @@ Backend (register/login endpoints):
 - email must match basic email regex
 - password length must be at least 6 (register)
 - suspended users are blocked from login and protected access
+- users must verify email by OTP before login
+- max 5 OTP verification attempts before resend is required
+- resend OTP resets OTP expiry window and attempt counter
 
 ---
 
@@ -128,8 +137,8 @@ Backend (register/login endpoints):
 
 Global middleware stack (app.js):
 - helmet(): Secure HTTP headers (disable XSS reflection, content sniffing, etc.)
-- xss-clean(): Remove malicious script injection attempts
-- express-mongo-sanitize(): Remove $ and . from req.body to prevent NoSQL injection queries like { "$gt": "" }
+- xssMiddleware(): Escape harmful HTML characters in body/query/params
+- sanitizeMiddleware(): Strip dangerous Mongo operator keys (`$` and `.`) from body/query/params
 - cors(): Cross-origin resource sharing
 - express.json(): Parse JSON bodies
 
@@ -249,3 +258,12 @@ Super Admin only action:
 
 CLI helper:
 - npm run make:super-admin -- <email>
+
+---
+
+## User Model Fields (Auth Verification)
+
+- isVerified (boolean, default: false)
+- verificationOTP (string)
+- otpExpires (date, 10-minute TTL index)
+- failedOtpAttempts (number, default: 0)

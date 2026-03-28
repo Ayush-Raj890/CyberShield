@@ -1,8 +1,6 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import xss from "xss-clean";
-import mongoSanitize from "express-mongo-sanitize";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import path from "path";
@@ -16,6 +14,8 @@ import adminRoutes from "./routes/adminRoutes.js";
 import forumRoutes from "./routes/forumRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import systemRoutes from "./routes/systemRoutes.js";
+import { sanitizeMiddleware } from "./middlewares/sanitizeMiddleware.js";
+import { xssMiddleware } from "./middlewares/xssMiddleware.js";
 import { errorHandler } from "./middlewares/errorMiddleware.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -29,8 +29,8 @@ const apiLimiter = rateLimit({
 
 // Security Middleware
 app.use(helmet());
-app.use(xss());
-app.use(mongoSanitize());
+app.use(xssMiddleware);
+app.use(sanitizeMiddleware);
 app.use(apiLimiter);
 
 // Standard Middleware

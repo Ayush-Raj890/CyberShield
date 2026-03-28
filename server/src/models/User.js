@@ -32,7 +32,12 @@ const userSchema = new mongoose.Schema(
       type: String
     },
     otpExpires: {
-      type: Date
+      type: Date,
+      index: { expires: 600 }
+    },
+    failedOtpAttempts: {
+      type: Number,
+      default: 0
     }
   },
   { timestamps: true }

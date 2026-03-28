@@ -15,6 +15,8 @@ Start here:
 Auth:
 - POST /api/auth/register
 - POST /api/auth/login
+- POST /api/auth/verify-otp
+- POST /api/auth/resend-otp
 
 Reports:
 - GET /api/reports
@@ -51,6 +53,10 @@ Backend (Auth APIs):
 - Email format validation on register/login
 - Password must be at least 6 characters on register
 - Input sanitization and HTML escaping on all auth fields
+- Email verification with 6-digit OTP before login
+- Re-register support for unverified accounts (old unverified record removed)
+- OTP resend endpoint with cooldown support in UI
+- OTP verification attempt limiting (max 5 attempts before forcing resend)
 - Report title, description, and category validation with sanitization
 - Report severity and contactEmail optional validation
 - Suspended users are blocked from login and protected API access
@@ -63,7 +69,7 @@ AI Predictor:
 ## Security Implementation (AppSec)
 
 Backend:
-- Global middleware: helmet (secure headers), xss-clean (XSS prevention), express-mongo-sanitize (NoSQL injection prevention)
+- Global middleware: helmet (secure headers), custom XSS sanitizer middleware, custom NoSQL sanitizer middleware
 - Route-level request validation/sanitization using express-validator on auth and report endpoints
 - Input trimming, HTML escaping, email validation, and category whitelisting
 

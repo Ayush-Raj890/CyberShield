@@ -28,6 +28,7 @@ API.interceptors.response.use(
     const status = error?.response?.status;
     const requestUrl = error?.config?.url || "";
     const isReportingCall = requestUrl.includes("/system/client-errors");
+    const isServerError = Number.isInteger(status) && status >= 500 && status <= 599;
 
     saveErrorContext({
       source: "API",
@@ -40,7 +41,7 @@ API.interceptors.response.use(
 
     if (
       !isReportingCall &&
-      (status >= 500 || status === undefined) &&
+      isServerError &&
       typeof window !== "undefined" &&
       window.location.pathname !== "/500"
     ) {

@@ -146,6 +146,17 @@
 - Updated admin users UI with Make Admin, Suspend, and Remove Admin actions
 - Added super-admin CLI helper script and npm command: `make:super-admin`
 
+## Day 20
+- Added email OTP verification flow for auth (register -> verify -> login)
+- Added `/api/auth/verify-otp` endpoint with validation
+- Added `/api/auth/resend-otp` endpoint with validation
+- Added resend OTP UX with 30-second cooldown timer on Verify page
+- Added OTP brute-force protection with max 5 attempts per OTP session
+- Added remaining-attempts payload in verify OTP error responses for better UX
+- Fixed unverified-user re-registration trap by deleting prior unverified account before new registration
+- Added optional mock email mode (`EMAIL_MOCK=true`) for local development without SMTP
+- Replaced Express 5-incompatible sanitization middleware with custom safe middlewares
+
 ---
 
 ## Notes

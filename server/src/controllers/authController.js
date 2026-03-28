@@ -15,9 +15,13 @@ export const registerUser = async (req, res) => {
 
     const { name, email, password } = req.body;
 
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return sendError(res, 400, "User already exists");
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      if (!existingUser.isVerified) {
+        await existingUser.deleteOne();
+      } else {
+        return sendError(res, 400, "User already exists");
+      }
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -29,7 +33,8 @@ export const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       verificationOTP: otp,
-      otpExpires: otpExpiry
+      otpExpires: otpExpiry,
+      failedOtpAttempts: 0
     });
 
     await sendEmail(
@@ -50,6 +55,39 @@ export const registerUser = async (req, res) => {
   }
 };
 
+// Resend OTP
+export const resendOTP = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return sendError(res, 400, "Validation failed", errors.array());
+    }
+
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return sendError(res, 404, "User not found");
+    }
+
+    if (user.isVerified) {
+      return sendError(res, 400, "Account already verified");
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.verificationOTP = otp;
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    user.failedOtpAttempts = 0;
+    await user.save();
+
+    await sendEmail(email, "Resend OTP", `Your OTP is: ${otp}. It expires in 10 minutes.`);
+
+    return sendSuccess(res, { resent: true }, 200, "OTP resent");
+  } catch (error) {
+    return sendError(res, 500, error.message);
+  }
+};
+
 // Verify OTP
 export const verifyOTP = async (req, res) => {
   try {
@@ -60,9 +98,19 @@ export const verifyOTP = async (req, res) => {
 
     const { email, otp } = req.body;
     const user = await User.findOne({ email });
+    const maxAttempts = 5;
 
     if (!user) {
       return sendError(res, 404, "User not found");
+    }
+
+    if (user.failedOtpAttempts >= maxAttempts) {
+      return sendError(
+        res,
+        403,
+        "Too many attempts. Please request a new OTP",
+        [{ attemptsRemaining: 0 }]
+      );
     }
 
     if (
@@ -70,15 +118,30 @@ export const verifyOTP = async (req, res) => {
       !user.otpExpires ||
       user.otpExpires < Date.now()
     ) {
-      return sendError(res, 400, "Invalid or expired OTP");
+      user.failedOtpAttempts += 1;
+      await user.save();
+
+      const attemptsRemaining = Math.max(0, maxAttempts - user.failedOtpAttempts);
+
+      if (user.failedOtpAttempts >= maxAttempts) {
+        return sendError(
+          res,
+          403,
+          "Too many attempts. Please request a new OTP",
+          [{ attemptsRemaining }]
+        );
+      }
+
+      return sendError(res, 400, "Invalid or expired OTP", [{ attemptsRemaining }]);
     }
 
     user.isVerified = true;
     user.verificationOTP = null;
     user.otpExpires = null;
+    user.failedOtpAttempts = 0;
     await user.save();
 
-    return sendSuccess(res, { verified: true }, 200, "Account verified");
+    return sendSuccess(res, { verified: true, attemptsRemaining: maxAttempts }, 200, "Account verified");
   } catch (error) {
     return sendError(res, 500, error.message);
   }
