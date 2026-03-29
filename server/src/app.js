@@ -14,6 +14,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import forumRoutes from "./routes/forumRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import systemRoutes from "./routes/systemRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import { sanitizeMiddleware } from "./middlewares/sanitizeMiddleware.js";
 import { xssMiddleware } from "./middlewares/xssMiddleware.js";
 import { errorHandler } from "./middlewares/errorMiddleware.js";
@@ -50,6 +51,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/forum", forumRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/system", systemRoutes);
+app.use("/api/users", userRoutes);
 
 // Health check
 app.get("/", (req, res) => {

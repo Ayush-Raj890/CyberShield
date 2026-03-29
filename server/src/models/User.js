@@ -38,6 +38,15 @@ const userSchema = new mongoose.Schema(
     failedOtpAttempts: {
       type: Number,
       default: 0
+    },
+    alias: {
+      type: String,
+      unique: true,
+      sparse: true
+    },
+    bio: {
+      type: String,
+      default: ""
     }
   },
   { timestamps: true }
