@@ -22,6 +22,12 @@
 - POST /api/auth/verify-otp
 - POST /api/auth/resend-otp
 
+### Users
+
+- GET /api/users/profile (protected)
+- PUT /api/users/profile (protected)
+- PUT /api/users/change-password (protected)
+
 ### Reports
 
 - POST /api/reports (protected, multipart/form-data)
@@ -87,6 +93,7 @@ Public:
 Protected:
 
 - /dashboard
+- /profile
 - /create-report
 - /forum/create
 
@@ -167,6 +174,8 @@ User:
 - verificationOTP
 - otpExpires (TTL index)
 - failedOtpAttempts
+- alias (unique, sparse)
+- bio
 
 Report:
 

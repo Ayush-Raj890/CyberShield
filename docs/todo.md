@@ -87,6 +87,12 @@
 - [x] Add AI Detector frontend page (`/ai`)
 - [x] Add Knowledge Hub list/detail frontend routes (`/articles`, `/articles/:id`)
 - [x] Split admin frontend into pages (ManageReports, ManageUsers, ManageArticles)
+- [x] User Profile module:
+  - [x] Backend profile/stats endpoints
+  - [x] Backend profile update + password change endpoints
+  - [x] User model personalization fields (alias, bio)
+  - [x] Frontend `/profile` page with stats and edit forms
+  - [x] Navbar discoverability for profile
 - [x] Community Forum end-to-end:
   - [x] Forum backend routes/controller/model
   - [x] Public forum listing page (`/forum`)

@@ -172,6 +172,15 @@
 - Fixed broken JSX structure in public Home page (missing closing section tag)
 - Performed full docs-folder synchronization with current implemented state
 
+## Day 23
+
+- Implemented User Profile backend module (`/api/users/profile`, `/api/users/change-password`)
+- Added ownership stats in profile API (reports, articles, forum posts)
+- Added personalization fields in User model (alias, bio)
+- Added secure password change flow with current password verification and hash update
+- Added protected frontend Profile page (`/profile`) with stats and profile/password forms
+- Added profile discoverability in shared Navbar
+
 ---
 
 ## Notes

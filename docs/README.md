@@ -7,6 +7,7 @@ This folder contains project planning, tracking, and implementation notes for Cy
 Implemented backend modules:
 
 - Authentication API (register/login + email OTP verification + resend OTP)
+- User Profile API (profile read/update + password change + ownership stats)
 - Incident Reporting API (create/get/update status + evidence upload)
 - AI detection integration route (public prediction endpoint)
 - Knowledge Hub API (user submission + approval-based publishing)
@@ -26,6 +27,7 @@ Implemented frontend modules:
 
 - Public Home page and public discovery flow
 - Auth pages (Login/Register)
+- User Profile page (`/profile`)
 - User Dashboard (navigation hub)
 - Report pages (Create Report, View Reports)
 - Enhanced reports with file upload (evidence), severity levels, and contact email
@@ -88,6 +90,12 @@ Auth:
 - POST /api/auth/verify-otp
 - POST /api/auth/resend-otp
 
+Users:
+
+- GET /api/users/profile (protected)
+- PUT /api/users/profile (protected)
+- PUT /api/users/change-password (protected)
+
 Reports:
 
 - POST /api/reports (protected, multipart/form-data)
@@ -145,6 +153,7 @@ Tooling:
 - /register
 - /verify
 - /dashboard (protected)
+- /profile (protected)
 - /create-report (protected)
 - /reports (public)
 - /ai (public)

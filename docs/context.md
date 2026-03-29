@@ -15,13 +15,14 @@ CyberShield is a full-stack cybersecurity platform combining:
 Implemented modules:
 
 1. Authentication with OTP email verification
-2. Incident reporting with evidence upload
-3. AI scam detector integration
-4. Knowledge Hub with moderation workflow
-5. Community Forum (public read, auth write)
-6. Admin dashboard and role governance
-7. Notification center
-8. Client error logging and admin observability
+2. User Profile and personalization layer
+3. Incident reporting with evidence upload
+4. AI scam detector integration
+5. Knowledge Hub with moderation workflow
+6. Community Forum (public read, auth write)
+7. Admin dashboard and role governance
+8. Notification center
+9. Client error logging and admin observability
 
 Simplified items:
 
@@ -83,13 +84,16 @@ Admin / Super Admin:
 1. OTP Auth Flow:
 Register -> OTP email -> Verify OTP -> Login
 
-2. Report Flow:
+2. Profile Flow:
+Login -> View profile stats -> Update alias/bio -> Change password
+
+3. Report Flow:
 Create report -> Status lifecycle (`PENDING`/`REVIEWED`/`RESOLVED`) -> Timeline updates
 
-3. Forum Flow:
+4. Forum Flow:
 Public read -> Authenticated create/reply
 
-4. Error Observability Flow:
+5. Error Observability Flow:
 Client captures error -> `/api/system/client-errors` -> Admin views logs and exports CSV
 
 ---
