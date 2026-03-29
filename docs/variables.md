@@ -177,6 +177,14 @@ User:
 - alias (unique, sparse)
 - bio
 
+---
+
+## Identity Display Rule
+
+- Default label shows `name`
+- If `alias` exists, UI shows `alias`
+- When alias is shown, username is exposed on hover (`title` hint)
+
 Report:
 
 - severity, contactEmail, evidence

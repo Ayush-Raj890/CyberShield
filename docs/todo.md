@@ -93,6 +93,7 @@
   - [x] User model personalization fields (alias, bio)
   - [x] Frontend `/profile` page with stats and edit forms
   - [x] Navbar discoverability for profile
+  - [x] Identity UX rule (alias-first display + username on hover)
 - [x] Community Forum end-to-end:
   - [x] Forum backend routes/controller/model
   - [x] Public forum listing page (`/forum`)

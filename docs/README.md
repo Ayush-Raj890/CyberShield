@@ -28,6 +28,7 @@ Implemented frontend modules:
 - Public Home page and public discovery flow
 - Auth pages (Login/Register)
 - User Profile page (`/profile`)
+- Alias-first identity display with username hover hint (forum, articles, admin, profile)
 - User Dashboard (navigation hub)
 - Report pages (Create Report, View Reports)
 - Enhanced reports with file upload (evidence), severity levels, and contact email

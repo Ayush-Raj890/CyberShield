@@ -181,6 +181,12 @@
 - Added protected frontend Profile page (`/profile`) with stats and profile/password forms
 - Added profile discoverability in shared Navbar
 
+## Day 24
+
+- Implemented alias-first identity rendering across forum, knowledge hub, admin article/report pages, and profile heading
+- Added username-on-hover behavior when alias is present for clearer identity context
+- Synced docs to include identity display behavior
+
 ---
 
 ## Notes

@@ -103,6 +103,7 @@ Frontend:
 - Knowledge Hub shows only approved published articles
 - Admin ManageArticles page with Pending vs Published tabs
 - Approve/Reject buttons for pending content with creator contact info
+- Identity labels use alias-first display; when alias exists, username is shown on hover
 
 ## Public Access Model
 

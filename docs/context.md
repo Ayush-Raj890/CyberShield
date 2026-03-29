@@ -93,7 +93,10 @@ Create report -> Status lifecycle (`PENDING`/`REVIEWED`/`RESOLVED`) -> Timeline 
 4. Forum Flow:
 Public read -> Authenticated create/reply
 
-5. Error Observability Flow:
+5. Identity Display Flow:
+Default username display -> If alias exists then show alias -> Hover alias to reveal username
+
+6. Error Observability Flow:
 Client captures error -> `/api/system/client-errors` -> Admin views logs and exports CSV
 
 ---
