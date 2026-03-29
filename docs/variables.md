@@ -205,7 +205,10 @@ User:
 
 Reusable component target path:
 
-- `client/src/components/ui/analytics-dashboard.tsx`
+- `client/src/components/ui/DashboardCore.jsx`
+- `client/src/pages/dashboard/Dashboard.jsx`
+- `client/src/components/dashboard/Charts.jsx`
+- `client/src/services/dashboardService.js`
 
 Tab mapping:
 
@@ -225,9 +228,9 @@ Metrics replacement strategy:
 Client data sources:
 
 - GET `/api/users/profile`
-- GET `/api/reports/user` (planned)
-- GET `/api/articles/user` (planned)
-- GET `/api/forum/user` (planned)
+- GET `/api/reports` (current implementation + frontend ownership filter)
+- GET `/api/articles` (current implementation + frontend ownership filter)
+- GET `/api/forum` (current implementation + frontend ownership filter)
 
 Admin data sources:
 

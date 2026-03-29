@@ -1,0 +1,167 @@
+import React, { Suspense, useEffect, useMemo, useState } from "react";
+
+const LazyCharts = React.lazy(() => import("../dashboard/Charts"));
+
+const tabLabel = {
+  overview: "Overview",
+  analytics: "Analytics",
+  reports: "Reports",
+  moderation: "Moderation"
+};
+
+const statusColor = {
+  PENDING: "bg-yellow-100 text-yellow-700",
+  REVIEWED: "bg-blue-100 text-blue-700",
+  RESOLVED: "bg-green-100 text-green-700"
+};
+
+const formatLabel = (value) =>
+  value
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (char) => char.toUpperCase());
+
+export default function DashboardCore({ type, data }) {
+  const [activeTab, setActiveTab] = useState("overview");
+  const [chartsLoaded, setChartsLoaded] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const tabs = useMemo(
+    () => (type === "admin" ? ["overview", "analytics", "moderation"] : ["overview", "analytics", "reports"]),
+    [type]
+  );
+
+  useEffect(() => {
+    if (activeTab === "analytics") {
+      setChartsLoaded(true);
+    }
+  }, [activeTab]);
+
+  const stats = data?.stats || {};
+
+  return (
+    <div
+      className={`min-h-screen p-4 sm:p-6 transition-colors ${
+        isDarkMode ? "bg-slate-900 text-slate-100" : "bg-gradient-to-br from-gray-50 to-gray-100 text-slate-900"
+      }`}
+    >
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-semibold">
+              {type === "admin" ? "Admin Dashboard" : "User Dashboard"}
+            </h1>
+            <p className={`${isDarkMode ? "text-slate-300" : "text-gray-500"} text-sm`}>
+              {type === "admin" ? "System overview and moderation" : "Your activity and insights"}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsDarkMode((prev) => !prev)}
+            className={`btn ${isDarkMode ? "bg-slate-700 text-white" : ""}`}
+            title="Dark mode ready state (local only)"
+          >
+            {isDarkMode ? "Light Preview" : "Dark Preview"}
+          </button>
+        </div>
+
+        <div className={`flex flex-wrap gap-4 mb-6 border-b ${isDarkMode ? "border-slate-700" : "border-slate-200"}`}>
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`pb-2 text-sm ${
+                activeTab === tab
+                  ? "border-b-2 border-blue-500 text-blue-600"
+                  : isDarkMode
+                  ? "text-slate-300"
+                  : "text-gray-500"
+              }`}
+            >
+              {tabLabel[tab]}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "overview" && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Object.entries(stats).map(([key, value]) => (
+              <div key={key} className="card text-center">
+                <p className="text-sm text-gray-500 capitalize">{formatLabel(key)}</p>
+                <h2 className="text-xl sm:text-2xl font-bold">{value}</h2>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "analytics" && (
+          <div>
+            {!chartsLoaded ? (
+              <p className={isDarkMode ? "text-slate-300" : "text-gray-600"}>Loading analytics...</p>
+            ) : (
+              <Suspense fallback={<p className={isDarkMode ? "text-slate-300" : "text-gray-600"}>Loading charts...</p>}>
+                <LazyCharts data={data} type={type} />
+              </Suspense>
+            )}
+          </div>
+        )}
+
+        {activeTab === "reports" && (
+          <div className="space-y-3">
+            {(data?.recentReports || []).length === 0 ? (
+              <div className="card text-sm text-gray-500">No recent reports available.</div>
+            ) : (
+              data.recentReports.map((report) => (
+                <div key={report._id} className="card">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="font-semibold break-words">{report.title}</h3>
+                    <span className={`px-2 py-1 rounded text-xs font-semibold ${statusColor[report.status] || "bg-gray-100 text-gray-700"}`}>
+                      {report.status}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">{report.category}</p>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === "moderation" && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="card">
+              <h3 className="font-semibold mb-3">Pending Reports</h3>
+              {(data?.moderation?.pendingReports || []).length === 0 ? (
+                <p className="text-sm text-gray-500">No pending reports.</p>
+              ) : (
+                <div className="space-y-2">
+                  {data.moderation.pendingReports.map((report) => (
+                    <div key={report._id} className="rounded border border-slate-200 px-3 py-2">
+                      <p className="font-medium text-sm break-words">{report.title}</p>
+                      <p className="text-xs text-gray-500">{report.category}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="card">
+              <h3 className="font-semibold mb-3">Pending Articles</h3>
+              {(data?.moderation?.pendingArticles || []).length === 0 ? (
+                <p className="text-sm text-gray-500">No pending articles.</p>
+              ) : (
+                <div className="space-y-2">
+                  {data.moderation.pendingArticles.map((article) => (
+                    <div key={article._id} className="rounded border border-slate-200 px-3 py-2">
+                      <p className="font-medium text-sm break-words">{article.title}</p>
+                      <p className="text-xs text-gray-500">{article.category}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -4,7 +4,7 @@ import Home from "../pages/public/Home";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import VerifyOTP from "../pages/auth/VerifyOTP";
-import UserDashboard from "../pages/dashboard/UserDashboard";
+import Dashboard from "../pages/dashboard/Dashboard";
 import Profile from "../pages/profile/Profile";
 import CreateReport from "../pages/reports/CreateReport";
 import ViewReports from "../pages/reports/ViewReports";
@@ -13,7 +13,6 @@ import Articles from "../pages/knowledge/Articles";
 import ArticleDetail from "../pages/knowledge/ArticleDetail";
 import Forum from "../pages/forum/Forum";
 import CreatePost from "../pages/forum/CreatePost";
-import AdminDashboard from "../pages/admin/AdminDashboard";
 import ManageReports from "../pages/admin/ManageReports";
 import ManageUsers from "../pages/admin/ManageUsers";
 import ManageArticles from "../pages/admin/ManageArticles";
@@ -33,7 +32,7 @@ export default function AppRoutes() {
         <Route path="/verify" element={<VerifyOTP />} />
         <Route
           path="/dashboard"
-          element={<PrivateRoute><UserDashboard /></PrivateRoute>}
+          element={<PrivateRoute><Dashboard /></PrivateRoute>}
         />
         <Route
           path="/profile"
@@ -69,7 +68,7 @@ export default function AppRoutes() {
         />
         <Route
           path="/admin"
-          element={<PrivateRoute adminOnly={true}><AdminDashboard /></PrivateRoute>}
+          element={<PrivateRoute adminOnly={true}><Dashboard /></PrivateRoute>}
         />
         <Route
           path="/admin/reports"

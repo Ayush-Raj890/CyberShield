@@ -201,6 +201,14 @@
 - Confirmed lazy chart loading strategy for analytics tab performance
 - Synced docs to capture planned API/data contracts and build sequence
 
+## Day 27
+
+- Implemented reusable dashboard engine component (`DashboardCore`) with mode switching (`user`/`admin`)
+- Implemented lazy-loaded analytics module (`components/dashboard/Charts.jsx`) and tab-triggered load behavior
+- Added dashboard data aggregation service (`services/dashboardService.js`) with role-specific transforms
+- Added unified dashboard wrapper page (`pages/dashboard/Dashboard.jsx`) and connected it to both `/dashboard` and `/admin` routes
+- Added dark-mode-ready local state preview in dashboard core (non-global)
+
 ---
 
 ## Notes
