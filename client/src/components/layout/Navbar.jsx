@@ -40,6 +40,10 @@ export default function Navbar() {
           <Book size={16} /> Learn
         </button>
 
+        <button onClick={() => navigate("/forum")} className="flex items-center gap-1 hover:text-indigo-500">
+          <FileText size={16} /> Forum
+        </button>
+
         {user ? (
           <button onClick={logout} className="flex items-center gap-1 text-red-500">
             <LogOut size={16} /> Logout

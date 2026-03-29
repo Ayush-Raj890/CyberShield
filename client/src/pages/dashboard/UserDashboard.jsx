@@ -1,4 +1,4 @@
-import { Shield, FileText, Brain, Book } from "lucide-react";
+import { Shield, FileText, Brain, Book, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
 
@@ -15,7 +15,7 @@ export default function UserDashboard() {
           Welcome, {user?.name}
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 p-6">
           <div className="card flex items-center gap-4 cursor-pointer" onClick={() => navigate("/create-report")}>
             <Shield className="text-indigo-500" />
             <div>
@@ -45,6 +45,14 @@ export default function UserDashboard() {
             <div>
               <h3 className="font-semibold">Knowledge Hub</h3>
               <p className="text-sm text-gray-500">Stay informed</p>
+            </div>
+          </div>
+
+          <div className="card flex items-center gap-4 cursor-pointer" onClick={() => navigate("/forum")}>
+            <Users className="text-blue-500" />
+            <div>
+              <h3 className="font-semibold">Community Forum</h3>
+              <p className="text-sm text-gray-500">Discuss threats and solutions</p>
             </div>
           </div>
         </div>

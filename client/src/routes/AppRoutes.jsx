@@ -10,6 +10,8 @@ import ViewReports from "../pages/reports/ViewReports";
 import ScamDetector from "../pages/ai/ScamDetector";
 import Articles from "../pages/knowledge/Articles";
 import ArticleDetail from "../pages/knowledge/ArticleDetail";
+import Forum from "../pages/forum/Forum";
+import CreatePost from "../pages/forum/CreatePost";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import ManageReports from "../pages/admin/ManageReports";
 import ManageUsers from "../pages/admin/ManageUsers";
@@ -51,6 +53,14 @@ export default function AppRoutes() {
         <Route
           path="/articles/:id"
           element={<ArticleDetail />}
+        />
+        <Route
+          path="/forum"
+          element={<Forum />}
+        />
+        <Route
+          path="/forum/create"
+          element={<PrivateRoute><CreatePost /></PrivateRoute>}
         />
         <Route
           path="/admin"
