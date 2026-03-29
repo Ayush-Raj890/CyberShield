@@ -36,7 +36,7 @@ export const createArticle = async (req, res) => {
 export const getArticles = async (req, res) => {
   try {
     const articles = await Article.find({ status: "APPROVED" })
-      .populate("createdBy", "name")
+      .populate("createdBy", "name alias")
       .sort({ createdAt: -1 });
 
     return sendSuccess(res, articles);
@@ -49,7 +49,7 @@ export const getArticles = async (req, res) => {
 export const getArticleById = async (req, res) => {
   try {
     const article = await Article.findById(req.params.id)
-      .populate("createdBy", "name");
+      .populate("createdBy", "name alias");
 
     if (!article || (article.status !== "APPROVED")) {
       return sendError(res, 404, "Article not found");
@@ -65,7 +65,7 @@ export const getArticleById = async (req, res) => {
 export const getPendingArticles = async (req, res) => {
   try {
     const articles = await Article.find({ status: "PENDING" })
-      .populate("createdBy", "name email")
+      .populate("createdBy", "name alias email")
       .sort({ createdAt: -1 });
 
     return sendSuccess(res, articles);

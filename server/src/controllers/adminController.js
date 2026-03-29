@@ -60,7 +60,7 @@ export const getAllReportsAdmin = async (req, res) => {
     const limit = Number(req.query.limit) || 10;
 
     const reports = await Report.find()
-      .populate("user", "name email")
+      .populate("user", "name alias email")
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);

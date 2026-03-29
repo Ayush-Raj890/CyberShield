@@ -38,8 +38,8 @@ export const addReply = async (req, res) => {
 export const getAllPosts = async (req, res) => {
   try {
     const posts = await ForumPost.find()
-      .populate("user", "name")
-      .populate("replies.user", "name")
+      .populate("user", "name alias")
+      .populate("replies.user", "name alias")
       .sort({ createdAt: -1 });
 
     return sendSuccess(res, posts);
