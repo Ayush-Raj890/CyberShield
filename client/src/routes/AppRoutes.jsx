@@ -5,6 +5,7 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import VerifyOTP from "../pages/auth/VerifyOTP";
 import UserDashboard from "../pages/dashboard/UserDashboard";
+import Profile from "../pages/profile/Profile";
 import CreateReport from "../pages/reports/CreateReport";
 import ViewReports from "../pages/reports/ViewReports";
 import ScamDetector from "../pages/ai/ScamDetector";
@@ -33,6 +34,10 @@ export default function AppRoutes() {
         <Route
           path="/dashboard"
           element={<PrivateRoute><UserDashboard /></PrivateRoute>}
+        />
+        <Route
+          path="/profile"
+          element={<PrivateRoute><Profile /></PrivateRoute>}
         />
         <Route
           path="/create-report"

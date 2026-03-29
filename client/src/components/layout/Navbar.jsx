@@ -22,6 +22,12 @@ export default function Navbar() {
           </button>
         )}
 
+        {user && (
+          <button onClick={() => navigate("/profile")} className="flex items-center gap-1 hover:text-indigo-500">
+            <FileText size={16} /> Profile
+          </button>
+        )}
+
         {isAdmin && (
           <button onClick={() => navigate("/admin")} className="flex items-center gap-1 hover:text-indigo-500">
             <Shield size={16} /> Admin
