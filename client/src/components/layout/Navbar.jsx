@@ -121,7 +121,10 @@ export default function Navbar() {
                 }}>Upload Meme</button>
               </>
             )}
-            <button className="block w-full text-left px-3 py-2 text-slate-400" disabled>Mini Games (Soon)</button>
+            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+              setActiveDropdown(null);
+              navigate("/games");
+            }}>Phishing Detector Game</button>
           </div>
         </details>
 

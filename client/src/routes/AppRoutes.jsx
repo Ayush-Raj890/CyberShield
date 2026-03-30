@@ -18,6 +18,7 @@ import VideoHub from "../pages/video/VideoHub";
 import SubmitVideo from "../pages/video/SubmitVideo";
 import MemeHub from "../pages/fun/MemeHub";
 import SubmitMeme from "../pages/fun/SubmitMeme";
+import PhishingGame from "../pages/games/PhishingGame";
 import ManageReports from "../pages/admin/ManageReports";
 import ManageUsers from "../pages/admin/ManageUsers";
 import ManageArticles from "../pages/admin/ManageArticles";
@@ -88,6 +89,10 @@ export default function AppRoutes() {
         <Route
           path="/memes/upload"
           element={<PrivateRoute><SubmitMeme /></PrivateRoute>}
+        />
+        <Route
+          path="/games"
+          element={<PrivateRoute><PhishingGame /></PrivateRoute>}
         />
         <Route
           path="/forum/create"
