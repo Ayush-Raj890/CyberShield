@@ -28,9 +28,12 @@ export default function Navbar() {
 
         <details className="relative">
           <summary className="cursor-pointer list-none hover:text-indigo-600">Learn</summary>
-          <div className="absolute right-0 mt-2 w-40 rounded border bg-white shadow z-10">
+          <div className="absolute right-0 mt-2 w-44 rounded border bg-white shadow z-10">
             <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/articles")}>Knowledge Hub</button>
-            <button className="block w-full text-left px-3 py-2 text-slate-400" disabled>Video Hub (Soon)</button>
+            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/videos")}>Video Hub</button>
+            {user && (
+              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/videos/submit")}>Submit Video</button>
+            )}
             <button className="block w-full text-left px-3 py-2 text-slate-400" disabled>Mini Games (Soon)</button>
           </div>
         </details>
@@ -39,17 +42,18 @@ export default function Navbar() {
           <summary className="cursor-pointer list-none hover:text-indigo-600">Account</summary>
           <div className="absolute right-0 mt-2 w-36 rounded border bg-white shadow z-10">
             <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/profile")}>Profile</button>
-            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/profile#settings")}>Settings</button>
+            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/settings")}>Settings</button>
           </div>
         </details>
 
         {isAdmin && (
           <details className="relative">
             <summary className="cursor-pointer list-none hover:text-indigo-600">Admin</summary>
-            <div className="absolute right-0 mt-2 w-40 rounded border bg-white shadow z-10">
+            <div className="absolute right-0 mt-2 w-44 rounded border bg-white shadow z-10">
               <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/admin")}>Admin Dashboard</button>
               <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/admin/users")}>Manage Users</button>
               <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/admin/reports")}>Moderation</button>
+              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/admin/videos")}>Video Moderation</button>
             </div>
           </details>
         )}

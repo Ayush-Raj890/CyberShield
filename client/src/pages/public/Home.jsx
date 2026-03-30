@@ -187,9 +187,9 @@ export default function Home() {
           <button className="btn btn-primary" onClick={() => navigate("/register")}>
             Create Account
           </button>
-          <Link to="/articles" className="btn">
+          <button className="btn btn-primary" onClick={() => navigate("/articles")}>
             Read Security Guides
-          </Link>
+          </button>
         </div>
       </section>
     </div>

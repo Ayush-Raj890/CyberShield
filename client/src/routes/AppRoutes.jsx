@@ -6,6 +6,7 @@ import Register from "../pages/auth/Register";
 import VerifyOTP from "../pages/auth/VerifyOTP";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Profile from "../pages/profile/Profile";
+import Settings from "../pages/account/Settings";
 import CreateReport from "../pages/reports/CreateReport";
 import ViewReports from "../pages/reports/ViewReports";
 import ScamDetector from "../pages/ai/ScamDetector";
@@ -13,9 +14,12 @@ import Articles from "../pages/knowledge/Articles";
 import ArticleDetail from "../pages/knowledge/ArticleDetail";
 import Forum from "../pages/forum/Forum";
 import CreatePost from "../pages/forum/CreatePost";
+import VideoHub from "../pages/video/VideoHub";
+import SubmitVideo from "../pages/video/SubmitVideo";
 import ManageReports from "../pages/admin/ManageReports";
 import ManageUsers from "../pages/admin/ManageUsers";
 import ManageArticles from "../pages/admin/ManageArticles";
+import VideoModeration from "../pages/admin/VideoModeration";
 import Notifications from "../pages/admin/Notifications";
 import ErrorLogs from "../pages/admin/ErrorLogs";
 import NotFound from "../pages/errors/NotFound";
@@ -37,6 +41,10 @@ export default function AppRoutes() {
         <Route
           path="/profile"
           element={<PrivateRoute><Profile /></PrivateRoute>}
+        />
+        <Route
+          path="/settings"
+          element={<PrivateRoute><Settings /></PrivateRoute>}
         />
         <Route
           path="/create-report"
@@ -63,6 +71,14 @@ export default function AppRoutes() {
           element={<Forum />}
         />
         <Route
+          path="/videos"
+          element={<VideoHub />}
+        />
+        <Route
+          path="/videos/submit"
+          element={<PrivateRoute><SubmitVideo /></PrivateRoute>}
+        />
+        <Route
           path="/forum/create"
           element={<PrivateRoute><CreatePost /></PrivateRoute>}
         />
@@ -81,6 +97,10 @@ export default function AppRoutes() {
         <Route
           path="/admin/articles"
           element={<PrivateRoute adminOnly={true}><ManageArticles /></PrivateRoute>}
+        />
+        <Route
+          path="/admin/videos"
+          element={<PrivateRoute adminOnly={true}><VideoModeration /></PrivateRoute>}
         />
         <Route
           path="/admin/notifications"

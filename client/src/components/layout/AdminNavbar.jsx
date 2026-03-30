@@ -41,6 +41,7 @@ export default function AdminNavbar() {
         <button className="hover:text-blue-500" onClick={() => navigate("/admin/reports")}>Reports</button>
         <button className="hover:text-blue-500" onClick={() => navigate("/admin/users")}>Users</button>
         <button className="hover:text-blue-500" onClick={() => navigate("/admin/articles")}>Articles</button>
+        <button className="hover:text-blue-500" onClick={() => navigate("/admin/videos")}>Videos</button>
         <button className="hover:text-blue-500" onClick={() => navigate("/admin/error-logs")}>Error Logs</button>
         <button className="hover:text-blue-500 relative" onClick={() => navigate("/admin/notifications")}>
           🔔
