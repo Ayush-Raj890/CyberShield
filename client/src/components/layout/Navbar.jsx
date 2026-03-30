@@ -49,6 +49,10 @@ export default function Navbar() {
         <button onClick={() => navigate("/dashboard")} className="hover:text-indigo-600">Dashboard</button>
         <button onClick={() => navigate("/ai")} className="hover:text-indigo-600">AI</button>
 
+        {user && (
+          <span className="font-semibold text-amber-600">🪙 {Number(user.coins || 0)}</span>
+        )}
+
         <details className="relative" open={activeDropdown === "activity"}>
           <summary
             className="cursor-pointer list-none hover:text-indigo-600"
@@ -176,6 +180,12 @@ export default function Navbar() {
           <button onClick={() => navigate("/login")} className="text-indigo-600 hover:text-indigo-700">Login</button>
         )}
       </div>
+
+      {user && Number(user.coins || 0) < 3 && (
+        <p className="text-red-500 text-xs text-center sm:text-right w-full sm:w-auto">
+          Low coins! Earn more by engaging.
+        </p>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import toast from "react-hot-toast";
 import API from "../../services/api";
+import { syncUserCoins } from "../../utils/economySync";
 
 const API_HOST = "http://localhost:5000";
 
@@ -17,9 +18,10 @@ export default function MemeCard({ meme, refresh }) {
 
     try {
       await API.post(`/memes/${meme._id}/vote`, { type });
+      await syncUserCoins();
       refresh();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to submit vote");
+      toast.error(error.response?.data?.message || "Action failed");
     }
   };
 

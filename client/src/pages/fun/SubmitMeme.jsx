@@ -2,6 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import Navbar from "../../components/layout/Navbar";
 import API from "../../services/api";
+import { syncUserCoins } from "../../utils/economySync";
 
 export default function SubmitMeme() {
   const [file, setFile] = useState(null);
@@ -33,10 +34,12 @@ export default function SubmitMeme() {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
+      await syncUserCoins();
+
       setFile(null);
       setCaption("");
       setCategory("FUN");
-      toast.success("Meme uploaded");
+      toast.success("Meme uploaded (+5 coins, -2 cost)");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to upload meme");
     } finally {
