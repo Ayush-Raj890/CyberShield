@@ -28,7 +28,15 @@ export const transformUserDashboard = ({ profile, reports, articles, forumPosts,
       reports: profile?.stats?.reports ?? ownReports.length,
       articles: profile?.stats?.articles ?? ownArticles.length,
       posts: profile?.stats?.posts ?? ownPosts.length,
-      aiChecks
+      aiChecks,
+      xp: profile?.user?.xp ?? 0,
+      level: profile?.user?.level ?? 1
+    },
+    gamification: {
+      xp: profile?.user?.xp ?? 0,
+      level: profile?.user?.level ?? 1,
+      streak: profile?.user?.streak ?? 0,
+      badges: profile?.user?.badges ?? []
     },
     reportStatus: {
       pending,
@@ -39,7 +47,9 @@ export const transformUserDashboard = ({ profile, reports, articles, forumPosts,
       reportsThisWeek,
       aiUsageTrend: aiChecks > 0 ? "Active" : "No checks yet"
     },
-    recentReports: ownReports.slice(0, 6)
+    recentReports: (profile?.recentReports && profile.recentReports.length > 0)
+      ? profile.recentReports
+      : ownReports.slice(0, 6)
   };
 };
 

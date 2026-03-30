@@ -4,6 +4,7 @@ import { generateToken } from "../utils/generateToken.js";
 import { validationResult } from "express-validator";
 import { sendError, sendSuccess } from "../utils/response.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import { addXP } from "../utils/gamification.js";
 
 // Register
 export const registerUser = async (req, res) => {
@@ -168,12 +169,44 @@ export const loginUser = async (req, res) => {
         return sendError(res, 403, "Account suspended");
       }
 
+      const now = new Date();
+      const today = now.toDateString();
+      const lastDate = user.lastActive ? new Date(user.lastActive) : null;
+      const lastDay = lastDate ? lastDate.toDateString() : null;
+      user.streak = Number(user.streak || 0);
+
+      if (today !== lastDay) {
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        if (lastDay === yesterday.toDateString()) {
+          user.streak += 1;
+        } else {
+          user.streak = 1;
+        }
+
+        user.lastActive = now;
+        await user.save();
+        await addXP(user._id, "DAILY_LOGIN");
+      }
+
+      if (!user.lastActive) {
+        user.lastActive = now;
+        await user.save();
+      }
+
+      const refreshedUser = await User.findById(user._id);
+
       return sendSuccess(res, {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id)
+        _id: refreshedUser._id,
+        name: refreshedUser.name,
+        email: refreshedUser.email,
+        role: refreshedUser.role,
+        xp: refreshedUser.xp,
+        level: refreshedUser.level,
+        streak: refreshedUser.streak,
+        badges: refreshedUser.badges,
+        token: generateToken(refreshedUser._id)
       });
     } else {
       return sendError(res, 401, "Invalid credentials");

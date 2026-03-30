@@ -1,6 +1,7 @@
 import Article from "../models/Article.js";
 import { validationResult } from "express-validator";
 import Notification from "../models/Notification.js";
+import { addXP } from "../utils/gamification.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
 // Create Article (Any authenticated user)
@@ -25,6 +26,8 @@ export const createArticle = async (req, res) => {
       message: "New article submitted for review",
       type: "ARTICLE"
     });
+
+    await addXP(req.user._id, "ARTICLE_CREATED");
 
     return sendSuccess(res, article, 201);
   } catch (error) {

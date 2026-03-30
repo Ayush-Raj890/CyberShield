@@ -2,6 +2,7 @@ import Report from "../models/Report.js";
 import { validationResult } from "express-validator";
 import Notification from "../models/Notification.js";
 import { encrypt, decrypt } from "../utils/encryption.js";
+import { addXP } from "../utils/gamification.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
 // Create Report
@@ -47,6 +48,8 @@ export const createReport = async (req, res) => {
       message: "New report submitted",
       type: "REPORT"
     });
+
+    await addXP(req.user._id, "REPORT_CREATED");
 
     return sendSuccess(res, report, 201);
   } catch (error) {

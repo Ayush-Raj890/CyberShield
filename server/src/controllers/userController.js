@@ -20,13 +20,29 @@ export const getProfile = async (req, res) => {
       ForumPost.countDocuments({ user: req.user._id })
     ]);
 
+    const recentReports = await Report.find({ user: req.user._id })
+      .sort({ createdAt: -1 })
+      .limit(6)
+      .select("title category status createdAt");
+
     return sendSuccess(res, {
-      user,
+      user: {
+        _id: user._id,
+        name: user.name,
+        alias: user.alias,
+        email: user.email,
+        bio: user.bio,
+        xp: user.xp,
+        level: user.level,
+        streak: user.streak,
+        badges: user.badges
+      },
       stats: {
         reports,
         articles,
         posts
-      }
+      },
+      recentReports
     });
   } catch (error) {
     return sendError(res, 500, error.message);

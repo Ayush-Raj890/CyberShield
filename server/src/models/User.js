@@ -47,6 +47,37 @@ const userSchema = new mongoose.Schema(
     bio: {
       type: String,
       default: ""
+    },
+    xp: {
+      type: Number,
+      default: 0
+    },
+    level: {
+      type: Number,
+      default: 1
+    },
+    streak: {
+      type: Number,
+      default: 0
+    },
+    lastActive: {
+      type: Date,
+      default: null
+    },
+    badges: {
+      type: [
+        {
+          name: {
+            type: String,
+            required: true
+          },
+          earnedAt: {
+            type: Date,
+            default: Date.now
+          }
+        }
+      ],
+      default: []
     }
   },
   { timestamps: true }

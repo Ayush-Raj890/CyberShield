@@ -1,4 +1,5 @@
 import ForumPost from "../models/ForumPost.js";
+import { addXP } from "../utils/gamification.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
 export const createPost = async (req, res) => {
@@ -8,6 +9,8 @@ export const createPost = async (req, res) => {
       title: req.body.title,
       content: req.body.content
     });
+
+    await addXP(req.user._id, "FORUM_POST");
 
     return sendSuccess(res, post, 201);
   } catch (error) {
