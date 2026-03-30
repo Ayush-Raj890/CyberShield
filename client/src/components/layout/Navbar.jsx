@@ -6,6 +6,8 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const navRef = useRef(null);
   const user = JSON.parse(localStorage.getItem("user") || "null");
+  const dailyCoins = Number(user?.dailyCoins || 0);
+  const dailyCap = 100;
   const isAdmin = ["ADMIN", "SUPER_ADMIN"].includes(user?.role);
 
   const toggleDropdown = (name) => {
@@ -50,7 +52,10 @@ export default function Navbar() {
         <button onClick={() => navigate("/ai")} className="hover:text-indigo-600">AI</button>
 
         {user && (
-          <span className="font-semibold text-amber-600">🪙 {Number(user.coins || 0)}</span>
+          <span className="font-semibold text-amber-600">
+            🪙 {Number(user.coins || 0)}
+            <span className="ml-2 text-xs text-slate-500">Today: {dailyCoins}/{dailyCap}</span>
+          </span>
         )}
 
         <details className="relative" open={activeDropdown === "activity"}>
@@ -184,6 +189,12 @@ export default function Navbar() {
       {user && Number(user.coins || 0) < 3 && (
         <p className="text-red-500 text-xs text-center sm:text-right w-full sm:w-auto">
           Low coins! Earn more by engaging.
+        </p>
+      )}
+
+      {user && dailyCoins >= dailyCap && (
+        <p className="text-amber-600 text-xs text-center sm:text-right w-full sm:w-auto">
+          Daily earn cap reached. More rewards unlock tomorrow.
         </p>
       )}
     </div>

@@ -46,6 +46,22 @@ export default function DashboardCore({ type, data }) {
     streak: 0,
     badges: []
   };
+  const dailyCap = 100;
+  const dailyCoins = Number(gamification.dailyCoins || 0);
+  const remainingDailyBudget = Math.max(0, dailyCap - dailyCoins);
+  const nextUtcReset = new Date(
+    Date.UTC(
+      new Date().getUTCFullYear(),
+      new Date().getUTCMonth(),
+      new Date().getUTCDate() + 1,
+      0,
+      0,
+      0
+    )
+  );
+  const resetInMs = Math.max(0, nextUtcReset.getTime() - Date.now());
+  const resetHours = Math.floor(resetInMs / (1000 * 60 * 60));
+  const resetMinutes = Math.floor((resetInMs % (1000 * 60 * 60)) / (1000 * 60));
   const progressPercent = Math.min(100, Number(gamification.xp || 0) % 100);
 
   return (
@@ -121,10 +137,19 @@ export default function DashboardCore({ type, data }) {
                   <p>Level {gamification.level}</p>
                   <p>XP: {gamification.xp}</p>
                   <p>🪙 Coins: {Number(gamification.coins || 0)}</p>
+                  <p>Daily Coins: {dailyCoins}/{dailyCap}</p>
                   <p>🔥 Streak: {gamification.streak} day{gamification.streak === 1 ? "" : "s"}</p>
                   <p>Your best meme got {Number(stats.topMemeLikes || 0)} likes</p>
+                  <div className="mt-2 rounded border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+                    <p className="font-medium text-slate-700">Wallet Snapshot</p>
+                    <p>Remaining daily earn budget: {remainingDailyBudget}</p>
+                    <p className="text-xs text-slate-500">Next reset in ~{resetHours}h {resetMinutes}m (UTC)</p>
+                  </div>
                   {Number(gamification.coins || 0) < 3 && (
                     <p className="text-red-500 text-xs mt-1">Low coins! Earn more by engaging.</p>
+                  )}
+                  {dailyCoins >= dailyCap && (
+                    <p className="text-amber-600 text-xs mt-1">Daily coin cap reached. Rewards reset tomorrow.</p>
                   )}
 
                   <div className="w-full bg-gray-200 h-2 rounded mt-2">
