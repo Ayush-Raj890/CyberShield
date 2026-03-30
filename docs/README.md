@@ -8,6 +8,7 @@ Implemented backend modules:
 
 - Authentication API (register/login + email OTP verification + resend OTP)
 - User Profile API (profile read/update + password change + ownership stats)
+- Gamification engine (XP, levels, streaks, badges, event-based rewards)
 - Incident Reporting API (create/get/update status + evidence upload)
 - AI detection integration route (public prediction endpoint)
 - Knowledge Hub API (user submission + approval-based publishing)
@@ -30,6 +31,8 @@ Implemented frontend modules:
 - User Profile page (`/profile`)
 - Alias-first identity display with username hover hint (forum, articles, admin, profile)
 - User Dashboard (navigation hub)
+- Unified modular dashboard engine (`user`/`admin`) with lazy analytics
+- Dashboard gamification panels (XP, level, streak, badges)
 - Report pages (Create Report, View Reports)
 - Enhanced reports with file upload (evidence), severity levels, and contact email
 - Report detail view with evidence image/document viewing
@@ -42,6 +45,7 @@ Implemented frontend modules:
 - Hybrid routing model (public content + protected write/admin actions)
 - Shared API service with auth interceptor
 - Reusable Navbar layout component
+- Domain-grouped Navbar UX (Core, Activity, Learn, Account, Admin)
 - Reusable AdminNavbar layout component
 - Mobile responsiveness pass across primary user flows (navbars, profile, reports, forum, articles, AI)
 - Global UI design system (`.card`, `.btn`, `.btn-primary`, `.btn-danger`, `.input`)
@@ -88,6 +92,12 @@ Planned build order:
 3. Integrate API data sources and calculated metrics
 4. Add async/lazy chart loading in analytics tabs
 
+Implementation status:
+
+- Core dashboard engine is implemented and routed for both user and admin
+- Lazy analytics loading is implemented
+- Chart visualization library integration remains pending
+
 ## Product Growth Roadmap (Planned)
 
 Strategic shift:
@@ -104,7 +114,7 @@ Four product pillars:
 
 High-impact features queued:
 
-- Gamification system (XP, levels, badges, streaks)
+- Gamification system (XP, levels, badges, streaks) - foundational implementation completed
 - Short content hub (embedded reels/shorts links managed by admin)
 - Meme submission and moderation flow
 - Mini security games (phishing detector, URL checker, password strength)
@@ -138,7 +148,7 @@ Auth:
 
 Users:
 
-- GET /api/users/profile (protected)
+- GET /api/users/profile (protected, includes gamification + recent reports)
 - PUT /api/users/profile (protected)
 - PUT /api/users/change-password (protected)
 
@@ -150,7 +160,7 @@ Reports:
 
 AI (backend proxy):
 
-- POST /api/ai/predict
+- POST /api/ai/predict (public, optional auth for XP tracking)
 
 Knowledge Hub:
 

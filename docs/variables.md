@@ -36,7 +36,7 @@
 
 ### AI
 
-- POST /api/ai/predict (public)
+- POST /api/ai/predict (public, optional auth for XP rewards)
 
 ### Articles
 
@@ -176,6 +176,11 @@ User:
 - failedOtpAttempts
 - alias (unique, sparse)
 - bio
+- xp
+- level
+- streak
+- lastActive
+- badges[] (`name`, `earnedAt`)
 
 ---
 
@@ -223,7 +228,7 @@ Metrics replacement strategy:
 
 ---
 
-## Dashboard Data Contract (Planned)
+## Dashboard Data Contract (Current)
 
 Client data sources:
 
@@ -251,9 +256,15 @@ State management strategy:
 - Local component state with `useState` + `useEffect`
 - Props-driven dashboard component input (`<Dashboard data={dashboardData} />`)
 
+Profile payload highlights (current):
+
+- `user`: name, alias, email, bio, xp, level, streak, badges
+- `stats`: reports, articles, posts
+- `recentReports`: latest user reports for dashboard feed
+
 ---
 
-## Engagement Expansion (Planned)
+## Engagement Expansion (Current + Planned)
 
 Core pillars:
 
@@ -262,18 +273,18 @@ Core pillars:
 - Community
 - Engagement
 
-Gamification XP actions (planned baseline):
+Gamification XP actions (implemented):
 
 - Report submitted: `+20 XP`
 - Article posted: `+30 XP`
 - AI check used: `+5 XP`
 - Daily login: `+2 XP`
 
-Planned badges:
+Current badges:
 
-- `First Report`
+- `Rookie`
 - `Cyber Warrior`
-- `Top Contributor`
+- `Elite Defender`
 
 Planned engagement metrics:
 

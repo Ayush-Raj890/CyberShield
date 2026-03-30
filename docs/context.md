@@ -25,7 +25,8 @@ Implemented modules:
 8. Notification center
 9. Client error logging and admin observability
 10. Mobile responsiveness pass for core user-facing flows
-11. Dashboard architecture design lock for next implementation phase
+11. Modular dashboard engine (user/admin mode, tab-based, lazy analytics)
+12. Gamification foundation (XP, levels, streaks, badges, event rewards)
 
 Simplified items:
 
@@ -108,10 +109,10 @@ Default username display -> If alias exists then show alias -> Hover alias to re
 6. Error Observability Flow:
 Client captures error -> `/api/system/client-errors` -> Admin views logs and exports CSV
 
-7. Dashboard Data Flow (Planned):
+7. Dashboard Data Flow:
 Tab-based dashboard -> Fetch real data from APIs -> Compute derived metrics in frontend -> Lazy-load analytics charts only on analytics tab
 
-8. Engagement Loop (Planned):
+8. Engagement Loop:
 Daily login/activity -> Earn XP and streak progress -> Unlock badges/challenges -> Return for next milestone
 
 9. Learning Loop (Planned):

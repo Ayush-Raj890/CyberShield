@@ -106,6 +106,14 @@ Frontend:
 - Identity labels use alias-first display; when alias exists, username is shown on hover
 - Mobile responsiveness improvements applied across core user flows (navbars, profile, reports, forum, articles, AI)
 - Dark mode switch is pending (tracked in docs/todo.md)
+- Modular dashboard engine now powers both user and admin dashboards
+- User dashboard now includes gamification progress (XP, level, streak, badges)
+- Navbar reorganized into grouped product domains for cleaner navigation UX
+
+Backend:
+
+- Gamification model and reward engine implemented (XP, levels, streaks, badges)
+- Event-based XP rewards wired to report/article/forum/AI/login actions
 
 ## Upcoming Dashboard Architecture (Locked)
 

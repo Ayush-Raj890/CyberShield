@@ -216,6 +216,16 @@
 - Added prioritized implementation backlog for gamification, short content, memes, mini-games, and insights loops
 - Documented planned data contracts and endpoint outlines for engagement modules
 
+## Day 29
+
+- Implemented backend gamification model fields in User schema (xp, level, streak, lastActive, badges)
+- Added reusable gamification utility with XP rules, level calculation, and badge awarding
+- Hooked XP rewards into report creation, article creation, forum posting, AI usage, and daily login
+- Added optional auth handling on AI route to keep endpoint public while rewarding authenticated usage
+- Updated profile API payload to expose gamification data and recent reports for dashboard use
+- Integrated gamification section into user dashboard overview (progress + badges)
+- Reorganized navbar into grouped domains (Core, Activity, Learn, Account, Admin)
+
 ---
 
 ## Notes

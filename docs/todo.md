@@ -79,16 +79,17 @@
 
 Priority 1 (must-do):
 
-- [ ] Gamification foundation (XP, levels, streak tracking)
+- [x] Gamification foundation (XP, levels, streak tracking)
 - [ ] Short video content hub (admin-managed embed links)
 - [ ] Meme submission + admin approval flow
-- [ ] Dashboard integration for XP, level progress, and engagement KPIs
+- [x] Dashboard integration for XP, level progress, and engagement KPIs
 
 Priority 2:
 
 - [ ] Mini phishing detector game
-- [ ] Daily streak reward loop
-- [ ] Badge system (First Report, Cyber Warrior, Top Contributor)
+- [x] Daily streak reward loop
+- [x] Badge system foundation (Rookie, Cyber Warrior, Elite Defender)
+- [ ] Badge expansion (First Report, Top Contributor, challenge badges)
 
 Priority 3:
 
