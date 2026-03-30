@@ -13,6 +13,7 @@ Implemented backend modules:
 - AI detection integration route (public prediction endpoint)
 - Knowledge Hub API (user submission + approval-based publishing)
 - Community Forum API (public read, authenticated post/reply)
+- Video Hub API (submit, public approved feed, admin moderation)
 - Admin APIs (stats, users, reports, article deletion, promote/suspend/demote user roles)
 - Notification API (list + mark read)
 - System observability API (client error logs, filter, CSV export)
@@ -29,6 +30,7 @@ Implemented frontend modules:
 - Public Home page and public discovery flow
 - Auth pages (Login/Register)
 - User Profile page (`/profile`)
+- Settings page (`/settings`) with profile/password/preferences/danger zone actions
 - Alias-first identity display with username hover hint (forum, articles, admin, profile)
 - User Dashboard (navigation hub)
 - Unified modular dashboard engine (`user`/`admin`) with lazy analytics
@@ -40,7 +42,9 @@ Implemented frontend modules:
 - Knowledge Hub pages (Articles list + Article detail + user submission form)
 - User-submitted article submission with approval workflow
 - Community Forum pages (`/forum`, `/forum/create`)
+- Video Hub pages (`/videos`, `/videos/submit`)
 - Admin pages (Dashboard, Manage Reports, Manage Users, Manage Articles)
+- Admin page (Video Moderation)
 - Admin pages (Notifications, Error Logs)
 - Hybrid routing model (public content + protected write/admin actions)
 - Shared API service with auth interceptor
@@ -115,7 +119,7 @@ Four product pillars:
 High-impact features queued:
 
 - Gamification system (XP, levels, badges, streaks) - foundational implementation completed
-- Short content hub (embedded reels/shorts links managed by admin)
+- Short content hub (Video Hub + moderation workflow) - foundational implementation completed
 - Meme submission and moderation flow
 - Mini security games (phishing detector, URL checker, password strength)
 - Smart insights and challenge loops (awareness score, weekly goals)
@@ -151,6 +155,7 @@ Users:
 - GET /api/users/profile (protected, includes gamification + recent reports)
 - PUT /api/users/profile (protected)
 - PUT /api/users/change-password (protected)
+- DELETE /api/users/me (protected)
 
 Reports:
 
@@ -175,6 +180,13 @@ Forum:
 - GET /api/forum (public)
 - POST /api/forum (auth)
 - POST /api/forum/:id/reply (auth)
+
+Videos:
+
+- GET /api/videos (public, approved only)
+- POST /api/videos (protected, submission)
+- GET /api/videos/pending (admin)
+- PUT /api/videos/:id (admin status update)
 
 Admin:
 
@@ -210,6 +222,7 @@ Tooling:
 - /verify
 - /dashboard (protected)
 - /profile (protected)
+- /settings (protected)
 - /create-report (protected)
 - /reports (public)
 - /ai (public)
@@ -217,10 +230,13 @@ Tooling:
 - /articles/:id (public)
 - /forum (public)
 - /forum/create (protected)
+- /videos (public)
+- /videos/submit (protected)
 - /admin (protected, admin only)
 - /admin/reports (protected, admin only)
 - /admin/users (protected, admin only)
 - /admin/articles (protected, admin only)
+- /admin/videos (protected, admin only)
 - /admin/notifications (protected, admin only)
 - /admin/error-logs (protected, admin only)
 - /500

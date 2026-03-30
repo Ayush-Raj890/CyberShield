@@ -80,7 +80,7 @@
 Priority 1 (must-do):
 
 - [x] Gamification foundation (XP, levels, streak tracking)
-- [ ] Short video content hub (admin-managed embed links)
+- [x] Short video content hub (submission + admin moderation + public approved feed)
 - [ ] Meme submission + admin approval flow
 - [x] Dashboard integration for XP, level progress, and engagement KPIs
 
@@ -140,6 +140,10 @@ Skip for now:
   - [x] Frontend `/profile` page with stats and edit forms
   - [x] Navbar discoverability for profile
   - [x] Identity UX rule (alias-first display + username on hover)
+- [x] Settings module:
+  - [x] Frontend `/settings` page (profile, password, local preferences)
+  - [x] Backend self-delete endpoint (`DELETE /api/users/me`)
+  - [x] Danger Zone account deletion flow in UI
 - [x] Community Forum end-to-end:
   - [x] Forum backend routes/controller/model
   - [x] Public forum listing page (`/forum`)

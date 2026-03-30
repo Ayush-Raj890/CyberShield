@@ -27,6 +27,7 @@
 - GET /api/users/profile (protected)
 - PUT /api/users/profile (protected)
 - PUT /api/users/change-password (protected)
+- DELETE /api/users/me (protected)
 
 ### Reports
 
@@ -51,6 +52,13 @@
 - GET /api/forum (public)
 - POST /api/forum (protected)
 - POST /api/forum/:id/reply (protected)
+
+### Videos
+
+- GET /api/videos (public, approved only)
+- POST /api/videos (protected)
+- GET /api/videos/pending (admin)
+- PUT /api/videos/:id (admin)
 
 ### Notifications
 
@@ -89,13 +97,16 @@ Public:
 - /articles
 - /articles/:id
 - /forum
+- /videos
 
 Protected:
 
 - /dashboard
 - /profile
+- /settings
 - /create-report
 - /forum/create
+- /videos/submit
 
 Admin Protected:
 
@@ -103,6 +114,7 @@ Admin Protected:
 - /admin/reports
 - /admin/users
 - /admin/articles
+- /admin/videos
 - /admin/notifications
 - /admin/error-logs
 
@@ -296,9 +308,9 @@ Planned engagement metrics:
 
 ---
 
-## Planned Content Modules
+## Content Modules
 
-Short content hub object shape:
+Video hub object shape:
 
 - `title`
 - `url` (embed-ready link)

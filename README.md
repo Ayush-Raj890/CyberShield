@@ -18,6 +18,12 @@ Auth:
 - POST /api/auth/verify-otp
 - POST /api/auth/resend-otp
 
+Users:
+- GET /api/users/profile
+- PUT /api/users/profile
+- PUT /api/users/change-password
+- DELETE /api/users/me
+
 Reports:
 - GET /api/reports
 - POST /api/reports
@@ -26,6 +32,12 @@ Reports:
 Articles:
 - GET /api/articles
 - POST /api/articles
+
+Videos:
+- GET /api/videos
+- POST /api/videos
+- GET /api/videos/pending
+- PUT /api/videos/:id
 
 Admin:
 - GET /api/admin/stats
@@ -103,6 +115,9 @@ Frontend:
 - Knowledge Hub shows only approved published articles
 - Admin ManageArticles page with Pending vs Published tabs
 - Approve/Reject buttons for pending content with creator contact info
+- Video Hub page shows approved moderator-reviewed video content
+- Video submit page allows authenticated users to submit videos for review
+- Admin Video Moderation page approves/rejects pending videos
 - Identity labels use alias-first display; when alias exists, username is shown on hover
 - Mobile responsiveness improvements applied across core user flows (navbars, profile, reports, forum, articles, AI)
 - Dark mode switch is pending (tracked in docs/todo.md)
@@ -136,14 +151,21 @@ Public frontend routes:
 - /
 - /login
 - /register
+- /verify
 - /reports
 - /ai
 - /articles
 - /articles/:id
+- /videos
+- /forum
 
 Protected frontend routes:
 - /dashboard
+- /profile
+- /settings
 - /create-report
+- /forum/create
+- /videos/submit
 - /admin/*
 
 Public backend endpoints:
@@ -151,6 +173,7 @@ Public backend endpoints:
 - POST /api/ai/predict
 - GET /api/articles
 - GET /api/articles/:id
+- GET /api/videos
 
 ## Role Governance
 

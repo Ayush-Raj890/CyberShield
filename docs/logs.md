@@ -226,6 +226,18 @@
 - Integrated gamification section into user dashboard overview (progress + badges)
 - Reorganized navbar into grouped domains (Core, Activity, Learn, Account, Admin)
 
+## Day 30
+
+- Implemented Video Hub backend module (`Video` model, controller, routes)
+- Connected `/api/videos` routes in backend app
+- Added video submission flow for authenticated users (`/videos/submit`)
+- Added public approved Video Hub page (`/videos`)
+- Added admin video moderation page (`/admin/videos`) with approve/reject actions
+- Updated Navbar/AdminNavbar for video discoverability and moderation entry
+- Added dedicated Settings page (`/settings`) for profile/password/preferences
+- Added account self-delete endpoint (`DELETE /api/users/me`) and UI Danger Zone action
+- Updated route wiring for settings and video workflows
+
 ---
 
 ## Notes

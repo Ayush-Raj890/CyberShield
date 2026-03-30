@@ -27,6 +27,8 @@ Implemented modules:
 10. Mobile responsiveness pass for core user-facing flows
 11. Modular dashboard engine (user/admin mode, tab-based, lazy analytics)
 12. Gamification foundation (XP, levels, streaks, badges, event rewards)
+13. Video Hub submission and moderation pipeline
+14. Account settings module with self-service account deletion
 
 Simplified items:
 
@@ -71,12 +73,15 @@ Public:
 - AI detector
 - Knowledge Hub listing/detail
 - Forum listing
+- Video Hub listing
 
 Authenticated:
 
 - Create report
 - Create/reply forum posts
 - Article submission
+- Video submission
+- Settings management (profile/password/preferences)
 - Dashboard tools
 
 Admin / Super Admin:
@@ -84,6 +89,7 @@ Admin / Super Admin:
 - User management
 - Report moderation
 - Article moderation
+- Video moderation
 - Notification center
 - Client error log dashboard/export
 
@@ -117,6 +123,12 @@ Daily login/activity -> Earn XP and streak progress -> Unlock badges/challenges 
 
 9. Learning Loop (Planned):
 Consume short-form security content -> Practice via mini-games -> Improve awareness score -> Share/community contribution
+
+10. Video Moderation Flow:
+Authenticated user submits video -> status set to `PENDING` -> admin reviews pending queue -> status updated to `APPROVED`/`REJECTED` -> public Video Hub serves approved content only
+
+11. Settings and Danger Zone Flow:
+Authenticated user opens settings -> updates alias/bio/password/preferences -> optional account self-delete removes owned records and account
 
 ---
 
