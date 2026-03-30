@@ -16,10 +16,13 @@ import Forum from "../pages/forum/Forum";
 import CreatePost from "../pages/forum/CreatePost";
 import VideoHub from "../pages/video/VideoHub";
 import SubmitVideo from "../pages/video/SubmitVideo";
+import MemeHub from "../pages/fun/MemeHub";
+import SubmitMeme from "../pages/fun/SubmitMeme";
 import ManageReports from "../pages/admin/ManageReports";
 import ManageUsers from "../pages/admin/ManageUsers";
 import ManageArticles from "../pages/admin/ManageArticles";
 import VideoModeration from "../pages/admin/VideoModeration";
+import MemeModeration from "../pages/admin/MemeModeration";
 import Notifications from "../pages/admin/Notifications";
 import ErrorLogs from "../pages/admin/ErrorLogs";
 import NotFound from "../pages/errors/NotFound";
@@ -75,8 +78,16 @@ export default function AppRoutes() {
           element={<VideoHub />}
         />
         <Route
+          path="/memes"
+          element={<MemeHub />}
+        />
+        <Route
           path="/videos/submit"
           element={<PrivateRoute><SubmitVideo /></PrivateRoute>}
+        />
+        <Route
+          path="/memes/upload"
+          element={<PrivateRoute><SubmitMeme /></PrivateRoute>}
         />
         <Route
           path="/forum/create"
@@ -101,6 +112,10 @@ export default function AppRoutes() {
         <Route
           path="/admin/videos"
           element={<PrivateRoute adminOnly={true}><VideoModeration /></PrivateRoute>}
+        />
+        <Route
+          path="/admin/memes"
+          element={<PrivateRoute adminOnly={true}><MemeModeration /></PrivateRoute>}
         />
         <Route
           path="/admin/notifications"

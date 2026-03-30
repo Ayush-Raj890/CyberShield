@@ -96,11 +96,21 @@ export default function Navbar() {
               setActiveDropdown(null);
               navigate("/videos");
             }}>Video Hub</button>
+            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+              setActiveDropdown(null);
+              navigate("/memes");
+            }}>Meme Hub</button>
             {user && (
-              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
-                setActiveDropdown(null);
-                navigate("/videos/submit");
-              }}>Submit Video</button>
+              <>
+                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                  setActiveDropdown(null);
+                  navigate("/videos/submit");
+                }}>Submit Video</button>
+                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                  setActiveDropdown(null);
+                  navigate("/memes/upload");
+                }}>Upload Meme</button>
+              </>
             )}
             <button className="block w-full text-left px-3 py-2 text-slate-400" disabled>Mini Games (Soon)</button>
           </div>

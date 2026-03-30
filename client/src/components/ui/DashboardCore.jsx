@@ -121,6 +121,7 @@ export default function DashboardCore({ type, data }) {
                   <p>Level {gamification.level}</p>
                   <p>XP: {gamification.xp}</p>
                   <p>🔥 Streak: {gamification.streak} day{gamification.streak === 1 ? "" : "s"}</p>
+                  <p>Your best meme got {Number(stats.topMemeLikes || 0)} likes</p>
 
                   <div className="w-full bg-gray-200 h-2 rounded mt-2">
                     <div
