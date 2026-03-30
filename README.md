@@ -141,6 +141,8 @@ Backend:
 - Event-based XP rewards wired to report/article/forum/AI/login actions
 - Meme engagement loop rewards added (meme upload, meme liked, meme voted)
 - Meme voting anti-abuse checks added (self-vote blocked, duplicate same-vote no XP, rate limiter)
+- Virtual coin economy added (earn + spend rules with anti-spam action costs)
+- Economy anti-farming controls added (daily earn cap, UTC daily reset, action cooldowns, diminishing rewards)
 
 ## Upcoming Dashboard Architecture (Locked)
 

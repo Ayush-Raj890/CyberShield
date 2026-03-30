@@ -209,8 +209,23 @@ User:
 - xp
 - level
 - streak
+- coins
+- dailyCoins
+- lastCoinReset
+- lastActions (`game`, `vote`, `meme` timestamps)
 - lastActive
 - badges[] (`name`, `earnedAt`)
+
+---
+
+## Economy Control Constants
+
+- DAILY_COIN_CAP = 100
+- Cooldowns:
+	- GAME_CORRECT: 10000ms
+	- VOTE: 2000ms
+	- MEME_UPLOAD: 30000ms
+- Diminishing reward floor multiplier: 0.2
 
 ---
 
@@ -312,6 +327,20 @@ Gamification XP actions (implemented):
 - Meme uploaded: `+10 XP`
 - Meme upvoted (creator reward): `+2 XP`
 - Meme voting participation: `+1 XP`
+
+Coin economy actions (implemented):
+
+- Daily login: `+5 coins`
+- Report submitted: `+10 coins`
+- Meme uploaded: `+5 coins`
+- Meme like received: `+2 coins`
+
+Coin costs (implemented):
+
+- Meme upload: `-2 coins`
+- Forum post: `-1 coin`
+- Comment/reply: `-1 coin`
+- Downvote: `-1 coin`
 
 Current badges:
 

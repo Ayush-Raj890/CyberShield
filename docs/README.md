@@ -9,6 +9,7 @@ Implemented backend modules:
 - Authentication API (register/login + email OTP verification + resend OTP)
 - User Profile API (profile read/update + password change + ownership stats)
 - Gamification engine (XP, levels, streaks, badges, event-based rewards)
+- Virtual economy engine (coin earn/spend rules for engagement and anti-spam)
 - Incident Reporting API (create/get/update status + evidence upload)
 - AI detection integration route (public prediction endpoint)
 - Knowledge Hub API (user submission + approval-based publishing)
@@ -36,6 +37,7 @@ Implemented frontend modules:
 - User Dashboard (navigation hub)
 - Unified modular dashboard engine (`user`/`admin`) with lazy analytics
 - Dashboard gamification panels (XP, level, streak, badges)
+- Dashboard wallet snapshot (daily earn progress, remaining budget, UTC reset hint)
 - Report pages (Create Report, View Reports)
 - Enhanced reports with file upload (evidence), severity levels, and contact email
 - Report detail view with evidence image/document viewing
@@ -120,6 +122,8 @@ Gamified learning module designed to increase engagement and cybersecurity aware
 - 	- Anti-abuse checks (self-vote blocked, duplicate same-vote no XP)
 - **Mini Games (Planned):** Phishing Detector, URL Checker, Password Strength
 - **Gamification Integration:** Meme upload, meme like, and meme voting XP actions added; meme-focused badges added
+- **Economy Integration (Implemented):** Coin rewards (daily login/report/meme/likes) and action costs (meme upload/downvote/forum post/comment)
+- **Economy Visibility (Implemented):** Dashboard now surfaces daily cap progress, remaining earn budget, and UTC reset countdown
 
 ## Product Growth Roadmap (Planned)
 
@@ -142,6 +146,7 @@ High-impact features queued:
 - Meme submission and moderation flow (with vote-driven auto-flagging) - foundational implementation completed
 - Mini security games (phishing detector, URL checker, password strength) - planning phase completed, awaiting implementation decisions
 - Smart insights and challenge loops (awareness score, weekly goals)
+- Coin economy UI expansion (dedicated wallet history and analytics) - pending polish
 
 ## Active Services
 

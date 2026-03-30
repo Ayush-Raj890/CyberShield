@@ -283,6 +283,35 @@
 - Added dashboard user insight metric for best meme performance (`topMemeLikes`)
 - Synced docs for updated engagement loop and moderation safeguards
 
+## Day 34
+
+- Added virtual coin economy field to user model (`coins`, starter 50)
+- Implemented economy utility (`addCoins`, `spendCoins`) with earn/cost rules
+- Integrated daily login coin rewards in auth login flow
+- Integrated report submission coin reward flow
+- Integrated meme upload spend/reward coin flow
+- Integrated meme vote flow with downvote coin cost and meme-like receiver coin reward
+- Integrated forum post and reply/comment coin costs
+- Added insufficient-balance handling for spend actions with user-friendly API errors
+- Exposed coin balance in login payload and profile payload
+- Added coin display to navbar and dashboard with low-balance warning UX
+- Added local coin sync after meme actions to keep UI balances fresh
+
+## Day 35
+
+- Added anti-farming economy state to user model (`dailyCoins`, `lastCoinReset`, `lastActions`)
+- Added economy emission controls in utility layer:
+  - UTC daily coin reset handling
+  - daily earn cap (`100`)
+  - per-action cooldown checks (game/vote/upload)
+  - diminishing reward multiplier as daily cap usage increases
+- Added reusable cooldown guard export for controller-level action throttling (`enforceActionCooldown`)
+- Applied unified vote cooldown in meme voting flow and preserved downvote coin-cost behavior
+- Exposed `dailyCoins` in auth login + profile payloads for frontend visibility
+- Extended frontend coin sync helper to keep `dailyCoins` in local user state
+- Added daily coin progress and cap-reached warnings to Navbar and Dashboard progress card
+- Added dashboard wallet snapshot with remaining daily budget and UTC reset countdown hint
+
 ---
 
 ## Notes

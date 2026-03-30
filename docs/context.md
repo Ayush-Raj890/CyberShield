@@ -31,6 +31,8 @@ Implemented modules:
 14. Account settings module with self-service account deletion
 15. Meme Hub foundation (implemented): user-generated image memes, community voting, auto-flag moderation, admin review panel
 16. Fun & Learn mini-games (planned): interactive quiz modules for phishing/url/password awareness
+17. Virtual coin economy (implemented): reward + spend system to regulate engagement and reduce spam
+18. Economy anti-farming controls (implemented): daily emission cap, cooldown checks, diminishing rewards
 
 Simplified items:
 
@@ -141,6 +143,15 @@ User uploads meme (image + caption + category) -> status set to `VISIBLE` -> com
 
 13. Mini Games Flow (Planned):
 User plays interactive quiz-based games (Phishing Detector, URL Checker, Password Strength) -> answers scored -> correct answers earn XP -> explanations provided -> contributes to cyber awareness badges
+
+14. Economy Loop:
+Use platform actions to earn coins -> spend coins on selected actions (meme upload/downvote/forum interactions) -> continue engaging to replenish balance -> anti-spam behavior emerges naturally
+
+15. Economy Emission Control Loop:
+Daily coin earnings are capped -> earnings reset at UTC day boundary -> repeated earning yields diminishing rewards as cap fills -> cooldowns throttle rapid repeated actions (game/vote/upload)
+
+16. Economy Visibility Loop:
+Dashboard wallet panel shows daily progress and remaining budget -> reset countdown sets user expectation for next earn window -> helps reduce confusion when cap is reached
 
 ---
 

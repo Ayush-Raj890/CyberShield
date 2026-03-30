@@ -148,6 +148,21 @@ Skip for now:
 - [ ] Game UI and feedback systems
 - [x] Mobile-responsive meme feed and moderation pages
 
+**E. Virtual Economy Layer**
+
+- [x] Add coin field to user model with starter balance
+- [x] Add economy utility for coin earn/spend rules
+- [x] Add anti-farming controls (daily cap + cooldowns + diminishing rewards)
+- [x] Daily login coin rewards
+- [x] Meme upload coin spend + reward flow
+- [x] Meme like receiver coin rewards
+- [x] Downvote coin cost
+- [x] Forum post/reply coin costs
+- [x] Navbar coin balance display
+- [x] Dashboard coin display + low coin warning
+- [x] Dashboard wallet snapshot (remaining daily budget + UTC reset hint)
+- [x] Local user coin sync after meme actions
+
 **DECISION POINTS (confirm before implementation):**
 
 - [x] **Meme Upload Type:** A (file upload via multer)
