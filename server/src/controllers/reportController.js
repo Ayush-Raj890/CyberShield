@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import Notification from "../models/Notification.js";
 import { encrypt, decrypt } from "../utils/encryption.js";
 import { addXP } from "../utils/gamification.js";
+import { addCoins } from "../utils/economy.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
 // Create Report
@@ -50,6 +51,7 @@ export const createReport = async (req, res) => {
     });
 
     await addXP(req.user._id, "REPORT_CREATED");
+    await addCoins(req.user._id, "REPORT_CREATED");
 
     return sendSuccess(res, report, 201);
   } catch (error) {

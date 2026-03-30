@@ -35,6 +35,7 @@ export const transformUserDashboard = ({ profile, reports, articles, forumPosts,
       posts: profile?.stats?.posts ?? ownPosts.length,
       aiChecks,
       topMemeLikes,
+      coins: profile?.user?.coins ?? 0,
       xp: profile?.user?.xp ?? 0,
       level: profile?.user?.level ?? 1
     },
@@ -42,6 +43,7 @@ export const transformUserDashboard = ({ profile, reports, articles, forumPosts,
       xp: profile?.user?.xp ?? 0,
       level: profile?.user?.level ?? 1,
       streak: profile?.user?.streak ?? 0,
+      coins: profile?.user?.coins ?? 0,
       badges: profile?.user?.badges ?? []
     },
     reportStatus: {

@@ -5,6 +5,7 @@ import { validationResult } from "express-validator";
 import { sendError, sendSuccess } from "../utils/response.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { addXP } from "../utils/gamification.js";
+import { addCoins } from "../utils/economy.js";
 
 // Register
 export const registerUser = async (req, res) => {
@@ -188,6 +189,7 @@ export const loginUser = async (req, res) => {
         user.lastActive = now;
         await user.save();
         await addXP(user._id, "DAILY_LOGIN");
+        await addCoins(user._id, "DAILY_LOGIN");
       }
 
       if (!user.lastActive) {
@@ -205,6 +207,7 @@ export const loginUser = async (req, res) => {
         xp: refreshedUser.xp,
         level: refreshedUser.level,
         streak: refreshedUser.streak,
+        coins: refreshedUser.coins,
         badges: refreshedUser.badges,
         token: generateToken(refreshedUser._id)
       });

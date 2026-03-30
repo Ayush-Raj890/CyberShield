@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import Meme from "../models/Meme.js";
 import { addXP } from "../utils/gamification.js";
+import { addCoins, spendCoins } from "../utils/economy.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
 const FLAG_MIN_TOTAL_VOTES = 20;
@@ -17,6 +18,12 @@ export const createMeme = async (req, res) => {
       return sendError(res, 400, "Meme image is required");
     }
 
+    try {
+      await spendCoins(req.user._id, "MEME_UPLOAD");
+    } catch (economyError) {
+      return sendError(res, 400, economyError.message);
+    }
+
     const meme = await Meme.create({
       image: `/uploads/${req.file.filename}`,
       caption: req.body.caption,
@@ -25,6 +32,7 @@ export const createMeme = async (req, res) => {
     });
 
     await addXP(req.user._id, "MEME_CREATED");
+  await addCoins(req.user._id, "MEME_CREATED");
 
     return sendSuccess(res, meme, 201, "Meme uploaded");
   } catch (error) {
@@ -85,6 +93,14 @@ export const voteMeme = async (req, res) => {
       return sendSuccess(res, meme, 200, "Vote unchanged");
     }
 
+    if (type === "down") {
+      try {
+        await spendCoins(req.user._id, "DOWNVOTE");
+      } catch (economyError) {
+        return sendError(res, 400, economyError.message);
+      }
+    }
+
     meme.upvotes = meme.upvotes.filter((id) => id.toString() !== userId);
     meme.downvotes = meme.downvotes.filter((id) => id.toString() !== userId);
 
@@ -105,6 +121,7 @@ export const voteMeme = async (req, res) => {
 
     if (type === "up" && !wasUpvoted && meme.createdBy?.toString() !== userId) {
       await addXP(meme.createdBy, "MEME_LIKED");
+      await addCoins(meme.createdBy, "MEME_LIKED");
     }
 
     return sendSuccess(res, meme, 200, "Vote recorded");

@@ -1,9 +1,16 @@
 import ForumPost from "../models/ForumPost.js";
 import { addXP } from "../utils/gamification.js";
+import { spendCoins } from "../utils/economy.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
 export const createPost = async (req, res) => {
   try {
+    try {
+      await spendCoins(req.user._id, "FORUM_POST");
+    } catch (economyError) {
+      return sendError(res, 400, economyError.message);
+    }
+
     const post = await ForumPost.create({
       user: req.user._id,
       title: req.body.title,
@@ -20,6 +27,12 @@ export const createPost = async (req, res) => {
 
 export const addReply = async (req, res) => {
   try {
+    try {
+      await spendCoins(req.user._id, "COMMENT");
+    } catch (economyError) {
+      return sendError(res, 400, economyError.message);
+    }
+
     const post = await ForumPost.findById(req.params.id);
 
     if (!post) {
