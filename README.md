@@ -39,6 +39,13 @@ Videos:
 - GET /api/videos/pending
 - PUT /api/videos/:id
 
+Memes:
+- GET /api/memes
+- POST /api/memes
+- POST /api/memes/:id/vote
+- GET /api/memes/admin/flagged
+- PUT /api/memes/:id
+
 Admin:
 - GET /api/admin/stats
 - GET /api/admin/users
@@ -118,6 +125,9 @@ Frontend:
 - Video Hub page shows approved moderator-reviewed video content
 - Video submit page allows authenticated users to submit videos for review
 - Admin Video Moderation page approves/rejects pending videos
+- Meme Hub page shows visible memes with community voting
+- Upload Meme page allows authenticated users to submit image-based memes
+- Admin Meme Moderation page manages flagged memes (approve/remove/toggle voting)
 - Identity labels use alias-first display; when alias exists, username is shown on hover
 - Mobile responsiveness improvements applied across core user flows (navbars, profile, reports, forum, articles, AI)
 - Dark mode switch is pending (tracked in docs/todo.md)
@@ -129,6 +139,8 @@ Backend:
 
 - Gamification model and reward engine implemented (XP, levels, streaks, badges)
 - Event-based XP rewards wired to report/article/forum/AI/login actions
+- Meme engagement loop rewards added (meme upload, meme liked, meme voted)
+- Meme voting anti-abuse checks added (self-vote blocked, duplicate same-vote no XP, rate limiter)
 
 ## Upcoming Dashboard Architecture (Locked)
 
@@ -157,6 +169,7 @@ Public frontend routes:
 - /articles
 - /articles/:id
 - /videos
+- /memes
 - /forum
 
 Protected frontend routes:
@@ -166,6 +179,7 @@ Protected frontend routes:
 - /create-report
 - /forum/create
 - /videos/submit
+- /memes/upload
 - /admin/*
 
 Public backend endpoints:
@@ -174,6 +188,7 @@ Public backend endpoints:
 - GET /api/articles
 - GET /api/articles/:id
 - GET /api/videos
+- GET /api/memes
 
 ## Role Governance
 

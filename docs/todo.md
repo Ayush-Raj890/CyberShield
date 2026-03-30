@@ -81,15 +81,15 @@ Priority 1 (must-do):
 
 - [x] Gamification foundation (XP, levels, streak tracking)
 - [x] Short video content hub (submission + admin moderation + public approved feed)
-- [ ] Meme submission + admin approval flow
+- [x] Meme submission + moderation flow (community voting + auto-flag + admin review)
 - [x] Dashboard integration for XP, level progress, and engagement KPIs
 
 Priority 2:
 
-- [ ] Mini phishing detector game
+- [ ] Mini phishing detector game (part of Fun & Learn module)
 - [x] Daily streak reward loop
 - [x] Badge system foundation (Rookie, Cyber Warrior, Elite Defender)
-- [ ] Badge expansion (First Report, Top Contributor, challenge badges)
+- [ ] Badge expansion (Meme Lord, Scam Spotter, Cyber Gamer, challenge badges)
 
 Priority 3:
 
@@ -102,6 +102,57 @@ Skip for now:
 - [ ] Complex multiplayer game modes
 - [ ] Real ML behavioral models
 - [ ] Heavy animation systems
+
+---
+
+### Phase 10: Meme + Fun Hub (Learning + Engagement)
+
+**Module Purpose:** Gamified learning through memes and interactive quizzes to increase engagement and cybersecurity awareness
+
+**A. Meme Hub** (user-generated, moderated content)
+
+- [x] Meme model and database schema
+- [x] File upload system for meme images (multer integration)
+- [x] Meme submission API (`POST /api/memes`)
+- [x] Meme moderation workflow (community vote-based auto-flag + admin moderation)
+- [x] Public visible meme feed (`GET /api/memes`)
+- [x] Voting system (upvote/downvote)
+- [x] Trending/Latest feed sorting
+- [x] Meme category support (SCAM, AWARENESS, FUN)
+- [ ] Educational tag differentiation
+- [x] Frontend Meme Hub page (`/memes`)
+- [x] Frontend meme submission page (`/memes/upload`)
+- [x] Admin meme moderation page (`/admin/memes`)
+
+**B. Fun & Learn (Mini Games)** (interactive quiz-based learning)
+
+- [ ] Game 1: Phishing Detector (identify phishing messages)
+- [ ] Game 2: URL Checker (identify malicious URLs)
+- [ ] Game 3: Password Strength Challenge (rate password strength)
+- [ ] Games scoring and explanations
+- [ ] XP rewards for correct answers
+- [ ] Frontend Games hub page
+- [ ] Game components and quiz logic
+
+**C. Gamification Integration**
+
+- [x] Update XP rules: meme uploaded (+10), meme liked (+2), game correct answer (+5)
+- [ ] New badges: Meme Lord, Scam Spotter, Cyber Gamer
+- [x] Dashboard integration showing meme activity and game stats (top meme likes insight)
+
+**D. UI/UX Integration**
+
+- [x] Update Navbar "Learn" section with Memes and Games links
+- [x] Responsive meme card components
+- [x] Meme card micro-feedback (+XP hint and trending badge)
+- [ ] Game UI and feedback systems
+- [x] Mobile-responsive meme feed and moderation pages
+
+**DECISION POINTS (confirm before implementation):**
+
+- [x] **Meme Upload Type:** A (file upload via multer)
+- [x] **Like System:** Simple voting (upvote/downvote)
+- [ ] **Games Complexity:** Simple quiz-based (recommended) OR Interactive UI (more complex)?
 
 ---
 

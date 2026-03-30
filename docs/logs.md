@@ -238,6 +238,51 @@
 - Added account self-delete endpoint (`DELETE /api/users/me`) and UI Danger Zone action
 - Updated route wiring for settings and video workflows
 
+## Day 31
+
+- Initiated Meme + Fun Hub planning phase with product-centric approach
+- Documented Meme Hub as learning + engagement module (user-generated memes with approval workflow + like system)
+- Documented Fun & Learn as interactive mini-games module (Phishing Detector, URL Checker, Password Strength Challenge)
+- Designed Meme model schema with image, caption, category, status, likes, and educational flag
+- Planned gamification integration: Meme Lord badge, Scam Spotter badge, Cyber Gamer badge
+- Added XP rewards: meme uploaded (+10), meme liked (+2), game correct answer (+5)
+- Updated TODO with detailed Phase 10 tasks for Meme + Fun Hub implementation
+- Identified three critical decision points requiring user confirmation:
+  1. Meme Upload Type (file upload via multer vs image URL only)
+  2. Like System (simple like vs advanced reactions)
+  3. Games Complexity (simple quiz-based vs interactive UI)
+- Updated nav structure to include Memes and Games under Learn section
+- Synced all docs (context, variables, TODO, logs, README) with planning information
+
+## Day 32
+
+- Implemented Meme Hub backend (`Meme` model, controller, routes)
+- Added meme upload endpoint with image-only multer flow (`POST /api/memes`)
+- Added community voting endpoint (`POST /api/memes/:id/vote`) with previous-vote replacement
+- Added auto-flag moderation logic (vote threshold + downvote ratio)
+- Added admin flagged memes queue endpoint (`GET /api/memes/admin/flagged`)
+- Added admin moderation update endpoint (`PUT /api/memes/:id`) for visible/removed and voting toggles
+- Wired meme routes in backend app (`/api/memes`)
+- Added Meme Hub frontend feed page (`/memes`) with latest/trending sorting
+- Added meme upload frontend page (`/memes/upload`)
+- Added admin meme moderation page (`/admin/memes`)
+- Added navbar/admin discoverability links for Meme Hub routes
+- Added vote throttling guard (rate limiter) on meme voting endpoint
+- Added active vote highlighting in meme cards and stronger flagged moderation UI cues
+- Synced docs to reflect implemented Meme Hub foundation and remaining mini-games roadmap
+
+## Day 33
+
+- Extended meme engagement XP rules with participation reward (`MEME_VOTED`)
+- Added anti-abuse checks in meme voting flow:
+  - blocked self-voting
+  - no XP on duplicate same-vote attempts
+  - retained vote rate limiter protection
+- Added new badge conditions in gamification utility (`Meme Starter`, `Meme Lord`, `Consistent`)
+- Added meme card micro-feedback in UI (`+XP for engagement`) and trending highlight for popular memes
+- Added dashboard user insight metric for best meme performance (`topMemeLikes`)
+- Synced docs for updated engagement loop and moderation safeguards
+
 ---
 
 ## Notes

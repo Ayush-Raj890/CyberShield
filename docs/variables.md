@@ -60,6 +60,19 @@
 - GET /api/videos/pending (admin)
 - PUT /api/videos/:id (admin)
 
+### Memes
+
+- GET /api/memes (public, visible only)
+- POST /api/memes (protected, multipart/form-data)
+- POST /api/memes/:id/vote (protected, up/down)
+- GET /api/memes/admin/flagged (admin)
+- PUT /api/memes/:id (admin)
+
+### Games (Planned)
+
+- GET /api/games (public list)
+- POST /api/games/:gameId/submit (protected, answer submission)
+
 ### Notifications
 
 - GET /api/notifications (admin)
@@ -98,6 +111,8 @@ Public:
 - /articles/:id
 - /forum
 - /videos
+- /memes
+- /games
 
 Protected:
 
@@ -107,6 +122,8 @@ Protected:
 - /create-report
 - /forum/create
 - /videos/submit
+- /memes/upload
+- /games
 
 Admin Protected:
 
@@ -115,6 +132,7 @@ Admin Protected:
 - /admin/users
 - /admin/articles
 - /admin/videos
+- /admin/memes
 - /admin/notifications
 - /admin/error-logs
 
@@ -291,12 +309,18 @@ Gamification XP actions (implemented):
 - Article posted: `+30 XP`
 - AI check used: `+5 XP`
 - Daily login: `+2 XP`
+- Meme uploaded: `+10 XP`
+- Meme upvoted (creator reward): `+2 XP`
+- Meme voting participation: `+1 XP`
 
 Current badges:
 
 - `Rookie`
 - `Cyber Warrior`
 - `Elite Defender`
+- `Meme Starter`
+- `Meme Lord`
+- `Consistent`
 
 Planned engagement metrics:
 
@@ -317,12 +341,18 @@ Video hub object shape:
 - `category` (`AWARENESS`, `SCAM`, `TIPS`)
 - `status` (`PENDING`, `APPROVED`, `REJECTED`)
 
-Meme module shape:
+Meme object shape:
 
-- `title`
-- `imageUrl` or `embedUrl`
-- `category` (`SCAM_MEME`, `AWARENESS_MEME`)
-- `status` (`PENDING`, `APPROVED`, `REJECTED`)
+- `image` (file path or URL)
+- `caption` (meme text)
+- `category` (`SCAM`, `AWARENESS`, `FUN`)
+- `createdBy` (ObjectId reference to User)
+- `status` (`VISIBLE`, `FLAGGED`, `REMOVED`)
+- `upvotes` (array of userId)
+- `downvotes` (array of userId)
+- `votingEnabled` (boolean)
+- `commentsEnabled` (boolean)
+- `createdAt`, `updatedAt` (timestamps)
 
 Mini-games (planned):
 
@@ -346,10 +376,17 @@ Short content:
 
 Memes:
 
-- GET `/api/memes` (public approved)
+- GET `/api/memes` (public visible)
 - POST `/api/memes` (auth submit)
-- GET `/api/memes/admin/pending` (admin)
-- PUT `/api/memes/:id/status` (admin)
+- POST `/api/memes/:id/vote` (auth vote)
+- GET `/api/memes/admin/flagged` (admin)
+- PUT `/api/memes/:id` (admin moderation)
+
+Voting safeguards:
+
+- Self-voting blocked
+- Duplicate same-vote attempts do not grant XP
+- Vote endpoint protected with rate limiter
 
 Challenges and insights:
 

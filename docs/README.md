@@ -14,6 +14,7 @@ Implemented backend modules:
 - Knowledge Hub API (user submission + approval-based publishing)
 - Community Forum API (public read, authenticated post/reply)
 - Video Hub API (submit, public approved feed, admin moderation)
+- Meme Hub API (upload, feed, voting, auto-flagging, admin moderation)
 - Admin APIs (stats, users, reports, article deletion, promote/suspend/demote user roles)
 - Notification API (list + mark read)
 - System observability API (client error logs, filter, CSV export)
@@ -43,8 +44,10 @@ Implemented frontend modules:
 - User-submitted article submission with approval workflow
 - Community Forum pages (`/forum`, `/forum/create`)
 - Video Hub pages (`/videos`, `/videos/submit`)
+- Meme Hub pages (`/memes`, `/memes/upload`)
 - Admin pages (Dashboard, Manage Reports, Manage Users, Manage Articles)
 - Admin page (Video Moderation)
+- Admin page (Meme Moderation)
 - Admin pages (Notifications, Error Logs)
 - Hybrid routing model (public content + protected write/admin actions)
 - Shared API service with auth interceptor
@@ -102,6 +105,22 @@ Implementation status:
 - Lazy analytics loading is implemented
 - Chart visualization library integration remains pending
 
+## Meme + Fun Hub
+
+Gamified learning module designed to increase engagement and cybersecurity awareness:
+
+- **Meme Hub (Implemented):**
+	- User image upload with caption/category
+	- Public visible feed
+	- Community upvote/downvote system
+	- Auto-flagging threshold for community-driven moderation
+	- Admin flagged queue with approve/remove actions and voting toggle
+	- Vote throttling guard (rate limiter)
+- 	- Engagement loop rewards (meme create, meme liked, meme voted participation)
+- 	- Anti-abuse checks (self-vote blocked, duplicate same-vote no XP)
+- **Mini Games (Planned):** Phishing Detector, URL Checker, Password Strength
+- **Gamification Integration:** Meme upload, meme like, and meme voting XP actions added; meme-focused badges added
+
 ## Product Growth Roadmap (Planned)
 
 Strategic shift:
@@ -120,8 +139,8 @@ High-impact features queued:
 
 - Gamification system (XP, levels, badges, streaks) - foundational implementation completed
 - Short content hub (Video Hub + moderation workflow) - foundational implementation completed
-- Meme submission and moderation flow
-- Mini security games (phishing detector, URL checker, password strength)
+- Meme submission and moderation flow (with vote-driven auto-flagging) - foundational implementation completed
+- Mini security games (phishing detector, URL checker, password strength) - planning phase completed, awaiting implementation decisions
 - Smart insights and challenge loops (awareness score, weekly goals)
 
 ## Active Services
@@ -188,6 +207,14 @@ Videos:
 - GET /api/videos/pending (admin)
 - PUT /api/videos/:id (admin status update)
 
+Memes:
+
+- GET /api/memes (public visible feed)
+- POST /api/memes (protected, image upload)
+- POST /api/memes/:id/vote (protected, up/down voting)
+- GET /api/memes/admin/flagged (admin)
+- PUT /api/memes/:id (admin moderation)
+
 Admin:
 
 - GET /api/admin/stats
@@ -232,11 +259,14 @@ Tooling:
 - /forum/create (protected)
 - /videos (public)
 - /videos/submit (protected)
+- /memes (public)
+- /memes/upload (protected)
 - /admin (protected, admin only)
 - /admin/reports (protected, admin only)
 - /admin/users (protected, admin only)
 - /admin/articles (protected, admin only)
 - /admin/videos (protected, admin only)
+- /admin/memes (protected, admin only)
 - /admin/notifications (protected, admin only)
 - /admin/error-logs (protected, admin only)
 - /500

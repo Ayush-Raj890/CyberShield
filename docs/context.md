@@ -29,6 +29,8 @@ Implemented modules:
 12. Gamification foundation (XP, levels, streaks, badges, event rewards)
 13. Video Hub submission and moderation pipeline
 14. Account settings module with self-service account deletion
+15. Meme Hub foundation (implemented): user-generated image memes, community voting, auto-flag moderation, admin review panel
+16. Fun & Learn mini-games (planned): interactive quiz modules for phishing/url/password awareness
 
 Simplified items:
 
@@ -41,6 +43,7 @@ Product strategy shift (planned):
 
 - Move from feature-complete utility experience to habit-forming product loop
 - Prioritize retention systems: gamification, short content, and repeat challenge mechanics
+- Community-driven moderation is now active for meme content to reduce admin-only load
 
 ---
 
@@ -74,6 +77,7 @@ Public:
 - Knowledge Hub listing/detail
 - Forum listing
 - Video Hub listing
+- Meme Hub listing
 
 Authenticated:
 
@@ -81,6 +85,7 @@ Authenticated:
 - Create/reply forum posts
 - Article submission
 - Video submission
+- Meme submission
 - Settings management (profile/password/preferences)
 - Dashboard tools
 
@@ -90,6 +95,7 @@ Admin / Super Admin:
 - Report moderation
 - Article moderation
 - Video moderation
+- Meme moderation (approve/reject user submissions)
 - Notification center
 - Client error log dashboard/export
 
@@ -129,6 +135,12 @@ Authenticated user submits video -> status set to `PENDING` -> admin reviews pen
 
 11. Settings and Danger Zone Flow:
 Authenticated user opens settings -> updates alias/bio/password/preferences -> optional account self-delete removes owned records and account
+
+12. Meme Hub Flow:
+User uploads meme (image + caption + category) -> status set to `VISIBLE` -> community upvote/downvote -> auto-flag when downvote ratio threshold is crossed -> status becomes `FLAGGED` and hidden from feed -> admin reviews flagged queue -> admin restores `VISIBLE` or marks `REMOVED`
+
+13. Mini Games Flow (Planned):
+User plays interactive quiz-based games (Phishing Detector, URL Checker, Password Strength) -> answers scored -> correct answers earn XP -> explanations provided -> contributes to cyber awareness badges
 
 ---
 
