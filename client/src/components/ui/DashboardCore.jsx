@@ -1,4 +1,6 @@
 import React, { Suspense, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const LazyCharts = React.lazy(() => import("../dashboard/Charts"));
 
@@ -21,9 +23,10 @@ const formatLabel = (value) =>
     .replace(/^./, (char) => char.toUpperCase());
 
 export default function DashboardCore({ type, data }) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [chartsLoaded, setChartsLoaded] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const isDarkMode = false;
 
   const tabs = useMemo(
     () => (type === "admin" ? ["overview", "analytics", "moderation"] : ["overview", "analytics", "reports"]),
@@ -62,14 +65,25 @@ export default function DashboardCore({ type, data }) {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsDarkMode((prev) => !prev)}
-            className={`btn ${isDarkMode ? "bg-slate-700 text-white" : ""}`}
-            title="Dark mode ready state (local only)"
-          >
-            {isDarkMode ? "Light Preview" : "Dark Preview"}
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            {type === "user" && (
+              <button
+                type="button"
+                onClick={() => navigate("/create-report")}
+                className="btn btn-primary"
+              >
+                Create Report
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => toast("UI implementation pending")}
+              className="btn btn-primary"
+              title="Global dark mode implementation pending"
+            >
+              Dark Mode (Soon)
+            </button>
+          </div>
         </div>
 
         <div className={`flex flex-wrap gap-4 mb-6 border-b ${isDarkMode ? "border-slate-700" : "border-slate-200"}`}>

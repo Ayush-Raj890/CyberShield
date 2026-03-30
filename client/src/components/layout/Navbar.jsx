@@ -1,9 +1,40 @@
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const navRef = useRef(null);
   const user = JSON.parse(localStorage.getItem("user") || "null");
   const isAdmin = ["ADMIN", "SUPER_ADMIN"].includes(user?.role);
+
+  const toggleDropdown = (name) => {
+    setActiveDropdown((prev) => (prev === name ? null : name));
+  };
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (!navRef.current?.contains(event.target)) {
+        setActiveDropdown(null);
+      }
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setActiveDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("touchstart", handleOutsideClick);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   const logout = () => {
     localStorage.clear();
@@ -11,49 +42,120 @@ export default function Navbar() {
   };
 
   return (
-    <div className="bg-white shadow px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+    <div ref={navRef} className="bg-white shadow px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
       <h1 className="text-xl font-bold text-indigo-600 text-center sm:text-left">CyberShield</h1>
 
       <div className="w-full sm:w-auto flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 text-sm">
         <button onClick={() => navigate("/dashboard")} className="hover:text-indigo-600">Dashboard</button>
         <button onClick={() => navigate("/ai")} className="hover:text-indigo-600">AI</button>
 
-        <details className="relative">
-          <summary className="cursor-pointer list-none hover:text-indigo-600">Activity</summary>
-          <div className="absolute right-0 mt-2 w-36 rounded border bg-white shadow z-10">
-            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/reports")}>Reports</button>
-            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/forum")}>Forum</button>
+        <details className="relative" open={activeDropdown === "activity"}>
+          <summary
+            className="cursor-pointer list-none hover:text-indigo-600"
+            onClick={(e) => {
+              e.preventDefault();
+              toggleDropdown("activity");
+            }}
+          >
+            Activity
+          </summary>
+          <div className="absolute right-0 mt-2 w-44 rounded border bg-white shadow z-10">
+            {user && (
+              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                setActiveDropdown(null);
+                navigate("/create-report");
+              }}>Create Report</button>
+            )}
+            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+              setActiveDropdown(null);
+              navigate("/reports");
+            }}>Reports</button>
+            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+              setActiveDropdown(null);
+              navigate("/forum");
+            }}>Forum</button>
           </div>
         </details>
 
-        <details className="relative">
-          <summary className="cursor-pointer list-none hover:text-indigo-600">Learn</summary>
+        <details className="relative" open={activeDropdown === "learn"}>
+          <summary
+            className="cursor-pointer list-none hover:text-indigo-600"
+            onClick={(e) => {
+              e.preventDefault();
+              toggleDropdown("learn");
+            }}
+          >
+            Learn
+          </summary>
           <div className="absolute right-0 mt-2 w-44 rounded border bg-white shadow z-10">
-            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/articles")}>Knowledge Hub</button>
-            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/videos")}>Video Hub</button>
+            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+              setActiveDropdown(null);
+              navigate("/articles");
+            }}>Knowledge Hub</button>
+            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+              setActiveDropdown(null);
+              navigate("/videos");
+            }}>Video Hub</button>
             {user && (
-              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/videos/submit")}>Submit Video</button>
+              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                setActiveDropdown(null);
+                navigate("/videos/submit");
+              }}>Submit Video</button>
             )}
             <button className="block w-full text-left px-3 py-2 text-slate-400" disabled>Mini Games (Soon)</button>
           </div>
         </details>
 
-        <details className="relative">
-          <summary className="cursor-pointer list-none hover:text-indigo-600">Account</summary>
+        <details className="relative" open={activeDropdown === "account"}>
+          <summary
+            className="cursor-pointer list-none hover:text-indigo-600"
+            onClick={(e) => {
+              e.preventDefault();
+              toggleDropdown("account");
+            }}
+          >
+            Account
+          </summary>
           <div className="absolute right-0 mt-2 w-36 rounded border bg-white shadow z-10">
-            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/profile")}>Profile</button>
-            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/settings")}>Settings</button>
+            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+              setActiveDropdown(null);
+              navigate("/profile");
+            }}>Profile</button>
+            <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+              setActiveDropdown(null);
+              navigate("/settings");
+            }}>Settings</button>
           </div>
         </details>
 
         {isAdmin && (
-          <details className="relative">
-            <summary className="cursor-pointer list-none hover:text-indigo-600">Admin</summary>
+          <details className="relative" open={activeDropdown === "admin"}>
+            <summary
+              className="cursor-pointer list-none hover:text-indigo-600"
+              onClick={(e) => {
+                e.preventDefault();
+                toggleDropdown("admin");
+              }}
+            >
+              Admin
+            </summary>
             <div className="absolute right-0 mt-2 w-44 rounded border bg-white shadow z-10">
-              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/admin")}>Admin Dashboard</button>
-              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/admin/users")}>Manage Users</button>
-              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/admin/reports")}>Moderation</button>
-              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => navigate("/admin/videos")}>Video Moderation</button>
+              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                setActiveDropdown(null);
+                navigate("/admin");
+              }}>Admin Dashboard</button>
+              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                setActiveDropdown(null);
+                navigate("/admin/users");
+              }}>Manage Users</button>
+              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                setActiveDropdown(null);
+                navigate("/admin/reports");
+              }}>Moderation</button>
+              <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                setActiveDropdown(null);
+                navigate("/admin/videos");
+              }}>Video Moderation</button>
             </div>
           </details>
         )}
