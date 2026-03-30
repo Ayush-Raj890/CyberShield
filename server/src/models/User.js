@@ -86,6 +86,10 @@ const userSchema = new mongoose.Schema(
         default: null
       }
     },
+    lastPlayedGame: {
+      type: Date,
+      default: null
+    },
     lastActive: {
       type: Date,
       default: null
