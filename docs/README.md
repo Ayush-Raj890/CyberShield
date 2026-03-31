@@ -2,6 +2,10 @@
 
 This folder contains project planning, tracking, and implementation notes for CyberShield.
 
+Quick links:
+
+- [Onboarding Guide](onboarding.md)
+
 ## Current Build Status
 
 Implemented backend modules:

@@ -4,6 +4,7 @@ Project documentation has moved to [docs/README.md](docs/README.md).
 
 Start here:
 
+- [Onboarding Guide](docs/onboarding.md)
 - [Project Context](docs/context.md)
 - [TODO](docs/todo.md)
 - [Variables](docs/variables.md)
