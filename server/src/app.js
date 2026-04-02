@@ -87,11 +87,13 @@ app.use(apiLimiter);
 // Standard Middleware
 app.use(express.json());
 app.use(morgan("dev"));
-app.use((req, res, next) => {
-	console.log(`[REQ] ${req.method} ${req.originalUrl}`);
-	next();
-});
 
+if (process.env.DEBUG_REQUEST_LOGS === "true") {
+	app.use((req, res, next) => {
+		console.log(`[REQ] ${req.method} ${req.originalUrl}`);
+		next();
+	});
+}
 // Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
