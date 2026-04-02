@@ -26,6 +26,51 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+const allowedOriginsEnv = process.env.ALLOWED_ORIGINS || "";
+const allowedOrigins = allowedOriginsEnv
+	.split(",")
+	.map((origin) => origin.trim())
+	.filter(Boolean);
+
+const corsOptions = {
+	origin: (origin, callback) => {
+		if (!origin) {
+			return callback(null, true);
+		}
+
+		let hostname;
+
+		try {
+			hostname = new URL(origin).hostname;
+		} catch {
+			// Malformed Origin header: deny without throwing to avoid 500 errors
+			return callback(null, false);
+		}
+
+		const isLocalDevOrigin = hostname === "localhost" || hostname === "127.0.0.1";
+
+		const isAllowedByEnv = allowedOrigins.some((allowedOrigin) => {
+			try {
+				const allowedHostname = new URL(allowedOrigin).hostname;
+				return allowedHostname === hostname;
+			} catch {
+				// If allowedOrigin is not a full URL, fall back to direct comparison
+				return allowedOrigin === origin || allowedOrigin === hostname;
+			}
+		});
+
+		if (isLocalDevOrigin || isAllowedByEnv) {
+			return callback(null, true);
+		}
+
+		// Disallowed origin: cleanly deny without throwing
+		return callback(null, false);
+	},
+	methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+	allowedHeaders: ["Content-Type", "Authorization"],
+	credentials: true
+};
+
 const apiLimiter = rateLimit({
 	windowMs: 15 * 60 * 1000,
 	max: 100
@@ -33,15 +78,22 @@ const apiLimiter = rateLimit({
 
 // Security Middleware
 app.use(helmet());
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 app.use(xssMiddleware);
 app.use(sanitizeMiddleware);
 app.use(apiLimiter);
 
 // Standard Middleware
-app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 
+if (process.env.DEBUG_REQUEST_LOGS === "true") {
+	app.use((req, res, next) => {
+		console.log(`[REQ] ${req.method} ${req.originalUrl}`);
+		next();
+	});
+}
 // Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
