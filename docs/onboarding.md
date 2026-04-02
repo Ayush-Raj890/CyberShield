@@ -7,12 +7,13 @@ This guide helps a new contributor run the full stack locally, including the AI 
 CyberShield has 3 runtime apps:
 
 1. Client (React + Vite) on port 3000
-2. Server (Node + Express + MongoDB) on port 5000
-3. AI Service (FastAPI) on port 8000
+1. Server (Node + Express + MongoDB) on port 5000
+1. AI Service (FastAPI) on port 8000
 
 Important:
-- The AI service does not start automatically.
-- You must start all 3 apps in separate terminals.
+
+- Manual startup requires all 3 apps in separate terminals.
+- Launcher scripts (`npm run dev`, `start-all.ps1`, `start-all.cmd`, `start-all.sh`) can start all 3 together.
 
 ## 2) Prerequisites
 
@@ -20,7 +21,7 @@ Install these first:
 
 - Node.js 18+ (LTS recommended)
 - npm
-- Python 3.10+ (3.11 works too)
+- Python 3.10+ (3.11+ recommended)
 - MongoDB connection string (Atlas or local)
 
 Optional but useful:
@@ -32,46 +33,51 @@ Optional but useful:
 
 From the repository root:
 
-1. Install server dependencies
+1. Install server dependencies.
+
 ```powershell
 cd server
 npm install
 ```
 
-2. Install client dependencies
+1. Install client dependencies.
+
 ```powershell
 cd ../client
 npm install
 ```
 
-3. Prepare Python environment for AI service
+1. Prepare Python environment for AI service.
+
 ```powershell
 cd ../ai-service
 python -m venv .venv
 ```
 
-4. Activate the virtual environment
+1. Activate the virtual environment.
+
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-5. Install AI service packages
+1. Install AI service packages.
+
 ```powershell
 pip install -r requirements.txt
 ```
 
 ## 4) Server environment configuration
 
-Create or update the server env file at server/.env with these keys:
+Create or update `server/.env` with these keys:
 
-- PORT=5000
-- MONGO_URI=<your_mongodb_connection_string>
-- JWT_SECRET=<your_secret>
-- AI_SERVICE_URL=http://localhost:8000
-- ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
-- DEBUG_REQUEST_LOGS=false
-- ENCRYPTION_KEY=<your_64_char_hex_key>
-- EMAIL_MOCK=true
+- `PORT=5000`
+- `MONGO_URI=<your_mongodb_connection_string>`
+- `JWT_SECRET=<your_secret>`
+- `AI_SERVICE_URL=http://localhost:8000`
+- `ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173`
+- `DEBUG_REQUEST_LOGS=false`
+- `ENCRYPTION_KEY=<your_64_char_hex_key>`
+- `EMAIL_MOCK=true`
 
 Copy-paste template:
 
@@ -88,8 +94,8 @@ EMAIL_MOCK=true
 
 Email notes:
 
-- Use EMAIL_MOCK=true for local development to avoid SMTP setup.
-- If you want real OTP emails, configure EMAIL_USER and EMAIL_PASS too.
+- Use `EMAIL_MOCK=true` for local development to avoid SMTP setup.
+- If you want real OTP/reset emails, configure `EMAIL_USER` and `EMAIL_PASS` too.
 
 Optional email config for real inbox delivery:
 
@@ -100,14 +106,16 @@ EMAIL_PASS=your_gmail_app_password
 
 ## 5) Start the full stack
 
-Open 3 terminals and run:
+You can use a launcher or manual 3-terminal startup.
 
-If you want a single launcher instead, use the root scripts:
+Launcher options:
 
 - Windows PowerShell: `start-all.ps1`
-- Windows: `start-all.cmd`
+- Windows CMD: `start-all.cmd`
 - macOS/Linux: `bash start-all.sh`
-- Node launcher: `npm run dev` from the repository root
+- Cross-platform node launcher: `npm run dev` from repo root
+
+Manual terminal startup:
 
 Terminal A (server):
 
@@ -134,66 +142,83 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ## 6) Verify everything is healthy
 
 1. AI service health:
-- Open http://localhost:8000/
-- Expected: {"message":"AI Service Running"}
 
-2. Server health:
-- Open http://localhost:5000/
-- Expected: API is running...
+- Open `http://localhost:8000/`
+- Expected: `{"message":"AI Service Running"}`
 
-3. Client:
-- Open http://localhost:3000
+1. Server health:
 
-4. AI flow from app:
+- Open `http://localhost:5000/`
+- Expected: `API is running...`
+
+1. Client:
+
+- Open `http://localhost:3000`
+
+1. AI flow from app:
+
 - Go to AI detector page and submit text
-- If AI works, you get SAFE / SUSPICIOUS / MALICIOUS response
+- Expect one of: `SAFE`, `SUSPICIOUS`, `MALICIOUS`
 
-## 7) How AI integration works
+## 7) Auth quick map
 
-- Client calls the Node server API.
-- Server endpoint /api/ai/predict forwards text to AI service /api/predict.
-- If AI service is down or AI_SERVICE_URL is wrong, server returns AI service failed.
+- Register: creates account + OTP email
+- Verify OTP: activates account
+- Resend OTP: sends new OTP and resets attempt counter
+- Forgot password: sends reset token by email
+- Reset password: applies new password with email + token
 
-## 8) Common startup issues and fixes
+## 8) How AI integration works
+
+- Client calls Node server API.
+- Server endpoint `/api/ai/predict` forwards text to AI service `/api/predict`.
+- If AI service is down or `AI_SERVICE_URL` is wrong, server returns AI service failed.
+
+## 9) Common startup issues and fixes
 
 Issue: AI service failed in server logs
-- Cause: AI service not running, wrong AI_SERVICE_URL, or wrong port.
-- Fix: Start FastAPI service and verify http://localhost:8000/.
 
-Issue: DB Error on server start
-- Cause: invalid or missing MONGO_URI.
-- Fix: update server/.env with a working MongoDB connection string.
+- Cause: AI service not running, wrong `AI_SERVICE_URL`, or wrong port.
+- Fix: Start FastAPI service and verify `http://localhost:8000/`.
 
-Issue: OTP/email errors while testing auth
+Issue: DB error on server start
+
+- Cause: invalid or missing `MONGO_URI`.
+- Fix: update `server/.env` with a working MongoDB connection string.
+
+Issue: OTP or reset-email errors while testing auth
+
 - Cause: SMTP not configured.
-- Fix: set EMAIL_MOCK=true in server/.env for local onboarding.
+- Fix: set `EMAIL_MOCK=true` in `server/.env` for local onboarding.
 
 Issue: Client cannot call backend
-- Cause: server not running on port 5000.
-- Fix: run npm run dev in server and confirm http://localhost:5000/.
 
-## 9) First-day sanity checklist
+- Cause: server not running on port 5000.
+- Fix: run `npm run dev` in `server` and confirm `http://localhost:5000/`.
+
+## 10) First-day sanity checklist
 
 - Server dependencies installed
 - Client dependencies installed
 - AI venv created and activated
 - AI packages installed
-- server/.env configured
+- `server/.env` configured
 - Server running on 5000
 - Client running on 3000
 - AI service running on 8000
 - AI detector returns classification successfully
+- Forgot-password flow sends token (or logs mock email)
 
-## 10) Recommended daily workflow
+## 11) Recommended daily workflow
 
 1. Start AI service first
-2. Start server second
-3. Start client last
-4. Keep all 3 terminals active while developing
+1. Start server second
+1. Start client last
+1. Keep all 3 terminals active while developing
 
-## 11) Quick copy-paste startup pack
+## 12) Quick copy-paste startup pack
 
-Use this when your dependencies are already installed.
+Use this when dependencies are already installed.
 
 Terminal A (server):
 

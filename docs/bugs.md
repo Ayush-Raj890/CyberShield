@@ -50,6 +50,16 @@ Fix: Added missing closing `</section>` tag in home page layout.
 
 ---
 
+## Bug 6
+
+Description: Emails with dots in local-part (e.g. `abc.def@gmail.com`) were being altered during auth validation.
+
+Status: Fixed
+
+Fix: Removed dot-pruning normalization behavior and replaced it with trim + lowercase sanitization that preserves local-part punctuation across register/login/verify/resend/reset flows.
+
+---
+
 ## Operational Note
 
 Description: Gmail SMTP can reject credentials (`535 BadCredentials`) when not using App Password.

@@ -18,6 +18,8 @@ Auth:
 - POST /api/auth/login
 - POST /api/auth/verify-otp
 - POST /api/auth/resend-otp
+- POST /api/auth/forgot-password
+- POST /api/auth/reset-password
 
 Users:
 - GET /api/users/profile
@@ -77,9 +79,11 @@ Backend (Auth APIs):
 - Password must be at least 6 characters on register
 - Input sanitization and HTML escaping on all auth fields
 - Email verification with 6-digit OTP before login
+- Emails are normalized to lowercase without removing dots (e.g. `abc.def@gmail.com` remains unchanged)
 - Re-register support for unverified accounts (old unverified record removed)
 - OTP resend endpoint with cooldown support in UI
 - OTP verification attempt limiting (max 5 attempts before forcing resend)
+- Forgot password flow with email reset token (15-minute expiry)
 - Report title, description, and category validation with sanitization
 - Report severity and contactEmail optional validation
 - Suspended users are blocked from login and protected API access

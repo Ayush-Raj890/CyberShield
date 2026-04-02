@@ -15,7 +15,7 @@ CyberShield is a full-stack cybersecurity platform combining:
 
 Implemented modules:
 
-1. Authentication with OTP email verification
+1. Authentication with OTP email verification and password reset
 2. User Profile and personalization layer
 3. Incident reporting with evidence upload
 4. AI scam detector integration
@@ -73,7 +73,7 @@ AI Service: FastAPI (`/api/predict`) called by backend proxy route
 
 Public:
 
-- Home, login/register/verify
+- Home, login/register/verify/forgot-password
 - Reports listing
 - AI detector
 - Knowledge Hub listing/detail
@@ -108,53 +108,59 @@ Admin / Super Admin:
 1. OTP Auth Flow:
 Register -> OTP email -> Verify OTP -> Login
 
-2. Profile Flow:
+2. Password Recovery Flow:
+Forgot password request -> reset token email -> reset password -> login with new password
+
+3. Profile Flow:
 Login -> View profile stats -> Update alias/bio -> Change password
 
-3. Report Flow:
+4. Report Flow:
 Create report -> Status lifecycle (`PENDING`/`REVIEWED`/`RESOLVED`) -> Timeline updates
 
-4. Forum Flow:
+5. Forum Flow:
 Public read -> Authenticated create/reply
 
-5. Identity Display Flow:
+6. Identity Display Flow:
 Default username display -> If alias exists then show alias -> Hover alias to reveal username
 
-6. Error Observability Flow:
+7. Error Observability Flow:
 Client captures error -> `/api/system/client-errors` -> Admin views logs and exports CSV
 
-7. Dashboard Data Flow:
+8. Dashboard Data Flow:
 Tab-based dashboard -> Fetch real data from APIs -> Compute derived metrics in frontend -> Lazy-load analytics charts only on analytics tab
 
-8. Engagement Loop:
+9. Engagement Loop:
 Daily login/activity -> Earn XP and streak progress -> Unlock badges/challenges -> Return for next milestone
 
-9. Learning Loop (Planned):
+10. Learning Loop (Planned):
 Consume short-form security content -> Practice via mini-games -> Improve awareness score -> Share/community contribution
 
-10. Video Moderation Flow:
+11. Video Moderation Flow:
 Authenticated user submits video -> status set to `PENDING` -> admin reviews pending queue -> status updated to `APPROVED`/`REJECTED` -> public Video Hub serves approved content only
 
-11. Settings and Danger Zone Flow:
+12. Settings and Danger Zone Flow:
 Authenticated user opens settings -> updates alias/bio/password/preferences -> optional account self-delete removes owned records and account
 
-12. Meme Hub Flow:
+13. Meme Hub Flow:
 User uploads meme (image + caption + category) -> status set to `VISIBLE` -> community upvote/downvote -> auto-flag when downvote ratio threshold is crossed -> status becomes `FLAGGED` and hidden from feed -> admin reviews flagged queue -> admin restores `VISIBLE` or marks `REMOVED`
 
-13. Mini Games Flow (Planned):
-User plays interactive quiz-based games (Phishing Detector, URL Checker, Password Strength) -> answers scored -> correct answers earn XP -> explanations provided -> contributes to cyber awareness badges
+14. Mini Games Flow (Partial):
+User plays interactive quiz-based games (Phishing Detector live, URL Checker + Password Strength planned) -> answers scored -> correct answers earn XP -> explanations provided -> contributes to cyber awareness badges
 
-17. Phishing Detector Flow (Implemented):
+15. Phishing Detector Flow (Implemented):
 Authenticated user opens `/games` -> reviews phishing-style message -> selects SAFE or SCAM -> receives immediate correctness + explanation -> correct answers trigger protected reward API for XP + coins (cooldown-protected)
 
-14. Economy Loop:
+16. Economy Loop:
 Use platform actions to earn coins -> spend coins on selected actions (meme upload/downvote/forum interactions) -> continue engaging to replenish balance -> anti-spam behavior emerges naturally
 
-15. Economy Emission Control Loop:
+17. Economy Emission Control Loop:
 Daily coin earnings are capped -> earnings reset at UTC day boundary -> repeated earning yields diminishing rewards as cap fills -> cooldowns throttle rapid repeated actions (game/vote/upload)
 
-16. Economy Visibility Loop:
+18. Economy Visibility Loop:
 Dashboard wallet panel shows daily progress and remaining budget -> reset countdown sets user expectation for next earn window -> helps reduce confusion when cap is reached
+
+19. Email Identity Integrity Rule:
+Auth email validation lowercases and trims but preserves local-part punctuation (e.g. `abc.def@gmail.com` stays `abc.def@gmail.com`)
 
 ---
 

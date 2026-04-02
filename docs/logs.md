@@ -329,6 +329,18 @@
 - Added root npm launcher (`npm run dev`) backed by `scripts/start-all.mjs` for cross-platform one-command startup
 - Added Windows PowerShell launcher (`start-all.ps1`) for one-click startup with separate service windows
 
+## Day 37
+
+- Fixed auth email normalization behavior to preserve dots in local-part (e.g. `abc.def@gmail.com` remains unchanged)
+- Added complete forgot-password system:
+  - backend endpoints: `/api/auth/forgot-password`, `/api/auth/reset-password`
+  - secure token generation + hash storage + 15-minute expiry
+  - frontend route/page: `/forgot-password`
+  - login-page shortcut link to password recovery
+- Added reusable admin utility script to reset password by email (`npm run reset:password -- <email> <newPassword>`)
+- Removed legacy duplicate frontend pages no longer used by route map
+- Ran final diagnostics pass and synchronized docs (`context.md`, `todo.md`, `bugs.md`, `README.md`, `variables.md`, `onboarding.md`)
+
 ---
 
 ## Notes

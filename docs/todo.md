@@ -86,7 +86,7 @@ Priority 1 (must-do):
 
 Priority 2:
 
-- [ ] Mini phishing detector game (part of Fun & Learn module)
+- [x] Mini phishing detector game (part of Fun & Learn module)
 - [x] Daily streak reward loop
 - [x] Badge system foundation (Rookie, Cyber Warrior, Elite Defender)
 - [ ] Badge expansion (Meme Lord, Scam Spotter, Cyber Gamer, challenge badges)
@@ -169,6 +169,7 @@ Skip for now:
 - [x] **Meme Upload Type:** A (file upload via multer)
 - [x] **Like System:** Simple voting (upvote/downvote)
 - [ ] **Games Complexity:** Simple quiz-based (recommended) OR Interactive UI (more complex)?
+- [x] **Games Complexity:** Simple quiz-based implementation selected for current release
 
 ---
 

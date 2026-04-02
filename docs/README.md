@@ -18,6 +18,7 @@ Startup shortcuts:
 Implemented backend modules:
 
 - Authentication API (register/login + email OTP verification + resend OTP)
+- Forgot password + reset password via email token flow
 - User Profile API (profile read/update + password change + ownership stats)
 - Gamification engine (XP, levels, streaks, badges, event-based rewards)
 - Virtual economy engine (coin earn/spend rules for engagement and anti-spam)
@@ -126,14 +127,14 @@ Implementation status:
 Gamified learning module designed to increase engagement and cybersecurity awareness:
 
 - **Meme Hub (Implemented):**
-	- User image upload with caption/category
-	- Public visible feed
-	- Community upvote/downvote system
-	- Auto-flagging threshold for community-driven moderation
-	- Admin flagged queue with approve/remove actions and voting toggle
-	- Vote throttling guard (rate limiter)
-- 	- Engagement loop rewards (meme create, meme liked, meme voted participation)
-- 	- Anti-abuse checks (self-vote blocked, duplicate same-vote no XP)
+  - User image upload with caption/category
+  - Public visible feed
+  - Community upvote/downvote system
+  - Auto-flagging threshold for community-driven moderation
+  - Admin flagged queue with approve/remove actions and voting toggle
+  - Vote throttling guard (rate limiter)
+  - Engagement loop rewards (meme create, meme liked, meme voted participation)
+  - Anti-abuse checks (self-vote blocked, duplicate same-vote no XP)
 - **Mini Games:** Phishing Detector (implemented), URL Checker (planned), Password Strength (planned)
 - **Gamification Integration:** Meme upload, meme like, and meme voting XP actions added; meme-focused badges added
 - **Economy Integration (Implemented):** Coin rewards (daily login/report/meme/likes) and action costs (meme upload/downvote/forum post/comment)
@@ -187,6 +188,10 @@ Auth:
 - POST /api/auth/login
 - POST /api/auth/verify-otp
 - POST /api/auth/resend-otp
+- POST /api/auth/forgot-password
+- POST /api/auth/reset-password
+- POST /api/auth/forgot-password
+- POST /api/auth/reset-password
 
 Users:
 
@@ -262,7 +267,8 @@ System:
 
 Tooling:
 
-- npm run make:super-admin -- your-email@example.com
+- `npm run make:super-admin -- your-email@example.com`
+- `npm run reset:password -- your-email@example.com NewPassword123`
 
 ## Frontend Route Summary
 
@@ -270,6 +276,7 @@ Tooling:
 - /login
 - /register
 - /verify
+- /forgot-password
 - /dashboard (protected)
 - /profile (protected)
 - /settings (protected)
@@ -294,7 +301,7 @@ Tooling:
 - /admin/notifications (protected, admin only)
 - /admin/error-logs (protected, admin only)
 - /500
-- * (404 fallback)
+- \* (404 fallback)
 
 ## Environment
 
@@ -303,7 +310,10 @@ Backend .env expected keys:
 - PORT=5000
 - MONGO_URI=your_mongodb_uri
 - JWT_SECRET=supersecretkey
-- AI_SERVICE_URL=http://localhost:8000
+- AI_SERVICE_URL=`http://localhost:8000`
+- ALLOWED_ORIGINS=`http://localhost:3000,http://localhost:5173`
+- DEBUG_REQUEST_LOGS=false
+- ENCRYPTION_KEY=your_64_char_hex_key
 - EMAIL_USER=your_gmail_address
 - EMAIL_PASS=your_gmail_app_password
 - EMAIL_MOCK=false
