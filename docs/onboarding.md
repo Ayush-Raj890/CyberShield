@@ -196,3 +196,25 @@ cd ai-service
 .\.venv\Scripts\Activate.ps1
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
+
+## 12) One-command startup (Windows)
+
+From the repository root, run one of these:
+
+```powershell
+.\start-dev.ps1
+```
+
+or:
+
+```cmd
+start-dev.cmd
+```
+
+What it does:
+- Opens 3 separate PowerShell windows
+- Starts server (`npm run dev`)
+- Starts client (`npm run dev`)
+- Starts AI service (`uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`)
+
+To stop all services, close each service window (or press Ctrl+C in each).
