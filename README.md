@@ -165,42 +165,17 @@ Backend:
 
 ## Upcoming Product Expansion (Planned)
 
-- Retention-first strategy: engagement loops and motivation systems
-- 4 product pillars: Protect, Learn, Community, Engagement
-- Priority roadmap: gamification, short content hub, meme moderation, mini-games, smart insights
 
 ## Public Access Model
 
 Public frontend routes:
-- /
-- /login
-- /register
-- /verify
-- /reports
-- /ai
-- /articles
-- /articles/:id
-- /videos
-- /memes
-- /forum
 
 Protected frontend routes:
-- /dashboard
-- /profile
-- /settings
-- /create-report
-- /forum/create
-- /videos/submit
-- /memes/upload
-- /games
-- /admin/*
 
 Public backend endpoints:
-- GET /api/reports
-- POST /api/ai/predict
-- GET /api/articles
-- GET /api/articles/:id
-- GET /api/videos
+ `scripts/start-all.ps1` on Windows PowerShell
+ `scripts/start-all.cmd` on Windows
+ `scripts/start-all.sh` on macOS/Linux
 - GET /api/memes
 
 ## Role Governance

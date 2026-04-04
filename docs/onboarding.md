@@ -13,7 +13,7 @@ CyberShield has 3 runtime apps:
 Important:
 
 - Manual startup requires all 3 apps in separate terminals.
-- Launcher scripts (`npm run dev`, `start-all.ps1`, `start-all.cmd`, `start-all.sh`) can start all 3 together.
+- Launcher scripts (`npm run dev`, `scripts/start-all.ps1`, `scripts/start-all.cmd`, `scripts/start-all.sh`) can start all 3 together.
 
 ## 2) Prerequisites
 
@@ -110,9 +110,9 @@ You can use a launcher or manual 3-terminal startup.
 
 Launcher options:
 
-- Windows PowerShell: `start-all.ps1`
-- Windows CMD: `start-all.cmd`
-- macOS/Linux: `bash start-all.sh`
+- Windows PowerShell: `scripts/start-all.ps1`
+- Windows CMD: `scripts/start-all.cmd`
+- macOS/Linux: `bash scripts/start-all.sh`
 - Cross-platform node launcher: `npm run dev` from repo root
 
 Manual terminal startup:

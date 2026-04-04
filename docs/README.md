@@ -8,10 +8,10 @@ Quick links:
 
 Startup shortcuts:
 
-- `start-all.ps1` on Windows PowerShell
+- `scripts/start-all.ps1` on Windows PowerShell
 - `npm run dev` from the repository root
-- `start-all.cmd` on Windows
-- `bash start-all.sh` on macOS/Linux
+- `scripts/start-all.cmd` on Windows
+- `scripts/start-all.sh` on macOS/Linux
 
 ## Current Build Status
 
