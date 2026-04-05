@@ -4,6 +4,20 @@ import Article from "../models/Article.js";
 import { decrypt, encrypt } from "../utils/encryption.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
+const ADMIN_REPORTS_PAGE_LIMIT_MAX = Number(process.env.ADMIN_REPORTS_PAGE_LIMIT_MAX) || 50;
+
+const getAdminPagination = (query) => {
+  const rawPage = Number(query.page);
+  const rawLimit = Number(query.limit);
+
+  const page = Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 1;
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0
+    ? Math.min(Math.floor(rawLimit), ADMIN_REPORTS_PAGE_LIMIT_MAX)
+    : 10;
+
+  return { page, limit };
+};
+
 // Dashboard stats
 export const getDashboardStats = async (req, res) => {
   try {
@@ -56,8 +70,8 @@ export const deleteUser = async (req, res) => {
 // Get all reports (admin view with user details)
 export const getAllReportsAdmin = async (req, res) => {
   try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+    const { page, limit } = getAdminPagination(req.query);
+    const total = await Report.countDocuments();
 
     const reports = await Report.find()
       .populate("user", "name alias email")
@@ -89,7 +103,19 @@ export const getAllReportsAdmin = async (req, res) => {
       return item;
     });
 
-    return sendSuccess(res, safeReports);
+    const totalPages = total > 0 ? Math.ceil(total / limit) : 0;
+    const hasNextPage = page * limit < total;
+
+    return sendSuccess(res, {
+      items: safeReports,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage
+      }
+    });
   } catch (error) {
     return sendError(res, 500, error.message);
   }

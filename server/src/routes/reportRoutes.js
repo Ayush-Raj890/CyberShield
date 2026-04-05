@@ -14,9 +14,12 @@ import { upload } from "../middlewares/uploadMiddleware.js";
 
 const router = express.Router();
 
+const publicListWindowMs = Number(process.env.REPORT_PUBLIC_LIST_WINDOW_MS) || 60 * 1000;
+const publicListMax = Number(process.env.REPORT_PUBLIC_LIST_MAX) || 60;
+
 const publicReportListLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 60,
+  windowMs: publicListWindowMs,
+  max: publicListMax,
   standardHeaders: true,
   legacyHeaders: false,
   message: {

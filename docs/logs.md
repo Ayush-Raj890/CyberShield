@@ -403,9 +403,24 @@
 - Added sensitive-content masking for public responses (`Sensitive report details are hidden`)
 - Added protected own-reports endpoint (`GET /api/reports/me`) with detailed fields and conditional sensitive decrypt
 - Added route-level rate limit guard to public report listing to reduce scraping/abuse risk
+- Made public report list limiter configurable via env (`REPORT_PUBLIC_LIST_WINDOW_MS`, `REPORT_PUBLIC_LIST_MAX`)
 - Added bounded pagination server-side for both public and protected report list endpoints
 - Added explicit report pagination metadata (`items`, `pagination`) to improve client paging accuracy
 - Updated frontend report and dashboard data calls to use `GET /api/reports/me` for authenticated user flows
+
+## Day 45
+
+- Hardened admin reports listing with server-side page-size cap (`ADMIN_REPORTS_PAGE_LIMIT_MAX`)
+- Updated `GET /api/admin/reports` to return explicit pagination metadata (`items`, `pagination`)
+- Updated admin frontend consumers (`ManageReports`, dashboard service) to support paginated admin reports payload
+- Synced docs so admin pagination and caps are clear for all contributors
+
+## Day 46
+
+- Addressed fullscan high finding by replacing plaintext OTP persistence with HMAC-hashed OTP storage
+- Updated register and resend flows to store hashed OTP values instead of raw 6-digit codes
+- Updated verify flow to compare hashed OTPs while preserving backward compatibility for legacy plaintext OTP records
+- Added `OTP_HASH_SECRET` environment variable support for OTP hashing key control
 
 ---
 

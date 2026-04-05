@@ -8,6 +8,10 @@
 - AI_SERVICE_URL=`http://localhost:8000`
 - ALLOWED_ORIGINS=`http://localhost:3000,http://localhost:5173`
 - DEBUG_REQUEST_LOGS=false
+- REPORT_PUBLIC_LIST_WINDOW_MS=60000
+- REPORT_PUBLIC_LIST_MAX=60
+- ADMIN_REPORTS_PAGE_LIMIT_MAX=50
+- OTP_HASH_SECRET=strong_random_secret_for_otp_hmac
 - ENCRYPTION_KEY=your_64_char_hex_key
 - ENCRYPTION_LEGACY_KEYS=comma_separated_old_keys
 - EMAIL_USER=your_gmail_address
@@ -102,6 +106,15 @@ Report listing response shape (`GET /api/reports`, `GET /api/reports/me`):
 - PUT /api/admin/demote/:id (super admin only)
 - GET /api/admin/reports
 - DELETE /api/admin/articles/:id
+
+Admin report listing response shape (`GET /api/admin/reports`):
+
+- `items`: report array
+- `pagination`: `{ page, limit, total, totalPages, hasNextPage }`
+
+Admin report pagination behavior:
+
+- Request `limit` is capped server-side by `ADMIN_REPORTS_PAGE_LIMIT_MAX`.
 
 ### System (Error Observability)
 

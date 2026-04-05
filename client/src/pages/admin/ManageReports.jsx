@@ -32,10 +32,12 @@ export default function ManageReports() {
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const { data } = await API.get(`/admin/reports?page=${page}&limit=${limit}`);
-      const prioritized = [...data].sort((a, b) => Number(b.isSensitive) - Number(a.isSensitive));
+      const response = await API.get(`/admin/reports?page=${page}&limit=${limit}`);
+      const payload = response.data;
+      const items = Array.isArray(payload) ? payload : (payload?.items || []);
+      const prioritized = [...items].sort((a, b) => Number(b.isSensitive) - Number(a.isSensitive));
       setReports(prioritized);
-      setHasNextPage(data.length === limit);
+      setHasNextPage(Array.isArray(payload) ? items.length === limit : Boolean(payload?.pagination?.hasNextPage));
     } catch (error) {
       console.error(error);
     } finally {

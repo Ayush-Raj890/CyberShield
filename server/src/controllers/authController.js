@@ -9,6 +9,8 @@ import { addXP } from "../utils/gamification.js";
 import { addCoins } from "../utils/economy.js";
 
 const normalizeEmail = (email) => String(email || "").trim().toLowerCase();
+const OTP_HASH_SECRET = process.env.OTP_HASH_SECRET || process.env.JWT_SECRET || "otp-fallback-secret";
+const hashOtp = (otp) => crypto.createHmac("sha256", OTP_HASH_SECRET).update(String(otp)).digest("hex");
 
 // Register
 export const registerUser = async (req, res) => {
@@ -32,13 +34,14 @@ export const registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedOtp = hashOtp(otp);
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
     const user = await User.create({
       name,
       email: normalizedEmail,
       password: hashedPassword,
-      verificationOTP: otp,
+      verificationOTP: hashedOtp,
       otpExpires: otpExpiry,
       failedOtpAttempts: 0
     });
@@ -89,7 +92,7 @@ export const resendOTP = async (req, res) => {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    user.verificationOTP = otp;
+    user.verificationOTP = hashOtp(otp);
     user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
     user.failedOtpAttempts = 0;
     await user.save();
@@ -117,6 +120,7 @@ export const verifyOTP = async (req, res) => {
     const normalizedEmail = normalizeEmail(email);
     const user = await User.findOne({ email: normalizedEmail });
     const maxAttempts = 5;
+    const submittedOtpHash = hashOtp(otp);
 
     if (!user) {
       return sendError(res, 404, "User not found");
@@ -131,11 +135,12 @@ export const verifyOTP = async (req, res) => {
       );
     }
 
-    if (
-      user.verificationOTP !== otp ||
-      !user.otpExpires ||
-      user.otpExpires < Date.now()
-    ) {
+    const isOtpValid = Boolean(user.verificationOTP) && (
+      user.verificationOTP === submittedOtpHash || user.verificationOTP === otp
+    );
+    const isOtpExpired = !user.otpExpires || user.otpExpires < Date.now();
+
+    if (!isOtpValid || isOtpExpired) {
       user.failedOtpAttempts += 1;
       await user.save();
 

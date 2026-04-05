@@ -203,7 +203,8 @@ Users:
 Reports:
 
 - POST /api/reports (protected, multipart/form-data)
-- GET /api/reports (public)
+- GET /api/reports (public safe feed)
+- GET /api/reports/me (protected own reports)
 - PUT /api/reports/:id
 
 AI (backend proxy):
@@ -253,6 +254,24 @@ Admin:
 - PUT /api/admin/demote/:id (super admin only)
 - GET /api/admin/reports
 - DELETE /api/admin/articles/:id
+
+## Pagination Conventions
+
+Report listing endpoints use a shared paginated response contract:
+
+- `items`: array of records for the current page
+- `pagination`: object with `page`, `limit`, `total`, `totalPages`, `hasNextPage`
+
+Endpoints currently using this contract:
+
+- GET /api/reports
+- GET /api/reports/me
+- GET /api/admin/reports
+
+Server-side pagination controls:
+
+- Public report listing rate and window are controlled by `REPORT_PUBLIC_LIST_MAX` and `REPORT_PUBLIC_LIST_WINDOW_MS`.
+- Admin report page size is capped by `ADMIN_REPORTS_PAGE_LIMIT_MAX` regardless of requested limit.
 
 Notifications:
 
@@ -313,7 +332,11 @@ Backend .env expected keys:
 - AI_SERVICE_URL=`http://localhost:8000`
 - ALLOWED_ORIGINS=`http://localhost:3000,http://localhost:5173`
 - DEBUG_REQUEST_LOGS=false
+- REPORT_PUBLIC_LIST_WINDOW_MS=60000
+- REPORT_PUBLIC_LIST_MAX=60
+- ADMIN_REPORTS_PAGE_LIMIT_MAX=50
 - ENCRYPTION_KEY=your_64_char_hex_key
+- ENCRYPTION_LEGACY_KEYS=comma_separated_old_keys
 - EMAIL_USER=your_gmail_address
 - EMAIL_PASS=your_gmail_app_password
 - EMAIL_MOCK=false

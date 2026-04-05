@@ -126,9 +126,14 @@ export const getAdminDashboardData = async () => {
     API.get("/articles/admin/pending")
   ]);
 
+  const adminReportsPayload = reportsRes.data;
+  const reports = Array.isArray(adminReportsPayload)
+    ? adminReportsPayload
+    : (adminReportsPayload?.items || []);
+
   return transformAdminDashboard({
     stats: statsRes.data,
-    reports: reportsRes.data || [],
+    reports,
     pendingArticles: pendingArticlesRes.data || []
   });
 };
