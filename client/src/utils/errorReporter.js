@@ -35,7 +35,7 @@ export const sendErrorReport = async () => {
 
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
-  await axios.post("http://localhost:5000/api/system/client-errors", {
+  await axios.post("http://localhost:5001/api/system/client-errors", {
     ...context,
     userAgent: navigator.userAgent,
     userId: user?._id

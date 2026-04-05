@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import API from "../../services/api";
 import { syncUserCoins } from "../../utils/economySync";
 
-const API_HOST = "http://localhost:5000";
+const API_HOST = "http://localhost:5001";
 
 export default function MemeCard({ meme, refresh }) {
   const user = JSON.parse(localStorage.getItem("user") || "null");

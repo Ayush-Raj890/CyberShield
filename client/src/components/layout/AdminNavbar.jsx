@@ -33,18 +33,18 @@ export default function AdminNavbar() {
   };
 
   return (
-    <div className="bg-white shadow px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-      <h1 className="text-lg font-semibold text-blue-600 text-center sm:text-left">Admin Panel</h1>
+    <div className="bg-white/95 dark:bg-neutral-900/95 border-b border-neutral-200 dark:border-neutral-700 shadow-sm px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 transition-colors">
+      <h1 className="text-xl font-semibold text-primary-700 dark:text-primary-100 text-center sm:text-left">Admin Panel</h1>
 
-      <div className="w-full sm:w-auto flex flex-wrap items-center justify-center sm:justify-end gap-3 text-sm">
-        <button className="hover:text-blue-500" onClick={() => navigate("/admin")}>Dashboard</button>
-        <button className="hover:text-blue-500" onClick={() => navigate("/admin/reports")}>Reports</button>
-        <button className="hover:text-blue-500" onClick={() => navigate("/admin/users")}>Users</button>
-        <button className="hover:text-blue-500" onClick={() => navigate("/admin/articles")}>Articles</button>
-        <button className="hover:text-blue-500" onClick={() => navigate("/admin/videos")}>Videos</button>
-        <button className="hover:text-blue-500" onClick={() => navigate("/admin/memes")}>Memes</button>
-        <button className="hover:text-blue-500" onClick={() => navigate("/admin/error-logs")}>Error Logs</button>
-        <button className="hover:text-blue-500 relative" onClick={() => navigate("/admin/notifications")}>
+      <div className="w-full sm:w-auto flex flex-wrap items-center justify-center sm:justify-end gap-3 text-sm text-neutral-700 dark:text-neutral-200">
+        <button className="hover:text-primary-600 dark:hover:text-primary-100 transition-colors" onClick={() => navigate("/admin")}>Dashboard</button>
+        <button className="hover:text-primary-600 dark:hover:text-primary-100 transition-colors" onClick={() => navigate("/admin/reports")}>Reports</button>
+        <button className="hover:text-primary-600 dark:hover:text-primary-100 transition-colors" onClick={() => navigate("/admin/users")}>Users</button>
+        <button className="hover:text-primary-600 dark:hover:text-primary-100 transition-colors" onClick={() => navigate("/admin/articles")}>Articles</button>
+        <button className="hover:text-primary-600 dark:hover:text-primary-100 transition-colors" onClick={() => navigate("/admin/videos")}>Videos</button>
+        <button className="hover:text-primary-600 dark:hover:text-primary-100 transition-colors" onClick={() => navigate("/admin/memes")}>Memes</button>
+        <button className="hover:text-primary-600 dark:hover:text-primary-100 transition-colors" onClick={() => navigate("/admin/error-logs")}>Error Logs</button>
+        <button className="hover:text-primary-600 dark:hover:text-primary-100 transition-colors relative" onClick={() => navigate("/admin/notifications")}>
           🔔
           {unreadCount > 0 && (
             <span className="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5 leading-none">
@@ -52,7 +52,7 @@ export default function AdminNavbar() {
             </span>
           )}
         </button>
-        <button className="hover:text-blue-500" onClick={logout}>Logout</button>
+        <button className="hover:text-red-500 transition-colors" onClick={logout}>Logout</button>
       </div>
     </div>
   );
