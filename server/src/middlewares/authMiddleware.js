@@ -20,14 +20,14 @@ export const protect = async (req, res, next) => {
         return res.status(403).json({ message: "Account suspended" });
       }
 
-      next();
+      return next();
     } catch (error) {
-      res.status(401).json({ message: "Not authorized" });
+      return res.status(401).json({ message: "Not authorized" });
     }
   }
 
   if (!token) {
-    res.status(401).json({ message: "No token provided" });
+    return res.status(401).json({ message: "No token provided" });
   }
 };
 

@@ -380,6 +380,12 @@
 - Added visible tag chips on article cards and article detail pages
 - Kept category as a separate article field while using tags for sidebar discovery
 
+## Day 42
+
+- Addressed fullscan critical finding #1 by hardening auth middleware response flow
+- Updated `protect` middleware to return from all response branches (`next()`, catch response, missing-token response)
+- Eliminated duplicate-response risk and potential "headers already sent" runtime errors in protected routes
+
 ---
 
 ## Notes
