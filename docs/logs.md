@@ -386,6 +386,16 @@
 - Updated `protect` middleware to return from all response branches (`next()`, catch response, missing-token response)
 - Eliminated duplicate-response risk and potential "headers already sent" runtime errors in protected routes
 
+## Day 43
+
+- Implemented encryption key-rotation utility with strict primary-key validation (`ENCRYPTION_KEY` min length enforced)
+- Added legacy key-ring decryption support via `ENCRYPTION_LEGACY_KEYS`
+- Updated encryption output format to versioned `v2:` prefix for new writes
+- Added explicit decryption failure behavior (`Decryption failed for all keys`) to avoid silent data corruption
+- Added legacy-key usage logging for migration observability
+- Added safe lazy migration in report/admin read paths (re-encrypt with primary key only when legacy key was used)
+- Added batched encryption migration script (`npm --prefix server run migrate:encryption`) using `_id` cursor pagination
+
 ---
 
 ## Notes

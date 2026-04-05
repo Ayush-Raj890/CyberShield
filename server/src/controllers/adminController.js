@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 import Report from "../models/Report.js";
 import Article from "../models/Article.js";
-import { decrypt } from "../utils/encryption.js";
+import { decrypt, encrypt } from "../utils/encryption.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
 // Dashboard stats
@@ -68,7 +68,23 @@ export const getAllReportsAdmin = async (req, res) => {
     const safeReports = reports.map((report) => {
       const item = report.toObject();
       if (item.isSensitive) {
-        item.description = decrypt(item.description);
+        const { data, usedLegacy } = decrypt(item.description, {
+          source: "adminController.getAllReportsAdmin",
+          recordId: String(report._id)
+        });
+
+        item.description = data;
+
+        if (usedLegacy) {
+          const reEncrypted = encrypt(data);
+
+          if (report.description !== reEncrypted) {
+            report.description = reEncrypted;
+            report.save().catch((error) => {
+              console.error(`[ENCRYPTION] Lazy migration failed for report=${report._id}:`, error.message);
+            });
+          }
+        }
       }
       return item;
     });

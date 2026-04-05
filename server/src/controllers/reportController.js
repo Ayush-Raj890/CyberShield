@@ -74,7 +74,23 @@ export const getReports = async (req, res) => {
     const safeReports = reports.map((report) => {
       const item = report.toObject();
       if (item.isSensitive) {
-        item.description = decrypt(item.description);
+        const { data, usedLegacy } = decrypt(item.description, {
+          source: "reportController.getReports",
+          recordId: String(report._id)
+        });
+
+        item.description = data;
+
+        if (usedLegacy) {
+          const reEncrypted = encrypt(data);
+
+          if (report.description !== reEncrypted) {
+            report.description = reEncrypted;
+            report.save().catch((error) => {
+              console.error(`[ENCRYPTION] Lazy migration failed for report=${report._id}:`, error.message);
+            });
+          }
+        }
       }
       return item;
     });

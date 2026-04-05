@@ -7,7 +7,8 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "make:super-admin": "node src/scripts/makeSuperAdmin.js",
-    "reset:password": "node src/scripts/resetUserPassword.js"
+    "reset:password": "node src/scripts/resetUserPassword.js",
+    "migrate:encryption": "node src/scripts/migrateEncryption.js"
   },
   "keywords": [],
   "author": "",

@@ -9,9 +9,14 @@
 - ALLOWED_ORIGINS=`http://localhost:3000,http://localhost:5173`
 - DEBUG_REQUEST_LOGS=false
 - ENCRYPTION_KEY=your_64_char_hex_key
+- ENCRYPTION_LEGACY_KEYS=comma_separated_old_keys
 - EMAIL_USER=your_gmail_address
 - EMAIL_PASS=your_gmail_app_password
 - EMAIL_MOCK=false
+
+Encryption migration helper:
+
+- `npm --prefix server run migrate:encryption`
 
 ---
 
