@@ -187,6 +187,8 @@ Skip for now:
   - [ ] h2 → text-xl
   - [ ] body → text-sm / text-base
 - [ ] Ensure consistent color palette (primary, secondary, neutral defined)
+- [ ] Ensure that all the components and pages are ready for dark mode implementation.
+- [ ] prepare the color pallete for dark mode integration too.
 
 **Priority 2 — Design System Components (VERY IMPORTANT)**
 
@@ -247,7 +249,7 @@ Skip for now:
 
 **Priority 10 — Dark Mode (OPTIONAL)**
 
-- [ ] Add dark mode toggle (if time permits)
+- [ ] Add dark mode toggle 
 - [ ] Use Tailwind `dark:` classes
 
 **Priority 11 — Content Hierarchy**
