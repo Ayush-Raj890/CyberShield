@@ -173,6 +173,143 @@ Skip for now:
 
 ---
 
+### Phase 11: UI Improvement & Design System (Lightweight Modern Upgrade)
+
+**Module Purpose:** Unified, modern UI with consistent spacing, colors, and component reusability
+
+**Priority 1 — Global Consistency (MUST DO)**
+
+- [ ] Standardize spacing scale (use Tailwind: p-4, p-6, gap-4, gap-6)
+- [ ] Standardize border radius (`rounded-xl` everywhere)
+- [ ] Standardize shadow system (`shadow-sm`, `shadow-md`)
+- [ ] Replace all inconsistent font sizes with scale:
+  - [ ] h1 → text-2xl / text-3xl
+  - [ ] h2 → text-xl
+  - [ ] body → text-sm / text-base
+- [ ] Ensure consistent color palette (primary, secondary, neutral defined)
+
+**Priority 2 — Design System Components (VERY IMPORTANT)**
+
+- [ ] Create reusable `Button` component with variants
+- [ ] Create reusable `Card` component
+- [ ] Create reusable `Input` component
+- [ ] Create reusable `Badge` component
+- [ ] Create reusable `Modal` component (basic)
+
+**Priority 3 — Layout Improvement**
+
+- [ ] Add max-width container (`max-w-6xl mx-auto`)
+- [ ] Add consistent page padding (`p-6`)
+- [ ] Improve section separation (use spacing instead of borders)
+- [ ] Align content to grid system
+
+**Priority 4 — Navbar Refinement**
+
+- [ ] Add subtle background blur or shadow
+- [ ] Improve dropdown animation (fade + slide)
+- [ ] Add active state indicator
+- [ ] Add hover transitions
+
+**Priority 5 — Dashboard Polish**
+
+- [ ] Improve stat cards (bigger numbers, muted labels)
+- [ ] Add subtle hover effect on cards
+- [ ] Improve spacing between sections
+- [ ] Add loading skeletons
+
+**Priority 6 — Feedback & States**
+
+- [ ] Add loading states (buttons + pages)
+- [ ] Add empty states ("No reports yet")
+- [ ] Add error states (clean alerts)
+- [ ] Add success feedback (toasts or inline)
+
+**Priority 7 — Micro-Interactions**
+
+- [ ] Add transitions to buttons (`transition-all duration-200`)
+- [ ] Add hover scale (`hover:scale-[1.02]`)
+- [ ] Add click feedback (`active:scale-95`)
+- [ ] Smooth dropdown animation
+
+**Priority 8 — Responsiveness**
+
+- [ ] Fix navbar wrapping issues
+- [ ] Stack cards on small screens
+- [ ] Ensure proper padding on mobile (`px-4`)
+- [ ] Test all major pages on small width
+
+**Priority 9 — Visual Cleanup**
+
+- [ ] Remove unnecessary borders
+- [ ] Reduce excessive colors
+- [ ] Replace harsh colors with muted tones
+- [ ] Use gray scale properly (gray-500, gray-700)
+
+**Priority 10 — Dark Mode (OPTIONAL)**
+
+- [ ] Add dark mode toggle (if time permits)
+- [ ] Use Tailwind `dark:` classes
+
+**Priority 11 — Content Hierarchy**
+
+- [ ] Improve heading hierarchy
+- [ ] Reduce text clutter
+- [ ] Add spacing between sections
+- [ ] Use subtle labels instead of heavy text
+
+**Final Polish**
+
+- [ ] Check consistency across all pages
+- [ ] Fix alignment issues
+- [ ] Ensure no broken layouts
+- [ ] Smooth transitions everywhere
+
+---
+
+### Phase 12: Security Hardening & Operational (Fullscan Findings)
+
+**HIGH Priority Findings to Implement:**
+
+- [ ] Add route-level rate limiting to auth routes:
+  - [ ] POST /api/auth/register (max 5 attempts per hour)
+  - [ ] POST /api/auth/login (max 10 attempts per 15 minutes)
+  - [ ] POST /api/auth/resend-otp (max 3 attempts per hour)
+  - [ ] POST /api/auth/forgot-password (max 5 attempts per hour)
+- [ ] Fix password reset suspension bypass:
+  - [ ] Prevent `isSuspended = false` from password reset flow
+  - [ ] Keep suspension separate from password recovery
+- [ ] Add AI endpoint input validation caps:
+  - [ ] Limit text payload size to reasonable max (e.g., 10KB)
+  - [ ] Add express-validator on /api/ai/predict route
+- [ ] Add upload file-size limits to multer:
+  - [ ] Set max file size cap (e.g., 50MB)
+  - [ ] Validate file type strictly (images, PDFs only)
+  - [ ] Add error handling for oversized uploads
+- [ ] **BUG FIX:** Implement account suspension revocation:
+  - [ ] Add backend unsuspend endpoint (`PUT /api/admin/users/:id/unsuspend`)
+  - [ ] Show suspend/unsuspend toggle button based on current state in admin UI
+  - [ ] Add 2-step confirmation modal before executing unsuspend
+- [ ] **BUG FIX:** Make remove admin button visible in admin panel:
+  - [ ] Verify Remove Admin button renders in ManageUsers component
+  - [ ] Fix any CSS visibility issues
+- [ ] **BUG FIX:** Add 2-step confirmation for critical operations:
+  - [ ] Remove Admin: Show confirmation modal with email/name display before executing
+  - [ ] Delete Account (self-service): Show confirmation modal with warning before permanent deletion
+  - [ ] Suspend Account: Show confirmation modal before suspending
+  - [ ] Unsuspend Account: Show confirmation modal before unsuspending
+  - [ ] Use consistent modal design across all operations
+
+**MEDIUM Priority Findings to Implement:**
+
+- [ ] Shorten JWT token expiry (from 1 week to 24 hours)
+  - [ ] Consider optional refresh token flow
+- [ ] Add forum listing pagination:
+  - [ ] Implement page/limit query params
+  - [ ] Add server-side pagination caps
+  - [ ] Update frontend forum page to use paginated payload
+
+---
+
 ## 🟡 Medium Priority
 - [x] UI improvements (basic functional layout)
 - [x] UI polishing pass (design system, cards, status indicators, clean navbars)
@@ -221,6 +358,16 @@ Skip for now:
 - [ ] Error Logs UX enhancements:
   - [ ] Quick filter presets (Last 24h, Last 7 days)
   - [ ] One-click status filter presets (e.g., Only 5xx)
+- [ ] Backend token validation on sensitive flows:
+  - [ ] Validate JWT on protected pages before rendering sensitive data
+  - [ ] Don't rely solely on localStorage for auth state
+- [ ] Remove legacy `UserDashboard.jsx` component:
+  - [ ] Confirm current dashboard uses `Dashboard.jsx` (not deprecated)
+  - [ ] Delete or archive old component
+- [ ] Post-login navigation restructuring:
+  - [ ] Redirect authenticated users from landing page to Forums instead of Dashboard
+  - [ ] Move Dashboard page to Account section of navbar (accessible through profile/account dropdown)
+  - [ ] Add Knowledge Hub, Create Report, and Forum links to main navbar after login
 - [ ] Bonus marks features:
   - [ ] Export reports as PDF
   - [ ] Email notifications (fake/mock service)
@@ -235,3 +382,11 @@ Skip for now:
 ## 🟢 Low Priority
 - [x] RBAC baseline enhancements (USER, ADMIN, SUPER_ADMIN)
 - [ ] RBAC advanced enhancements (granular permissions, audit logging)
+- [ ] Create `.env.example` files for team guidance:
+  - [ ] `server/.env.example` with all backend variables documented
+  - [ ] `client/.env.example` (VITE_API_URL documentation)
+  - [ ] `ai-service/.env.example` (if applicable)
+- [ ] Startup script documentation:
+  - [ ] Single canonical recommendation per OS in onboarding
+  - [ ] Label fallback launchers clearly
+  - [ ] Document which method works best for CI/CD
