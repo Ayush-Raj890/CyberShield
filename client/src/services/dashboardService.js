@@ -100,7 +100,7 @@ export const transformAdminDashboard = ({ stats, reports, pendingArticles }) => 
 export const getUserDashboardData = async (currentUserId) => {
   const [profileRes, reportsRes, articlesRes, forumRes, memesRes] = await Promise.all([
     API.get("/users/profile"),
-    API.get(`/reports?page=1&limit=${DEFAULT_LIMIT}`),
+    API.get(`/reports/me?page=1&limit=${DEFAULT_LIMIT}`),
     API.get("/articles"),
     API.get("/forum"),
     API.get("/memes")

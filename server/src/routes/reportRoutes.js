@@ -1,8 +1,10 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 import { body } from "express-validator";
 import {
   createReport,
   getReports,
+  getMyReports,
   updateReportStatus
 } from "../controllers/reportController.js";
 
@@ -11,6 +13,17 @@ import { adminOnly } from "../middlewares/roleMiddleware.js";
 import { upload } from "../middlewares/uploadMiddleware.js";
 
 const router = express.Router();
+
+const publicReportListLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: "Too many report list requests, please try again shortly"
+  }
+});
 
 router.post(
   "/",
@@ -27,7 +40,8 @@ router.post(
   ],
   createReport
 );
-router.get("/", getReports);
+router.get("/", publicReportListLimiter, getReports);
+router.get("/me", protect, getMyReports);
 router.put("/:id", protect, adminOnly, updateReportStatus);
 
 export default router;

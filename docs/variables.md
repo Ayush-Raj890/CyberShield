@@ -41,7 +41,8 @@ Encryption migration helper:
 ### Reports
 
 - POST /api/reports (protected, multipart/form-data)
-- GET /api/reports (public)
+- GET /api/reports (public, safe feed; hides sensitive details and excludes contact/evidence/history)
+- GET /api/reports/me (protected, own detailed reports)
 - PUT /api/reports/:id (admin)
 
 ### AI

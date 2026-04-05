@@ -21,7 +21,8 @@ export default function ViewReports() {
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const { data } = await API.get(`/reports?page=${page}&limit=${limit}`);
+      const endpoint = user ? "/reports/me" : "/reports";
+      const { data } = await API.get(`${endpoint}?page=${page}&limit=${limit}`);
       setReports(data);
       setHasNextPage(data.length === limit);
     } catch (error) {

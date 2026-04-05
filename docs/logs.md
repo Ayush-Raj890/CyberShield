@@ -396,6 +396,16 @@
 - Added safe lazy migration in report/admin read paths (re-encrypt with primary key only when legacy key was used)
 - Added batched encryption migration script (`npm --prefix server run migrate:encryption`) using `_id` cursor pagination
 
+## Day 44
+
+- Addressed fullscan critical finding #3 by splitting report read paths into public-safe and protected-own endpoints
+- Hardened public report feed (`GET /api/reports`) with strict projection and serializer-based output
+- Added sensitive-content masking for public responses (`Sensitive report details are hidden`)
+- Added protected own-reports endpoint (`GET /api/reports/me`) with detailed fields and conditional sensitive decrypt
+- Added route-level rate limit guard to public report listing to reduce scraping/abuse risk
+- Added bounded pagination server-side for both public and protected report list endpoints
+- Updated frontend report and dashboard data calls to use `GET /api/reports/me` for authenticated user flows
+
 ---
 
 ## Notes

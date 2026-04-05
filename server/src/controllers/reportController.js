@@ -6,6 +6,40 @@ import { addXP } from "../utils/gamification.js";
 import { addCoins } from "../utils/economy.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
+const PUBLIC_PAGE_LIMIT_MAX = 20;
+const PRIVATE_PAGE_LIMIT_MAX = 50;
+
+const getPagination = (query, maxLimit) => {
+  const rawPage = Number(query.page);
+  const rawLimit = Number(query.limit);
+
+  const page = Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 1;
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0
+    ? Math.min(Math.floor(rawLimit), maxLimit)
+    : Math.min(10, maxLimit);
+
+  return { page, limit };
+};
+
+const serializePublicReport = (report) => {
+  const safeDescription = report.isSensitive
+    ? "Sensitive report details are hidden"
+    : report.description;
+
+  return {
+    _id: report._id,
+    title: report.title,
+    description: safeDescription,
+    category: report.category,
+    severity: report.severity,
+    status: report.status,
+    isAnonymous: Boolean(report.isAnonymous),
+    isSensitive: Boolean(report.isSensitive),
+    createdAt: report.createdAt,
+    updatedAt: report.updatedAt
+  };
+};
+
 // Create Report
 export const createReport = async (req, res) => {
   try {
@@ -59,14 +93,32 @@ export const createReport = async (req, res) => {
   }
 };
 
-// Get Reports (User -> own, Admin -> all)
+// Get public report feed (safe, non-sensitive projection)
 export const getReports = async (req, res) => {
   try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+    const { page, limit } = getPagination(req.query, PUBLIC_PAGE_LIMIT_MAX);
 
     const reports = await Report.find()
-      .populate("user", "name alias")
+      .select("title description category severity status isAnonymous isSensitive createdAt updatedAt")
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const safeReports = reports.map((report) => serializePublicReport(report));
+
+    return sendSuccess(res, safeReports);
+  } catch (error) {
+    return sendError(res, 500, error.message);
+  }
+};
+
+// Get current user's own reports (detailed view)
+export const getMyReports = async (req, res) => {
+  try {
+    const { page, limit } = getPagination(req.query, PRIVATE_PAGE_LIMIT_MAX);
+
+    const reports = await Report.find({ user: req.user._id })
+      .select("title description category severity status contactEmail evidence isAnonymous isSensitive history createdAt updatedAt")
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
@@ -75,7 +127,7 @@ export const getReports = async (req, res) => {
       const item = report.toObject();
       if (item.isSensitive) {
         const { data, usedLegacy } = decrypt(item.description, {
-          source: "reportController.getReports",
+          source: "reportController.getMyReports",
           recordId: String(report._id)
         });
 
