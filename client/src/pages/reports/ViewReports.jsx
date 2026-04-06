@@ -154,13 +154,13 @@ export default function ViewReports() {
                   </p>
                   {r.evidence.match(/\.(jpg|jpeg|png|gif)$/i) ? (
                     <img
-                      src={`${import.meta.env.VITE_API_URL || "http://localhost:5000"}${r.evidence}`}
+                      src={`${import.meta.env.VITE_API_URL || "http://localhost:5001"}${r.evidence}`}
                       alt="Evidence"
                       className="w-full max-w-md rounded border"
                     />
                   ) : (
                     <a
-                      href={`${import.meta.env.VITE_API_URL || "http://localhost:5000"}${r.evidence}`}
+                      href={`${import.meta.env.VITE_API_URL || "http://localhost:5001"}${r.evidence}`}
                       target="_blank"
                       rel="noreferrer"
                       className="text-blue-500 underline"

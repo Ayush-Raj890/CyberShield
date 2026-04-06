@@ -42,7 +42,7 @@ export default function Dashboard() {
     return (
       <>
         {isAdmin ? <AdminNavbar /> : <Navbar />}
-        <div className="p-4 sm:p-6">Loading dashboard...</div>
+        <div className="p-4 sm:p-6 text-sm text-neutral-500 dark:text-neutral-300">Loading dashboard...</div>
       </>
     );
   }
@@ -51,7 +51,7 @@ export default function Dashboard() {
     return (
       <>
         {isAdmin ? <AdminNavbar /> : <Navbar />}
-        <div className="p-4 sm:p-6 text-gray-500">Dashboard unavailable.</div>
+        <div className="p-4 sm:p-6 text-sm text-neutral-500 dark:text-neutral-300">Dashboard unavailable.</div>
       </>
     );
   }
