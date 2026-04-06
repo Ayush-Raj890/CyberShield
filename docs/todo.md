@@ -297,9 +297,9 @@ Skip for now:
 - [ ] **BUG FIX:** Add 2-step confirmation for critical operations:
   - [x] Remove Admin: Show confirmation modal with email/name display before executing
   - [x] Delete Account (self-service): Show confirmation modal with warning before permanent deletion
-  - [ ] Suspend Account: Show confirmation modal before suspending
-  - [ ] Unsuspend Account: Show confirmation modal before unsuspending
-  - [ ] Use consistent modal design across all operations
+  - [x] Suspend Account: Show confirmation modal before suspending
+  - [x] Unsuspend Account: Show confirmation modal before unsuspending
+  - [x] Use consistent modal design across all operations
 
 **MEDIUM Priority Findings to Implement:**
 

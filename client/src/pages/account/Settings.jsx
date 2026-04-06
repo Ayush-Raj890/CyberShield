@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
+import ConfirmActionModal from "../../components/ui/ConfirmActionModal";
 import API from "../../services/api";
 
 const PREFS_KEY = "userPreferences";
@@ -208,35 +209,17 @@ export default function Settings() {
         </div>
       </div>
 
-      {confirmDeleteOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-neutral-900">
-            <h3 className="text-lg font-semibold text-red-600 dark:text-red-400">Delete account?</h3>
-            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
-              This will permanently delete your account and related content. This action cannot be undone.
-            </p>
-
-            <div className="mt-6 flex flex-wrap justify-end gap-3">
-              <button
-                type="button"
-                className="btn btn-outline"
-                onClick={() => setConfirmDeleteOpen(false)}
-                disabled={deleting}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={deleteAccount}
-                disabled={deleting}
-              >
-                {deleting ? "Deleting..." : "Confirm Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmActionModal
+        open={confirmDeleteOpen}
+        title="Delete account?"
+        description="This will permanently delete your account and related content. This action cannot be undone."
+        confirmLabel={deleting ? "Deleting..." : "Confirm Delete"}
+        confirmVariant="danger"
+        onConfirm={deleteAccount}
+        onCancel={() => setConfirmDeleteOpen(false)}
+        confirmDisabled={deleting}
+        cancelDisabled={deleting}
+      />
     </>
   );
 }

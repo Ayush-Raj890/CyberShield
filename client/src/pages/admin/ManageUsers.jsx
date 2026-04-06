@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import API from "../../services/api";
 import AdminNavbar from "../../components/layout/AdminNavbar";
+import ConfirmActionModal from "../../components/ui/ConfirmActionModal";
 
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
@@ -231,43 +232,29 @@ export default function ManageUsers() {
         )}
       </div>
 
-      {pendingModalAction && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-neutral-900">
-            <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-              {pendingModalAction.label} account?
-            </h3>
-            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
-              {pendingModalAction.action === "remove-admin"
-                ? <>Confirm removal of admin access for <span className="font-medium">{pendingModalAction.name}</span>{pendingModalAction.email ? ` (${pendingModalAction.email})` : ""}. This will downgrade the account to a regular user.</>
-                : <>Confirm {pendingModalAction.action} for <span className="font-medium">{pendingModalAction.name}</span>{pendingModalAction.email ? ` (${pendingModalAction.email})` : ""}. This changes the account access state.</>}
-            </p>
-
-            <div className="mt-6 flex flex-wrap justify-end gap-3">
-              <button
-                type="button"
-                className="btn btn-outline"
-                onClick={closeSuspensionModal}
-                disabled={Boolean(processingId)}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className={pendingModalAction.action === "unsuspend" ? "btn btn-secondary" : "btn btn-danger"}
-                onClick={confirmSuspensionAction}
-                disabled={Boolean(processingId)}
-              >
-                {pendingModalAction.action === "unsuspend"
-                  ? "Confirm Unsuspend"
-                  : pendingModalAction.action === "remove-admin"
-                  ? "Confirm Remove Admin"
-                  : "Confirm Suspend"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmActionModal
+        open={Boolean(pendingModalAction)}
+        title={pendingModalAction?.label ? `${pendingModalAction.label} account?` : "Confirm action?"}
+        description={
+          pendingModalAction?.action === "remove-admin"
+            ? `Confirm removal of admin access for ${pendingModalAction.name}${pendingModalAction.email ? ` (${pendingModalAction.email})` : ""}. This will downgrade the account to a regular user.`
+            : pendingModalAction?.action
+            ? `Confirm ${pendingModalAction.action} for ${pendingModalAction.name}${pendingModalAction.email ? ` (${pendingModalAction.email})` : ""}. This changes the account access state.`
+            : "Confirm this account action."
+        }
+        confirmLabel={
+          pendingModalAction?.action === "unsuspend"
+            ? "Confirm Unsuspend"
+            : pendingModalAction?.action === "remove-admin"
+            ? "Confirm Remove Admin"
+            : "Confirm Suspend"
+        }
+        confirmVariant={pendingModalAction?.action === "unsuspend" ? "secondary" : "danger"}
+        onConfirm={confirmSuspensionAction}
+        onCancel={closeSuspensionModal}
+        confirmDisabled={Boolean(processingId)}
+        cancelDisabled={Boolean(processingId)}
+      />
     </>
   );
 }
