@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import API from "../../services/api";
 import AdminNavbar from "../../components/layout/AdminNavbar";
+import ConfirmActionModal from "../../components/ui/ConfirmActionModal";
 
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
@@ -9,6 +10,7 @@ export default function ManageUsers() {
   const [search, setSearch] = useState("");
   const [deletingId, setDeletingId] = useState(null);
   const [processingId, setProcessingId] = useState(null);
+  const [pendingModalAction, setPendingModalAction] = useState(null);
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const isAdmin = ["ADMIN", "SUPER_ADMIN"].includes(currentUser?.role);
   const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
@@ -75,6 +77,67 @@ export default function ManageUsers() {
     }
   };
 
+  const unsuspendUser = async (id) => {
+    setProcessingId(id);
+    try {
+      await API.put(`/admin/users/${id}/unsuspend`);
+      toast.success("User unsuspended");
+      fetchUsers();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to unsuspend user");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const openSuspensionModal = (user) => {
+    const action = user.isSuspended ? "unsuspend" : "suspend";
+    setPendingModalAction({
+      type: "suspension",
+      userId: user._id,
+      name: user.name,
+      email: user.email,
+      action,
+      label: action === "unsuspend" ? "Unsuspend" : "Suspend"
+    });
+  };
+
+  const openRemoveAdminModal = (user) => {
+    setPendingModalAction({
+      type: "remove-admin",
+      userId: user._id,
+      name: user.name,
+      email: user.email,
+      action: "remove-admin",
+      label: "Remove Admin"
+    });
+  };
+
+  const closeSuspensionModal = () => {
+    if (processingId) return;
+    setPendingModalAction(null);
+  };
+
+  const confirmSuspensionAction = async () => {
+    if (!pendingModalAction) return;
+
+    const { userId, action, type } = pendingModalAction;
+    setPendingModalAction(null);
+
+    if (action === "remove-admin" || type === "remove-admin") {
+      await demoteAdmin(userId);
+      return;
+    }
+
+    if (action === "unsuspend") {
+      await unsuspendUser(userId);
+      return;
+    }
+
+    await suspendUser(userId);
+  };
+
   const demoteAdmin = async (id) => {
     setProcessingId(id);
     try {
@@ -130,20 +193,24 @@ export default function ManageUsers() {
                   </button>
                 )}
 
-                {isAdmin && u.role !== "SUPER_ADMIN" && !u.isSuspended && (
+                {isAdmin && u.role !== "SUPER_ADMIN" && (
                   <button
-                    onClick={() => suspendUser(u._id)}
-                    className="btn btn-danger"
+                    onClick={() => openSuspensionModal(u)}
+                    className={u.isSuspended ? "btn btn-secondary" : "btn btn-danger"}
                     disabled={processingId === u._id}
                   >
-                    {processingId === u._id ? "Processing..." : "Suspend"}
+                    {processingId === u._id
+                      ? "Processing..."
+                      : u.isSuspended
+                      ? "Unsuspend"
+                      : "Suspend"}
                   </button>
                 )}
 
                 {isSuperAdmin && u.role === "ADMIN" && (
                   <button
-                    onClick={() => demoteAdmin(u._id)}
-                    className="btn"
+                    onClick={() => openRemoveAdminModal(u)}
+                    className="btn btn-secondary"
                     disabled={processingId === u._id}
                   >
                     {processingId === u._id ? "Processing..." : "Remove Admin"}
@@ -164,6 +231,30 @@ export default function ManageUsers() {
           ))
         )}
       </div>
+
+      <ConfirmActionModal
+        open={Boolean(pendingModalAction)}
+        title={pendingModalAction?.label ? `${pendingModalAction.label} account?` : "Confirm action?"}
+        description={
+          pendingModalAction?.action === "remove-admin"
+            ? `Confirm removal of admin access for ${pendingModalAction.name}${pendingModalAction.email ? ` (${pendingModalAction.email})` : ""}. This will downgrade the account to a regular user.`
+            : pendingModalAction?.action
+            ? `Confirm ${pendingModalAction.action} for ${pendingModalAction.name}${pendingModalAction.email ? ` (${pendingModalAction.email})` : ""}. This changes the account access state.`
+            : "Confirm this account action."
+        }
+        confirmLabel={
+          pendingModalAction?.action === "unsuspend"
+            ? "Confirm Unsuspend"
+            : pendingModalAction?.action === "remove-admin"
+            ? "Confirm Remove Admin"
+            : "Confirm Suspend"
+        }
+        confirmVariant={pendingModalAction?.action === "unsuspend" ? "secondary" : "danger"}
+        onConfirm={confirmSuspensionAction}
+        onCancel={closeSuspensionModal}
+        confirmDisabled={Boolean(processingId)}
+        cancelDisabled={Boolean(processingId)}
+      />
     </>
   );
 }

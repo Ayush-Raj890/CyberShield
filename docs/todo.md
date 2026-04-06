@@ -280,35 +280,35 @@ Skip for now:
 - [x] Fix password reset suspension bypass:
   - [x] Prevent `isSuspended = false` from password reset flow
   - [x] Keep suspension separate from password recovery
-- [ ] Add AI endpoint input validation caps:
-  - [ ] Limit text payload size to reasonable max (e.g., 10KB)
-  - [ ] Add express-validator on /api/ai/predict route
-- [ ] Add upload file-size limits to multer:
-  - [ ] Set max file size cap (e.g., 50MB)
-  - [ ] Validate file type strictly (images, PDFs only)
-  - [ ] Add error handling for oversized uploads
+- [x] Add AI endpoint input validation caps:
+  - [x] Limit text payload size to reasonable max (e.g., 10KB)
+  - [x] Add express-validator on /api/ai/predict route
+- [x] Add upload file-size limits to multer:
+  - [x] Set max file size cap (e.g., 50MB)
+  - [x] Validate file type strictly (images, PDFs only)
+  - [x] Add error handling for oversized uploads
 - [ ] **BUG FIX:** Implement account suspension revocation:
-  - [ ] Add backend unsuspend endpoint (`PUT /api/admin/users/:id/unsuspend`)
-  - [ ] Show suspend/unsuspend toggle button based on current state in admin UI
-  - [ ] Add 2-step confirmation modal before executing unsuspend
-- [ ] **BUG FIX:** Make remove admin button visible in admin panel:
-  - [ ] Verify Remove Admin button renders in ManageUsers component
-  - [ ] Fix any CSS visibility issues
+  - [x] Add backend unsuspend endpoint (`PUT /api/admin/users/:id/unsuspend`)
+  - [x] Show suspend/unsuspend toggle button based on current state in admin UI
+  - [x] Add 2-step confirmation modal before executing unsuspend
+- [x] **BUG FIX:** Make remove admin button visible in admin panel:
+  - [x] Verify Remove Admin button renders in ManageUsers component
+  - [x] Fix any CSS visibility issues
 - [ ] **BUG FIX:** Add 2-step confirmation for critical operations:
-  - [ ] Remove Admin: Show confirmation modal with email/name display before executing
-  - [ ] Delete Account (self-service): Show confirmation modal with warning before permanent deletion
-  - [ ] Suspend Account: Show confirmation modal before suspending
-  - [ ] Unsuspend Account: Show confirmation modal before unsuspending
-  - [ ] Use consistent modal design across all operations
+  - [x] Remove Admin: Show confirmation modal with email/name display before executing
+  - [x] Delete Account (self-service): Show confirmation modal with warning before permanent deletion
+  - [x] Suspend Account: Show confirmation modal before suspending
+  - [x] Unsuspend Account: Show confirmation modal before unsuspending
+  - [x] Use consistent modal design across all operations
 
 **MEDIUM Priority Findings to Implement:**
 
-- [ ] Shorten JWT token expiry (from 1 week to 24 hours)
-  - [ ] Consider optional refresh token flow
-- [ ] Add forum listing pagination:
-  - [ ] Implement page/limit query params
-  - [ ] Add server-side pagination caps
-  - [ ] Update frontend forum page to use paginated payload
+- [x] Shorten JWT token expiry (from 1 week to 24 hours)
+  - [ ] Consider optional refresh token flow (deferred)
+- [x] Add forum listing pagination:
+  - [x] Implement page/limit query params
+  - [x] Add server-side pagination caps
+  - [x] Update frontend forum page to use paginated payload
 
 ---
 

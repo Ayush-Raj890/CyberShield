@@ -422,6 +422,36 @@
 - Updated verify flow to compare hashed OTPs while preserving backward compatibility for legacy plaintext OTP records
 - Added `OTP_HASH_SECRET` environment variable support for OTP hashing key control
 
+## Day 47
+
+- Implemented comprehensive admin account management confirmation flow:
+  - Added state-aware suspend/unsuspend button toggle (label changes based on current `isSuspended` state)
+  - Added 2-step confirmation modal with user email/name context for suspend action
+  - Added 2-step confirmation modal for unsuspend action
+  - Added 2-step confirmation modal for remove admin action with improved styling (`btn-secondary`)
+- Extended delete account confirmation flow for self-service account deletion:
+  - Replaced browser `window.confirm()` with modal-based confirmation on Settings page
+  - Added 2-step confirmation modal with danger styling for delete account action
+- Created reusable `ConfirmActionModal` component with configurable variants (danger/secondary/outline):
+  - Accepts `open`, `title`, `description`, `confirmLabel`, `cancelLabel`, `confirmVariant`, `onConfirm`, `onCancel`, `confirmDisabled`, `cancelDisabled` props
+  - Provides consistent confirmation UX across 3 pages: ManageUsers (suspend/unsuspend/demote), Settings (delete account)
+  - Integrated shared modal on ManageUsers page for all destructive account actions
+  - Integrated shared modal on Settings page for delete account danger zone
+- Implemented production-grade forum listing pagination:
+  - **Backend:** Added safe pagination query parameter parsing with defaults (page=1, limit=10)
+  - **Backend:** Added server-side pagination limit cap (`FORUM_PAGE_LIMIT_MAX = 50`) to prevent abuse
+  - **Backend:** Returns consistent paginated response shape: `{ items: posts[], pagination: { page, limit, total, totalPages, hasNextPage } }`
+  - **Backend:** Uses parallel `Promise.all()` for efficient DB operations (fetch + count)
+  - **Backend:** Implements `.sort({ createdAt: -1 }).skip(skip).limit(limit)` for sorted pagination
+  - **Frontend:** Added page state management in Forum page component
+  - **Frontend:** Fetch trigger on page change with `useEffect` dependency on `page` state
+  - **Frontend:** Renders prev/next pagination controls with proper disabled state logic
+  - **Frontend:** Displays "Page X of Y" metadata for user feedback
+  - **Frontend:** Create/reply actions preserve current page and refresh it (no full refetch)
+  - **Database:** Added `createdAt` index to ForumPost model for pagination query performance
+- Updated TODO and documentation files to reflect completion of all confirmation modals and forum pagination tasks
+- All syntax validation passed; backend forum module smoke test confirmed (`FORUM_MODULE_IMPORT_SMOKE_OK`)
+
 ---
 
 ## Notes

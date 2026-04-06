@@ -7,6 +7,7 @@ import {
   deleteArticle,
   promoteToAdmin,
   suspendUser,
+  unsuspendUser,
   removeAdmin
 } from "../controllers/adminController.js";
 
@@ -23,6 +24,7 @@ router.get("/users", protect, adminOnly, getAllUsers);
 router.delete("/users/:id", protect, adminOnly, deleteUser);
 router.put("/promote/:id", protect, adminOnly, promoteToAdmin);
 router.put("/suspend/:id", protect, adminOnly, suspendUser);
+router.put("/users/:id/unsuspend", protect, adminOnly, unsuspendUser);
 router.put("/demote/:id", protect, superAdminOnly, removeAdmin);
 
 // Reports

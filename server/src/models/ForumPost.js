@@ -16,4 +16,6 @@ const forumPostSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+forumPostSchema.index({ createdAt: 1 });
+
 export default mongoose.model("ForumPost", forumPostSchema);
