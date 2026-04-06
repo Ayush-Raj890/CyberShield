@@ -192,7 +192,7 @@ export default function Forum() {
                   )}
 
                   <textarea
-                    className="input mb-2 min-h-20"
+                    className="input mb-3 min-h-20"
                     placeholder={user ? "Write a reply..." : "Login to reply"}
                     value={replyDrafts[post._id] || ""}
                     onChange={(e) => setReplyDrafts((prev) => ({ ...prev, [post._id]: e.target.value }))}
@@ -200,7 +200,7 @@ export default function Forum() {
                   />
 
                   <button
-                    className="btn w-full sm:w-auto"
+                    className="btn btn-primary w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-200"
                     onClick={() => replyToPost(post._id)}
                     disabled={!user || replyingId === post._id}
                   >

@@ -357,6 +357,7 @@ Skip for now:
   - [x] Protected create post route (`/forum/create`)
   - [x] Auth-gated reply flow
   - [x] Navbar and dashboard discoverability
+  - [x] Add reply submit button with improved styling (blue gradient button with hover effects)
 - [ ] Error Logs UX enhancements:
   - [ ] Quick filter presets (Last 24h, Last 7 days)
   - [ ] One-click status filter presets (e.g., Only 5xx)
