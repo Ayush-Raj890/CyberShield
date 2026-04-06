@@ -1,5 +1,6 @@
 import express from "express";
-import { body, validationResult } from "express-validator";
+import rateLimit from "express-rate-limit";
+import { body } from "express-validator";
 import {
   registerUser,
   loginUser,
@@ -11,6 +12,36 @@ import {
 
 const router = express.Router();
 
+const parsePositiveNumber = (rawValue, fallback) => {
+  const parsed = Number(rawValue);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
+
+const authRegisterWindowMs = parsePositiveNumber(process.env.AUTH_REGISTER_WINDOW_MS, 60 * 60 * 1000);
+const authRegisterMax = parsePositiveNumber(process.env.AUTH_REGISTER_MAX, 5);
+const authLoginWindowMs = parsePositiveNumber(process.env.AUTH_LOGIN_WINDOW_MS, 15 * 60 * 1000);
+const authLoginMax = parsePositiveNumber(process.env.AUTH_LOGIN_MAX, 10);
+const authResendOtpWindowMs = parsePositiveNumber(process.env.AUTH_RESEND_OTP_WINDOW_MS, 60 * 60 * 1000);
+const authResendOtpMax = parsePositiveNumber(process.env.AUTH_RESEND_OTP_MAX, 3);
+const authForgotPasswordWindowMs = parsePositiveNumber(process.env.AUTH_FORGOT_PASSWORD_WINDOW_MS, 60 * 60 * 1000);
+const authForgotPasswordMax = parsePositiveNumber(process.env.AUTH_FORGOT_PASSWORD_MAX, 5);
+
+const createAuthLimiter = (windowMs, max, actionLabel) => rateLimit({
+  windowMs,
+  max,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: `Too many ${actionLabel} attempts. Please try again later.`
+  }
+});
+
+const registerLimiter = createAuthLimiter(authRegisterWindowMs, authRegisterMax, "registration");
+const loginLimiter = createAuthLimiter(authLoginWindowMs, authLoginMax, "login");
+const resendOtpLimiter = createAuthLimiter(authResendOtpWindowMs, authResendOtpMax, "OTP resend");
+const forgotPasswordLimiter = createAuthLimiter(authForgotPasswordWindowMs, authForgotPasswordMax, "password reset request");
+
 const emailChain = () => body("email")
   .isEmail()
   .withMessage("Valid email required")
@@ -18,6 +49,7 @@ const emailChain = () => body("email")
 
 router.post(
   "/register",
+  registerLimiter,
   [
     body("name").trim().escape().notEmpty().withMessage("Name is required"),
     emailChain(),
@@ -28,6 +60,7 @@ router.post(
 
 router.post(
   "/login",
+  loginLimiter,
   [
     emailChain(),
     body("password").notEmpty().withMessage("Password required")
@@ -50,6 +83,7 @@ router.post(
 
 router.post(
   "/resend-otp",
+  resendOtpLimiter,
   [
     emailChain()
   ],
@@ -58,6 +92,7 @@ router.post(
 
 router.post(
   "/forgot-password",
+  forgotPasswordLimiter,
   [emailChain()],
   forgotPassword
 );

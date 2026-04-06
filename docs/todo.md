@@ -272,11 +272,11 @@ Skip for now:
 
 **HIGH Priority Findings to Implement:**
 
-- [ ] Add route-level rate limiting to auth routes:
-  - [ ] POST /api/auth/register (max 5 attempts per hour)
-  - [ ] POST /api/auth/login (max 10 attempts per 15 minutes)
-  - [ ] POST /api/auth/resend-otp (max 3 attempts per hour)
-  - [ ] POST /api/auth/forgot-password (max 5 attempts per hour)
+- [x] Add route-level rate limiting to auth routes:
+  - [x] POST /api/auth/register (max 5 attempts per hour)
+  - [x] POST /api/auth/login (max 10 attempts per 15 minutes)
+  - [x] POST /api/auth/resend-otp (max 3 attempts per hour)
+  - [x] POST /api/auth/forgot-password (max 5 attempts per hour)
 - [ ] Fix password reset suspension bypass:
   - [ ] Prevent `isSuspended = false` from password reset flow
   - [ ] Keep suspension separate from password recovery
@@ -385,7 +385,7 @@ Skip for now:
 - [x] RBAC baseline enhancements (USER, ADMIN, SUPER_ADMIN)
 - [ ] RBAC advanced enhancements (granular permissions, audit logging)
 - [ ] Create `.env.example` files for team guidance:
-  - [ ] `server/.env.example` with all backend variables documented
+  - [x] `server/.env.example` with all backend variables documented
   - [ ] `client/.env.example` (VITE_API_URL documentation)
   - [ ] `ai-service/.env.example` (if applicable)
 - [ ] Startup script documentation:
