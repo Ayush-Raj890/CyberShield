@@ -178,7 +178,7 @@ export default function ManageUsers() {
                 {isAdmin && u.role !== "SUPER_ADMIN" && (
                   <button
                     onClick={() => openSuspensionModal(u)}
-                    className={u.isSuspended ? "btn" : "btn btn-danger"}
+                    className={u.isSuspended ? "btn btn-secondary" : "btn btn-danger"}
                     disabled={processingId === u._id}
                   >
                     {processingId === u._id
@@ -192,7 +192,7 @@ export default function ManageUsers() {
                 {isSuperAdmin && u.role === "ADMIN" && (
                   <button
                     onClick={() => demoteAdmin(u._id)}
-                    className="btn"
+                    className="btn btn-secondary"
                     disabled={processingId === u._id}
                   >
                     {processingId === u._id ? "Processing..." : "Remove Admin"}
@@ -228,7 +228,7 @@ export default function ManageUsers() {
             <div className="mt-6 flex flex-wrap justify-end gap-3">
               <button
                 type="button"
-                className="btn"
+                className="btn btn-outline"
                 onClick={closeSuspensionModal}
                 disabled={Boolean(processingId)}
               >
@@ -236,7 +236,7 @@ export default function ManageUsers() {
               </button>
               <button
                 type="button"
-                className={pendingModalAction.action === "unsuspend" ? "btn" : "btn btn-danger"}
+                className={pendingModalAction.action === "unsuspend" ? "btn btn-secondary" : "btn btn-danger"}
                 onClick={confirmSuspensionAction}
                 disabled={Boolean(processingId)}
               >
