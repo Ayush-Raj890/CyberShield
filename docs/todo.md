@@ -303,7 +303,7 @@ Skip for now:
 
 **MEDIUM Priority Findings to Implement:**
 
-- [ ] Shorten JWT token expiry (from 1 week to 24 hours)
+- [x] Shorten JWT token expiry (from 1 week to 24 hours)
   - [ ] Consider optional refresh token flow
 - [ ] Add forum listing pagination:
   - [ ] Implement page/limit query params

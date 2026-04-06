@@ -5,6 +5,7 @@
 - PORT=5000
 - MONGO_URI=your_mongodb_uri
 - JWT_SECRET=supersecretkey
+- JWT_EXPIRES_IN=24h
 - AI_SERVICE_URL=`http://localhost:8000`
 - ALLOWED_ORIGINS=`http://localhost:3000,http://localhost:5173`
 - DEBUG_REQUEST_LOGS=false
@@ -36,6 +37,11 @@ Encryption migration helper:
 - POST /api/auth/resend-otp
 - POST /api/auth/forgot-password
 - POST /api/auth/reset-password
+
+JWT behavior:
+
+- Access tokens default to 24 hours via `JWT_EXPIRES_IN`
+- A refresh token flow is not implemented yet
 
 ### Users
 
