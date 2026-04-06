@@ -277,9 +277,9 @@ Skip for now:
   - [x] POST /api/auth/login (max 10 attempts per 15 minutes)
   - [x] POST /api/auth/resend-otp (max 3 attempts per hour)
   - [x] POST /api/auth/forgot-password (max 5 attempts per hour)
-- [ ] Fix password reset suspension bypass:
-  - [ ] Prevent `isSuspended = false` from password reset flow
-  - [ ] Keep suspension separate from password recovery
+- [x] Fix password reset suspension bypass:
+  - [x] Prevent `isSuspended = false` from password reset flow
+  - [x] Keep suspension separate from password recovery
 - [ ] Add AI endpoint input validation caps:
   - [ ] Limit text payload size to reasonable max (e.g., 10KB)
   - [ ] Add express-validator on /api/ai/predict route
