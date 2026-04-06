@@ -116,6 +116,7 @@ AI predict validation behavior:
 - DELETE /api/admin/users/:id
 - PUT /api/admin/promote/:id
 - PUT /api/admin/suspend/:id
+- PUT /api/admin/users/:id/unsuspend
 - PUT /api/admin/demote/:id (super admin only)
 - GET /api/admin/reports
 - DELETE /api/admin/articles/:id

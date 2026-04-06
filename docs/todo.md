@@ -288,7 +288,7 @@ Skip for now:
   - [x] Validate file type strictly (images, PDFs only)
   - [x] Add error handling for oversized uploads
 - [ ] **BUG FIX:** Implement account suspension revocation:
-  - [ ] Add backend unsuspend endpoint (`PUT /api/admin/users/:id/unsuspend`)
+  - [x] Add backend unsuspend endpoint (`PUT /api/admin/users/:id/unsuspend`)
   - [ ] Show suspend/unsuspend toggle button based on current state in admin UI
   - [ ] Add 2-step confirmation modal before executing unsuspend
 - [ ] **BUG FIX:** Make remove admin button visible in admin panel:
