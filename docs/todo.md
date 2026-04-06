@@ -291,12 +291,12 @@ Skip for now:
   - [x] Add backend unsuspend endpoint (`PUT /api/admin/users/:id/unsuspend`)
   - [x] Show suspend/unsuspend toggle button based on current state in admin UI
   - [x] Add 2-step confirmation modal before executing unsuspend
-- [ ] **BUG FIX:** Make remove admin button visible in admin panel:
-  - [ ] Verify Remove Admin button renders in ManageUsers component
-  - [ ] Fix any CSS visibility issues
+- [x] **BUG FIX:** Make remove admin button visible in admin panel:
+  - [x] Verify Remove Admin button renders in ManageUsers component
+  - [x] Fix any CSS visibility issues
 - [ ] **BUG FIX:** Add 2-step confirmation for critical operations:
-  - [ ] Remove Admin: Show confirmation modal with email/name display before executing
-  - [ ] Delete Account (self-service): Show confirmation modal with warning before permanent deletion
+  - [x] Remove Admin: Show confirmation modal with email/name display before executing
+  - [x] Delete Account (self-service): Show confirmation modal with warning before permanent deletion
   - [ ] Suspend Account: Show confirmation modal before suspending
   - [ ] Unsuspend Account: Show confirmation modal before unsuspending
   - [ ] Use consistent modal design across all operations

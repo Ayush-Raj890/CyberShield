@@ -93,11 +93,23 @@ export default function ManageUsers() {
   const openSuspensionModal = (user) => {
     const action = user.isSuspended ? "unsuspend" : "suspend";
     setPendingModalAction({
+      type: "suspension",
       userId: user._id,
       name: user.name,
       email: user.email,
       action,
       label: action === "unsuspend" ? "Unsuspend" : "Suspend"
+    });
+  };
+
+  const openRemoveAdminModal = (user) => {
+    setPendingModalAction({
+      type: "remove-admin",
+      userId: user._id,
+      name: user.name,
+      email: user.email,
+      action: "remove-admin",
+      label: "Remove Admin"
     });
   };
 
@@ -109,8 +121,13 @@ export default function ManageUsers() {
   const confirmSuspensionAction = async () => {
     if (!pendingModalAction) return;
 
-    const { userId, action } = pendingModalAction;
+    const { userId, action, type } = pendingModalAction;
     setPendingModalAction(null);
+
+    if (action === "remove-admin" || type === "remove-admin") {
+      await demoteAdmin(userId);
+      return;
+    }
 
     if (action === "unsuspend") {
       await unsuspendUser(userId);
@@ -191,7 +208,7 @@ export default function ManageUsers() {
 
                 {isSuperAdmin && u.role === "ADMIN" && (
                   <button
-                    onClick={() => demoteAdmin(u._id)}
+                    onClick={() => openRemoveAdminModal(u)}
                     className="btn btn-secondary"
                     disabled={processingId === u._id}
                   >
@@ -221,8 +238,9 @@ export default function ManageUsers() {
               {pendingModalAction.label} account?
             </h3>
             <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
-              Confirm {pendingModalAction.action} for <span className="font-medium">{pendingModalAction.name}</span>
-              {pendingModalAction.email ? ` (${pendingModalAction.email})` : ""}. This changes the account access state.
+              {pendingModalAction.action === "remove-admin"
+                ? <>Confirm removal of admin access for <span className="font-medium">{pendingModalAction.name}</span>{pendingModalAction.email ? ` (${pendingModalAction.email})` : ""}. This will downgrade the account to a regular user.</>
+                : <>Confirm {pendingModalAction.action} for <span className="font-medium">{pendingModalAction.name}</span>{pendingModalAction.email ? ` (${pendingModalAction.email})` : ""}. This changes the account access state.</>}
             </p>
 
             <div className="mt-6 flex flex-wrap justify-end gap-3">
@@ -240,7 +258,11 @@ export default function ManageUsers() {
                 onClick={confirmSuspensionAction}
                 disabled={Boolean(processingId)}
               >
-                {pendingModalAction.action === "unsuspend" ? "Confirm Unsuspend" : "Confirm Suspend"}
+                {pendingModalAction.action === "unsuspend"
+                  ? "Confirm Unsuspend"
+                  : pendingModalAction.action === "remove-admin"
+                  ? "Confirm Remove Admin"
+                  : "Confirm Suspend"}
               </button>
             </div>
           </div>

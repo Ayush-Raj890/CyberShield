@@ -12,6 +12,7 @@ export default function Settings() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const [profileForm, setProfileForm] = useState({ alias: "", bio: "" });
   const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "" });
@@ -110,9 +111,6 @@ export default function Settings() {
   };
 
   const deleteAccount = async () => {
-    const confirmed = window.confirm("This will permanently delete your account and related content. Continue?");
-    if (!confirmed) return;
-
     setDeleting(true);
     try {
       await API.delete("/users/me");
@@ -123,6 +121,7 @@ export default function Settings() {
       toast.error(error.response?.data?.message || "Failed to delete account");
     } finally {
       setDeleting(false);
+      setConfirmDeleteOpen(false);
     }
   };
 
@@ -198,11 +197,46 @@ export default function Settings() {
 
         <div className="card border border-red-400">
           <h3 className="text-red-500 font-semibold mb-2">Danger Zone</h3>
-          <button className="btn btn-danger" type="button" disabled={deleting} onClick={deleteAccount}>
+          <button
+            className="btn btn-danger"
+            type="button"
+            disabled={deleting}
+            onClick={() => setConfirmDeleteOpen(true)}
+          >
             {deleting ? "Deleting..." : "Delete Account"}
           </button>
         </div>
       </div>
+
+      {confirmDeleteOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-neutral-900">
+            <h3 className="text-lg font-semibold text-red-600 dark:text-red-400">Delete account?</h3>
+            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
+              This will permanently delete your account and related content. This action cannot be undone.
+            </p>
+
+            <div className="mt-6 flex flex-wrap justify-end gap-3">
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={() => setConfirmDeleteOpen(false)}
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={deleteAccount}
+                disabled={deleting}
+              >
+                {deleting ? "Deleting..." : "Confirm Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
