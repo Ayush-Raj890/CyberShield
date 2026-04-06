@@ -9,6 +9,7 @@ export default function ManageUsers() {
   const [search, setSearch] = useState("");
   const [deletingId, setDeletingId] = useState(null);
   const [processingId, setProcessingId] = useState(null);
+  const [pendingModalAction, setPendingModalAction] = useState(null);
   const currentUser = JSON.parse(localStorage.getItem("user"));
   const isAdmin = ["ADMIN", "SUPER_ADMIN"].includes(currentUser?.role);
   const isSuperAdmin = currentUser?.role === "SUPER_ADMIN";
@@ -75,6 +76,50 @@ export default function ManageUsers() {
     }
   };
 
+  const unsuspendUser = async (id) => {
+    setProcessingId(id);
+    try {
+      await API.put(`/admin/users/${id}/unsuspend`);
+      toast.success("User unsuspended");
+      fetchUsers();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to unsuspend user");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const openSuspensionModal = (user) => {
+    const action = user.isSuspended ? "unsuspend" : "suspend";
+    setPendingModalAction({
+      userId: user._id,
+      name: user.name,
+      email: user.email,
+      action,
+      label: action === "unsuspend" ? "Unsuspend" : "Suspend"
+    });
+  };
+
+  const closeSuspensionModal = () => {
+    if (processingId) return;
+    setPendingModalAction(null);
+  };
+
+  const confirmSuspensionAction = async () => {
+    if (!pendingModalAction) return;
+
+    const { userId, action } = pendingModalAction;
+    setPendingModalAction(null);
+
+    if (action === "unsuspend") {
+      await unsuspendUser(userId);
+      return;
+    }
+
+    await suspendUser(userId);
+  };
+
   const demoteAdmin = async (id) => {
     setProcessingId(id);
     try {
@@ -130,13 +175,17 @@ export default function ManageUsers() {
                   </button>
                 )}
 
-                {isAdmin && u.role !== "SUPER_ADMIN" && !u.isSuspended && (
+                {isAdmin && u.role !== "SUPER_ADMIN" && (
                   <button
-                    onClick={() => suspendUser(u._id)}
-                    className="btn btn-danger"
+                    onClick={() => openSuspensionModal(u)}
+                    className={u.isSuspended ? "btn" : "btn btn-danger"}
                     disabled={processingId === u._id}
                   >
-                    {processingId === u._id ? "Processing..." : "Suspend"}
+                    {processingId === u._id
+                      ? "Processing..."
+                      : u.isSuspended
+                      ? "Unsuspend"
+                      : "Suspend"}
                   </button>
                 )}
 
@@ -164,6 +213,39 @@ export default function ManageUsers() {
           ))
         )}
       </div>
+
+      {pendingModalAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-neutral-900">
+            <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+              {pendingModalAction.label} account?
+            </h3>
+            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
+              Confirm {pendingModalAction.action} for <span className="font-medium">{pendingModalAction.name}</span>
+              {pendingModalAction.email ? ` (${pendingModalAction.email})` : ""}. This changes the account access state.
+            </p>
+
+            <div className="mt-6 flex flex-wrap justify-end gap-3">
+              <button
+                type="button"
+                className="btn"
+                onClick={closeSuspensionModal}
+                disabled={Boolean(processingId)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={pendingModalAction.action === "unsuspend" ? "btn" : "btn btn-danger"}
+                onClick={confirmSuspensionAction}
+                disabled={Boolean(processingId)}
+              >
+                {pendingModalAction.action === "unsuspend" ? "Confirm Unsuspend" : "Confirm Suspend"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

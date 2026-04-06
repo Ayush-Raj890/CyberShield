@@ -289,8 +289,8 @@ Skip for now:
   - [x] Add error handling for oversized uploads
 - [ ] **BUG FIX:** Implement account suspension revocation:
   - [x] Add backend unsuspend endpoint (`PUT /api/admin/users/:id/unsuspend`)
-  - [ ] Show suspend/unsuspend toggle button based on current state in admin UI
-  - [ ] Add 2-step confirmation modal before executing unsuspend
+  - [x] Show suspend/unsuspend toggle button based on current state in admin UI
+  - [x] Add 2-step confirmation modal before executing unsuspend
 - [ ] **BUG FIX:** Make remove admin button visible in admin panel:
   - [ ] Verify Remove Admin button renders in ManageUsers component
   - [ ] Fix any CSS visibility issues
