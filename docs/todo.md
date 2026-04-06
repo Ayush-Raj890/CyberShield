@@ -283,10 +283,10 @@ Skip for now:
 - [x] Add AI endpoint input validation caps:
   - [x] Limit text payload size to reasonable max (e.g., 10KB)
   - [x] Add express-validator on /api/ai/predict route
-- [ ] Add upload file-size limits to multer:
-  - [ ] Set max file size cap (e.g., 50MB)
-  - [ ] Validate file type strictly (images, PDFs only)
-  - [ ] Add error handling for oversized uploads
+- [x] Add upload file-size limits to multer:
+  - [x] Set max file size cap (e.g., 50MB)
+  - [x] Validate file type strictly (images, PDFs only)
+  - [x] Add error handling for oversized uploads
 - [ ] **BUG FIX:** Implement account suspension revocation:
   - [ ] Add backend unsuspend endpoint (`PUT /api/admin/users/:id/unsuspend`)
   - [ ] Show suspend/unsuspend toggle button based on current state in admin UI

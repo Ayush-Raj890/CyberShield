@@ -12,6 +12,7 @@
 - REPORT_PUBLIC_LIST_MAX=60
 - ADMIN_REPORTS_PAGE_LIMIT_MAX=50
 - AI_PREDICT_TEXT_MAX_CHARS=10000
+- UPLOAD_MAX_FILE_SIZE_MB=50
 - OTP_HASH_SECRET=strong_random_secret_for_otp_hmac
 - ENCRYPTION_KEY=your_64_char_hex_key
 - ENCRYPTION_LEGACY_KEYS=comma_separated_old_keys
@@ -54,6 +55,12 @@ Report listing response shape (`GET /api/reports`, `GET /api/reports/me`):
 
 - `items`: report array
 - `pagination`: `{ page, limit, total, totalPages, hasNextPage }`
+
+Upload validation behavior:
+
+- Max file size is controlled by `UPLOAD_MAX_FILE_SIZE_MB` (default 50MB)
+- Reports accept image files and PDFs only
+- Meme uploads accept image files only
 
 ### AI
 
