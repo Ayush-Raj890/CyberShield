@@ -280,9 +280,9 @@ Skip for now:
 - [x] Fix password reset suspension bypass:
   - [x] Prevent `isSuspended = false` from password reset flow
   - [x] Keep suspension separate from password recovery
-- [ ] Add AI endpoint input validation caps:
-  - [ ] Limit text payload size to reasonable max (e.g., 10KB)
-  - [ ] Add express-validator on /api/ai/predict route
+- [x] Add AI endpoint input validation caps:
+  - [x] Limit text payload size to reasonable max (e.g., 10KB)
+  - [x] Add express-validator on /api/ai/predict route
 - [ ] Add upload file-size limits to multer:
   - [ ] Set max file size cap (e.g., 50MB)
   - [ ] Validate file type strictly (images, PDFs only)

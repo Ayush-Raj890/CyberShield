@@ -11,6 +11,7 @@
 - REPORT_PUBLIC_LIST_WINDOW_MS=60000
 - REPORT_PUBLIC_LIST_MAX=60
 - ADMIN_REPORTS_PAGE_LIMIT_MAX=50
+- AI_PREDICT_TEXT_MAX_CHARS=10000
 - OTP_HASH_SECRET=strong_random_secret_for_otp_hmac
 - ENCRYPTION_KEY=your_64_char_hex_key
 - ENCRYPTION_LEGACY_KEYS=comma_separated_old_keys
@@ -57,6 +58,11 @@ Report listing response shape (`GET /api/reports`, `GET /api/reports/me`):
 ### AI
 
 - POST /api/ai/predict (public, optional auth for XP rewards)
+
+AI predict validation behavior:
+
+- `text` is required and must be a non-empty string
+- `text` length is capped by `AI_PREDICT_TEXT_MAX_CHARS` (default 10000)
 
 ### Articles
 

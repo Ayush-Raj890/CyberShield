@@ -1,10 +1,16 @@
 import { analyzeText } from "../services/aiService.js";
+import { validationResult } from "express-validator";
 import { sendError, sendSuccess } from "../utils/response.js";
 import { addXP } from "../utils/gamification.js";
 
 export const detectScam = async (req, res) => {
   try {
-    const { text } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return sendError(res, 400, "Validation failed", errors.array());
+    }
+
+    const text = String(req.body?.text || "").trim();
 
     const result = await analyzeText(text);
 
