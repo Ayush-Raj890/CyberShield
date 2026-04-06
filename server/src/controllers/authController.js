@@ -290,12 +290,24 @@ export const forgotPassword = async (req, res) => {
 };
 
 // Reset Password (using token)
+/**
+ * SECURITY NOTE:
+ * Password reset must NOT modify moderation state (for example isSuspended).
+ * Moderation flags are controlled only via admin flows.
+ */
 export const resetPassword = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return sendError(res, 400, "Validation failed", errors.array());
     }
+
+    // Defensive guard: auth flows should never accept moderation or role fields.
+    ["isSuspended", "role", "isVerified", "coins", "xp"].forEach((blockedField) => {
+      if (Object.prototype.hasOwnProperty.call(req.body, blockedField)) {
+        delete req.body[blockedField];
+      }
+    });
 
     const { email, token, newPassword } = req.body;
     const normalizedEmail = normalizeEmail(email);
@@ -304,6 +316,10 @@ export const resetPassword = async (req, res) => {
     const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       return sendError(res, 400, "Invalid or expired reset token");
+    }
+
+    if (user.isSuspended) {
+      console.warn("[AUTH][SECURITY] Suspended user attempted password reset:", normalizedEmail);
     }
 
     if (
@@ -319,7 +335,6 @@ export const resetPassword = async (req, res) => {
     user.passwordResetToken = null;
     user.passwordResetExpires = null;
     user.failedOtpAttempts = 0;
-    user.isSuspended = false;
     await user.save();
 
     return sendSuccess(res, { reset: true }, 200, "Password reset successful");

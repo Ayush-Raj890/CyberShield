@@ -50,9 +50,9 @@ export default function Navbar() {
   ];
 
   return (
-    <header ref={navRef} className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="max-w-6xl mx-auto px-6 py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-        <button onClick={() => navigate("/")} className="text-xl font-bold text-blue-700 text-center sm:text-left">
+    <header ref={navRef} className="sticky top-0 z-40 border-b border-neutral-200 bg-white/95 dark:border-neutral-700 dark:bg-neutral-900/95 backdrop-blur transition-colors">
+      <div className="container-page py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+        <button onClick={() => navigate("/")} className="text-xl font-bold text-primary-700 dark:text-primary-100 text-center sm:text-left">
           CyberShield
         </button>
 
@@ -62,18 +62,18 @@ export default function Navbar() {
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className="text-slate-700 hover:text-blue-700 transition-colors"
+                className="text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors"
               >
                 {item.label}
               </button>
             ))}
-            <button onClick={() => navigate("/login")} className="text-slate-700 hover:text-blue-700 transition-colors">Login</button>
+            <button onClick={() => navigate("/login")} className="text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors">Login</button>
             <button onClick={() => navigate("/register")} className="btn btn-primary text-sm">Get Started</button>
           </div>
         ) : (
           <div className="w-full sm:w-auto flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 text-sm">
-            <button onClick={() => navigate("/dashboard")} className="hover:text-blue-700">Dashboard</button>
-            <button onClick={() => navigate("/ai")} className="hover:text-blue-700">AI</button>
+            <button onClick={() => navigate("/dashboard")} className="text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors">Dashboard</button>
+            <button onClick={() => navigate("/ai")} className="text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors">AI</button>
 
             <span className="font-semibold text-amber-600">
               🪙 {Number(user.coins || 0)}
@@ -82,7 +82,7 @@ export default function Navbar() {
 
             <details className="relative" open={activeDropdown === "activity"}>
               <summary
-                className="cursor-pointer list-none hover:text-blue-700"
+                className="cursor-pointer list-none text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors"
                 onClick={(e) => {
                   e.preventDefault();
                   toggleDropdown("activity");
@@ -90,16 +90,16 @@ export default function Navbar() {
               >
                 Activity
               </summary>
-              <div className="absolute right-0 mt-2 w-44 rounded border border-slate-200 bg-white shadow z-10">
-                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+              <div className="absolute right-0 mt-2 w-44 rounded-xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 shadow-sm z-10">
+                <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                   setActiveDropdown(null);
                   navigate("/create-report");
                 }}>Create Report</button>
-                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                   setActiveDropdown(null);
                   navigate("/reports");
                 }}>Reports</button>
-                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                   setActiveDropdown(null);
                   navigate("/forum");
                 }}>Forum</button>
@@ -108,7 +108,7 @@ export default function Navbar() {
 
             <details className="relative" open={activeDropdown === "learn"}>
               <summary
-                className="cursor-pointer list-none hover:text-blue-700"
+                className="cursor-pointer list-none text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors"
                 onClick={(e) => {
                   e.preventDefault();
                   toggleDropdown("learn");
@@ -116,28 +116,28 @@ export default function Navbar() {
               >
                 Learn
               </summary>
-              <div className="absolute right-0 mt-2 w-44 rounded border border-slate-200 bg-white shadow z-10">
-                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+              <div className="absolute right-0 mt-2 w-44 rounded-xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 shadow-sm z-10">
+                <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                   setActiveDropdown(null);
                   navigate("/articles");
                 }}>Knowledge Hub</button>
-                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                   setActiveDropdown(null);
                   navigate("/videos");
                 }}>Video Hub</button>
-                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                   setActiveDropdown(null);
                   navigate("/memes");
                 }}>Meme Hub</button>
-                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                   setActiveDropdown(null);
                   navigate("/videos/submit");
                 }}>Submit Video</button>
-                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                   setActiveDropdown(null);
                   navigate("/memes/upload");
                 }}>Upload Meme</button>
-                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                   setActiveDropdown(null);
                   navigate("/games");
                 }}>Phishing Detector Game</button>
@@ -146,7 +146,7 @@ export default function Navbar() {
 
             <details className="relative" open={activeDropdown === "account"}>
               <summary
-                className="cursor-pointer list-none hover:text-blue-700"
+                className="cursor-pointer list-none text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors"
                 onClick={(e) => {
                   e.preventDefault();
                   toggleDropdown("account");
@@ -154,12 +154,12 @@ export default function Navbar() {
               >
                 Account
               </summary>
-              <div className="absolute right-0 mt-2 w-36 rounded border border-slate-200 bg-white shadow z-10">
-                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+              <div className="absolute right-0 mt-2 w-36 rounded-xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 shadow-sm z-10">
+                <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                   setActiveDropdown(null);
                   navigate("/profile");
                 }}>Profile</button>
-                <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                   setActiveDropdown(null);
                   navigate("/settings");
                 }}>Settings</button>
@@ -169,7 +169,7 @@ export default function Navbar() {
             {isAdmin && (
               <details className="relative" open={activeDropdown === "admin"}>
                 <summary
-                  className="cursor-pointer list-none hover:text-blue-700"
+                  className="cursor-pointer list-none text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors"
                   onClick={(e) => {
                     e.preventDefault();
                     toggleDropdown("admin");
@@ -177,20 +177,20 @@ export default function Navbar() {
                 >
                   Admin
                 </summary>
-                <div className="absolute right-0 mt-2 w-44 rounded border border-slate-200 bg-white shadow z-10">
-                  <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                <div className="absolute right-0 mt-2 w-44 rounded-xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 shadow-sm z-10">
+                  <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                     setActiveDropdown(null);
                     navigate("/admin");
                   }}>Admin Dashboard</button>
-                  <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                  <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                     setActiveDropdown(null);
                     navigate("/admin/users");
                   }}>Manage Users</button>
-                  <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                  <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                     setActiveDropdown(null);
                     navigate("/admin/reports");
                   }}>Moderation</button>
-                  <button className="block w-full text-left px-3 py-2 hover:bg-slate-50" onClick={() => {
+                  <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => {
                     setActiveDropdown(null);
                     navigate("/admin/videos");
                   }}>Video Moderation</button>
@@ -198,7 +198,7 @@ export default function Navbar() {
               </details>
             )}
 
-            <button onClick={logout} className="text-red-500 hover:text-red-600">Logout</button>
+            <button onClick={logout} className="text-red-500 hover:text-red-600 transition-colors">Logout</button>
           </div>
         )}
 

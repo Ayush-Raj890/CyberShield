@@ -11,7 +11,7 @@ export default function UserDashboard() {
       <Navbar />
 
       <div className="p-4 sm:p-6">
-        <h2 className="text-xl sm:text-2xl mb-4">
+        <h2 className="text-2xl sm:text-3xl mb-4">
           Welcome, {user?.name}
         </h2>
 
@@ -19,40 +19,40 @@ export default function UserDashboard() {
           <div className="card flex items-center gap-4 cursor-pointer" onClick={() => navigate("/create-report")}>
             <Shield className="text-indigo-500" />
             <div>
-              <h3 className="font-semibold">Create Report</h3>
-              <p className="text-sm text-gray-500">Report threats instantly</p>
+              <h3 className="text-xl font-semibold">Create Report</h3>
+              <p className="text-sm text-neutral-500 dark:text-neutral-300">Report threats instantly</p>
             </div>
           </div>
 
           <div className="card flex items-center gap-4 cursor-pointer" onClick={() => navigate("/reports")}>
             <FileText className="text-green-500" />
             <div>
-              <h3 className="font-semibold">My Reports</h3>
-              <p className="text-sm text-gray-500">Track status</p>
+              <h3 className="text-xl font-semibold">My Reports</h3>
+              <p className="text-sm text-neutral-500 dark:text-neutral-300">Track status</p>
             </div>
           </div>
 
           <div className="card flex items-center gap-4 cursor-pointer" onClick={() => navigate("/ai")}>
             <Brain className="text-yellow-500" />
             <div>
-              <h3 className="font-semibold">AI Detector</h3>
-              <p className="text-sm text-gray-500">Analyze scams</p>
+              <h3 className="text-xl font-semibold">AI Detector</h3>
+              <p className="text-sm text-neutral-500 dark:text-neutral-300">Analyze scams</p>
             </div>
           </div>
 
           <div className="card flex items-center gap-4 cursor-pointer" onClick={() => navigate("/articles")}>
             <Book className="text-purple-500" />
             <div>
-              <h3 className="font-semibold">Knowledge Hub</h3>
-              <p className="text-sm text-gray-500">Stay informed</p>
+              <h3 className="text-xl font-semibold">Knowledge Hub</h3>
+              <p className="text-sm text-neutral-500 dark:text-neutral-300">Stay informed</p>
             </div>
           </div>
 
           <div className="card flex items-center gap-4 cursor-pointer" onClick={() => navigate("/forum")}>
             <Users className="text-blue-500" />
             <div>
-              <h3 className="font-semibold">Community Forum</h3>
-              <p className="text-sm text-gray-500">Discuss threats and solutions</p>
+              <h3 className="text-xl font-semibold">Community Forum</h3>
+              <p className="text-sm text-neutral-500 dark:text-neutral-300">Discuss threats and solutions</p>
             </div>
           </div>
         </div>

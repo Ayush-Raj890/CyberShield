@@ -187,6 +187,8 @@ Skip for now:
   - [ ] h2 → text-xl
   - [ ] body → text-sm / text-base
 - [ ] Ensure consistent color palette (primary, secondary, neutral defined)
+- [ ] Ensure that all the components and pages are ready for dark mode implementation.
+- [ ] prepare the color pallete for dark mode integration too.
 
 **Priority 2 — Design System Components (VERY IMPORTANT)**
 
@@ -247,7 +249,7 @@ Skip for now:
 
 **Priority 10 — Dark Mode (OPTIONAL)**
 
-- [ ] Add dark mode toggle (if time permits)
+- [ ] Add dark mode toggle 
 - [ ] Use Tailwind `dark:` classes
 
 **Priority 11 — Content Hierarchy**
@@ -270,14 +272,14 @@ Skip for now:
 
 **HIGH Priority Findings to Implement:**
 
-- [ ] Add route-level rate limiting to auth routes:
-  - [ ] POST /api/auth/register (max 5 attempts per hour)
-  - [ ] POST /api/auth/login (max 10 attempts per 15 minutes)
-  - [ ] POST /api/auth/resend-otp (max 3 attempts per hour)
-  - [ ] POST /api/auth/forgot-password (max 5 attempts per hour)
-- [ ] Fix password reset suspension bypass:
-  - [ ] Prevent `isSuspended = false` from password reset flow
-  - [ ] Keep suspension separate from password recovery
+- [x] Add route-level rate limiting to auth routes:
+  - [x] POST /api/auth/register (max 5 attempts per hour)
+  - [x] POST /api/auth/login (max 10 attempts per 15 minutes)
+  - [x] POST /api/auth/resend-otp (max 3 attempts per hour)
+  - [x] POST /api/auth/forgot-password (max 5 attempts per hour)
+- [x] Fix password reset suspension bypass:
+  - [x] Prevent `isSuspended = false` from password reset flow
+  - [x] Keep suspension separate from password recovery
 - [ ] Add AI endpoint input validation caps:
   - [ ] Limit text payload size to reasonable max (e.g., 10KB)
   - [ ] Add express-validator on /api/ai/predict route
@@ -383,7 +385,7 @@ Skip for now:
 - [x] RBAC baseline enhancements (USER, ADMIN, SUPER_ADMIN)
 - [ ] RBAC advanced enhancements (granular permissions, audit logging)
 - [ ] Create `.env.example` files for team guidance:
-  - [ ] `server/.env.example` with all backend variables documented
+  - [x] `server/.env.example` with all backend variables documented
   - [ ] `client/.env.example` (VITE_API_URL documentation)
   - [ ] `ai-service/.env.example` (if applicable)
 - [ ] Startup script documentation:
