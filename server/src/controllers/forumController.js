@@ -3,6 +3,20 @@ import { addXP } from "../utils/gamification.js";
 import { spendCoins } from "../utils/economy.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
+const FORUM_PAGE_LIMIT_MAX = 50;
+
+const getForumPagination = (query) => {
+  const rawPage = Number.parseInt(query.page, 10);
+  const rawLimit = Number.parseInt(query.limit, 10);
+
+  const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0
+    ? Math.min(rawLimit, FORUM_PAGE_LIMIT_MAX)
+    : 10;
+
+  return { page, limit };
+};
+
 export const createPost = async (req, res) => {
   try {
     try {
@@ -53,12 +67,29 @@ export const addReply = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await ForumPost.find()
-      .populate("user", "name alias")
-      .populate("replies.user", "name alias")
-      .sort({ createdAt: -1 });
+    const { page, limit } = getForumPagination(req.query);
+    const skip = (page - 1) * limit;
 
-    return sendSuccess(res, posts);
+    const [posts, total] = await Promise.all([
+      ForumPost.find()
+        .populate("user", "name alias")
+        .populate("replies.user", "name alias")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      ForumPost.countDocuments()
+    ]);
+
+    return sendSuccess(res, {
+      items: posts,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: total > 0 ? Math.ceil(total / limit) : 0,
+        hasNextPage: page * limit < total
+      }
+    });
   } catch (error) {
     return sendError(res, 500, error.message);
   }
