@@ -162,6 +162,12 @@ Dashboard wallet panel shows daily progress and remaining budget -> reset countd
 19. Email Identity Integrity Rule:
 Auth email validation lowercases and trims but preserves local-part punctuation (e.g. `abc.def@gmail.com` stays `abc.def@gmail.com`)
 
+20. Forum Pagination Flow:
+User loads `/forum` with `?page=1&limit=10` (defaults) -> backend returns paginated response `{ items: posts[], pagination: { page, limit, total, totalPages, hasNextPage } }` -> frontend renders page state and prev/next controls -> user navigates pages -> create/reply refreshes current page only (no full refetch)
+
+21. Critical Operations Confirmation Flow:
+User initiates destructive action (suspend/unsuspend/remove admin/delete account) -> reusable `ConfirmActionModal` renders with context (email/name display) -> user confirms -> action executes -> modal closes -> page state updates -> success feedback displayed
+
 ---
 
 ## Constraints
