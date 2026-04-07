@@ -60,10 +60,6 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-```bash
-source .venv/bin/activate
-```
-
 1. Install AI service packages.
 
 ```powershell
@@ -152,12 +148,6 @@ Terminal C (ai-service):
 ```powershell
 cd ai-service
 .\.venv\Scripts\Activate.ps1
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-```bash
-cd ai-service
-source .venv/bin/activate
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
@@ -261,12 +251,6 @@ Terminal C (ai-service):
 ```powershell
 cd ai-service
 .\.venv\Scripts\Activate.ps1
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-```bash
-cd ai-service
-source .venv/bin/activate
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
