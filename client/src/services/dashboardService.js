@@ -9,9 +9,9 @@ const isCurrentUserRecord = (recordUser, currentUserId) => {
 };
 
 export const transformUserDashboard = ({ profile, reports, articles, forumPosts, memes, currentUserId }) => {
-  const ownReports = reports.filter((r) => isCurrentUserRecord(r.user, currentUserId));
-  const ownArticles = articles.filter((a) => isCurrentUserRecord(a.createdBy, currentUserId));
-  const ownPosts = forumPosts.filter((p) => isCurrentUserRecord(p.user, currentUserId));
+  const ownReports = reports;
+  const ownArticles = articles;
+  const ownPosts = forumPosts;
   const ownMemes = memes.filter((m) => isCurrentUserRecord(m.createdBy, currentUserId));
 
   const pending = ownReports.filter((r) => r.status === "PENDING").length;
@@ -100,20 +100,24 @@ export const transformAdminDashboard = ({ stats, reports, pendingArticles }) => 
 export const getUserDashboardData = async (currentUserId) => {
   const [profileRes, reportsRes, articlesRes, forumRes, memesRes] = await Promise.all([
     API.get("/users/profile"),
-    API.get(`/reports/me?page=1&limit=${DEFAULT_LIMIT}`),
-    API.get("/articles"),
-    API.get("/forum"),
+    API.get(`/reports/user?page=1&limit=${DEFAULT_LIMIT}`),
+    API.get(`/articles/user?page=1&limit=${DEFAULT_LIMIT}`),
+    API.get(`/forum/user?page=1&limit=${DEFAULT_LIMIT}`),
     API.get("/memes")
   ]);
 
   const reportsPayload = reportsRes.data;
   const reports = Array.isArray(reportsPayload) ? reportsPayload : (reportsPayload?.items || []);
+  const articlesPayload = articlesRes.data;
+  const articles = Array.isArray(articlesPayload) ? articlesPayload : (articlesPayload?.items || []);
+  const forumPayload = forumRes.data;
+  const forumPosts = Array.isArray(forumPayload) ? forumPayload : (forumPayload?.items || []);
 
   return transformUserDashboard({
     profile: profileRes.data,
     reports,
-    articles: articlesRes.data || [],
-    forumPosts: forumRes.data || [],
+    articles,
+    forumPosts,
     memes: memesRes.data || [],
     currentUserId
   });

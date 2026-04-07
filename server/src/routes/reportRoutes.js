@@ -44,6 +44,7 @@ router.post(
   createReport
 );
 router.get("/", publicReportListLimiter, getReports);
+router.get("/user", protect, getMyReports);
 router.get("/me", protect, getMyReports);
 router.put("/:id", protect, adminOnly, updateReportStatus);
 

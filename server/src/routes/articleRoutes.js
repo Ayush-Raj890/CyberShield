@@ -3,6 +3,7 @@ import { body } from "express-validator";
 import {
   createArticle,
   getArticles,
+  getMyArticles,
   getArticleById,
   getPendingArticles,
   updateArticleStatus,
@@ -16,6 +17,7 @@ const router = express.Router();
 
 // Public routes
 router.get("/", getArticles);
+router.get("/user", protect, getMyArticles);
 router.get("/admin/pending", protect, adminOnly, getPendingArticles);
 
 // User-submitted articles (any authenticated user)

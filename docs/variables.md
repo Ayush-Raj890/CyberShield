@@ -37,6 +37,7 @@ Encryption migration helper:
 - POST /api/auth/resend-otp
 - POST /api/auth/forgot-password
 - POST /api/auth/reset-password
+- GET /api/auth/validate (protected; token/session validation)
 
 JWT behavior:
 
@@ -54,6 +55,7 @@ JWT behavior:
 
 - POST /api/reports (protected, multipart/form-data)
 - GET /api/reports (public, safe feed; hides sensitive details and excludes contact/evidence/history)
+- GET /api/reports/user (protected, own detailed reports)
 - GET /api/reports/me (protected, own detailed reports)
 - PUT /api/reports/:id (admin)
 
@@ -81,6 +83,7 @@ AI predict validation behavior:
 
 - POST /api/articles (protected)
 - GET /api/articles (public, approved only)
+- GET /api/articles/user (protected, own article list)
 - GET /api/articles/:id (public, approved only)
 - GET /api/articles/admin/pending (admin)
 - PUT /api/articles/:id/status (admin)
@@ -88,6 +91,7 @@ AI predict validation behavior:
 ### Forum
 
 - GET /api/forum (public)
+- GET /api/forum/user (protected, own forum posts)
 - POST /api/forum (protected)
 - POST /api/forum/:id/reply (protected)
 
@@ -163,6 +167,12 @@ Admin report pagination behavior:
 - POST /api/system/client-errors
 - GET /api/system/client-errors (admin)
 - GET /api/system/client-errors/export (admin CSV)
+
+Client error filter query params:
+
+- `range`: `24h` or `7d`
+- `type`: `5xx` (status codes 500-599)
+- Existing filters remain supported: `source`, `statusCode`, `q`, `fromDate`, `toDate`
 
 ---
 

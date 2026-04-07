@@ -71,7 +71,7 @@
 - [x] Add lazy-loaded charts for analytics tabs only
 - [x] Add dark mode ready state wiring (without forcing global theme)
 - [ ] Add chart visualization library integration (optional polish)
-- [ ] Add role-specific endpoint hardening (`/reports/user`, `/articles/user`, `/forum/user`) to avoid broad fetch + frontend filtering
+- [x] Add role-specific endpoint hardening (`/reports/user`, `/articles/user`, `/forum/user`) to avoid broad fetch + frontend filtering
 
 ---
 
@@ -359,11 +359,11 @@ Skip for now:
   - [x] Navbar and dashboard discoverability
   - [x] Add reply submit button with improved styling (blue gradient button with hover effects)
 - [ ] Error Logs UX enhancements:
-  - [ ] Quick filter presets (Last 24h, Last 7 days)
-  - [ ] One-click status filter presets (e.g., Only 5xx)
-- [ ] Backend token validation on sensitive flows:
-  - [ ] Validate JWT on protected pages before rendering sensitive data
-  - [ ] Don't rely solely on localStorage for auth state
+  - [x] Quick filter presets (Last 24h, Last 7 days)
+  - [x] One-click status filter presets (e.g., Only 5xx)
+- [x] Backend token validation on sensitive flows:
+  - [x] Validate JWT on protected pages before rendering sensitive data
+  - [x] Don't rely solely on localStorage for auth state
 - [ ] Remove legacy `UserDashboard.jsx` component:
   - [ ] Confirm current dashboard uses `Dashboard.jsx` (not deprecated)
   - [ ] Delete or archive old component

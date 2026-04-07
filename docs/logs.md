@@ -452,6 +452,24 @@
 - Updated TODO and documentation files to reflect completion of all confirmation modals and forum pagination tasks
 - All syntax validation passed; backend forum module smoke test confirmed (`FORUM_MODULE_IMPORT_SMOKE_OK`)
 
+## Day 48
+
+- Added role-specific user-owned endpoints to eliminate frontend ownership filtering:
+  - `GET /api/reports/user` (alias to own report listing)
+  - `GET /api/articles/user` (paginated own article listing)
+  - `GET /api/forum/user` (paginated own forum post listing)
+- Updated dashboard data service to consume backend-scoped endpoints (`/reports/user`, `/articles/user`, `/forum/user`) instead of fetching broad collections and filtering client-side
+- Added token revalidation endpoint: `GET /api/auth/validate` (protected) returning `{ valid: true, user }`
+- Hardened protected page access in frontend `PrivateRoute`:
+  - Session validation now calls `/auth/validate` on protected route entry
+  - Added short validation TTL cache to avoid excessive network calls
+  - Invalid/expired tokens are treated as unauthenticated and local session is cleared
+- Added Error Logs preset filters in backend and frontend:
+  - Backend query supports `range=24h|7d` and `type=5xx` on both list and CSV export
+  - Frontend admin Error Logs page now includes Last 24h, Last 7d, and 5xx-only quick presets
+  - Manual date filtering remains available and coexists with preset behavior
+- Ran syntax validation across updated backend and frontend files; no errors reported
+
 ---
 
 ## Notes

@@ -2,15 +2,18 @@ import ClientErrorLog from "../models/ClientErrorLog.js";
 import { validationResult } from "express-validator";
 import { sendError, sendSuccess } from "../utils/response.js";
 
-const buildClientErrorQuery = ({ source, statusCode, q, fromDate, toDate }) => {
+const buildClientErrorQuery = ({ source, statusCode, q, fromDate, toDate, range, type }) => {
   const query = {};
 
   if (["UI", "API"].includes(source)) {
     query.source = source;
   }
 
-  if (statusCode && !Number.isNaN(Number(statusCode))) {
+  const parsedStatusCode = Number(statusCode);
+  if (statusCode && !Number.isNaN(parsedStatusCode)) {
     query.statusCode = Number(statusCode);
+  } else if (type === "5xx") {
+    query.statusCode = { $gte: 500, $lte: 599 };
   }
 
   if (q) {
@@ -33,6 +36,14 @@ const buildClientErrorQuery = ({ source, statusCode, q, fromDate, toDate }) => {
       end.setHours(23, 59, 59, 999);
       query.createdAt.$lte = end;
     }
+  } else if (range === "24h" || range === "7d") {
+    const now = Date.now();
+    const durationMs = range === "24h"
+      ? 24 * 60 * 60 * 1000
+      : 7 * 24 * 60 * 60 * 1000;
+    query.createdAt = {
+      $gte: new Date(now - durationMs)
+    };
   }
 
   return query;
@@ -94,7 +105,9 @@ export const getClientErrors = async (req, res) => {
     const q = req.query.q?.trim();
     const fromDate = req.query.fromDate;
     const toDate = req.query.toDate;
-    const query = buildClientErrorQuery({ source, statusCode, q, fromDate, toDate });
+    const range = req.query.range;
+    const type = req.query.type;
+    const query = buildClientErrorQuery({ source, statusCode, q, fromDate, toDate, range, type });
 
     const [items, total] = await Promise.all([
       ClientErrorLog.find(query)
@@ -126,8 +139,10 @@ export const exportClientErrorsCsv = async (req, res) => {
     const q = req.query.q?.trim();
     const fromDate = req.query.fromDate;
     const toDate = req.query.toDate;
+    const range = req.query.range;
+    const type = req.query.type;
 
-    const query = buildClientErrorQuery({ source, statusCode, q, fromDate, toDate });
+    const query = buildClientErrorQuery({ source, statusCode, q, fromDate, toDate, range, type });
 
     const items = await ClientErrorLog.find(query)
       .sort({ createdAt: -1 })

@@ -94,3 +94,34 @@ export const getAllPosts = async (req, res) => {
     return sendError(res, 500, error.message);
   }
 };
+
+export const getMyPosts = async (req, res) => {
+  try {
+    const { page, limit } = getForumPagination(req.query);
+    const skip = (page - 1) * limit;
+    const match = { user: req.user._id };
+
+    const [posts, total] = await Promise.all([
+      ForumPost.find(match)
+        .populate("user", "name alias")
+        .populate("replies.user", "name alias")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      ForumPost.countDocuments(match)
+    ]);
+
+    return sendSuccess(res, {
+      items: posts,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: total > 0 ? Math.ceil(total / limit) : 0,
+        hasNextPage: page * limit < total
+      }
+    });
+  } catch (error) {
+    return sendError(res, 500, error.message);
+  }
+};
