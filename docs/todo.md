@@ -365,8 +365,8 @@ Skip for now:
   - [x] Validate JWT on protected pages before rendering sensitive data
   - [x] Don't rely solely on localStorage for auth state
 - [ ] Remove legacy `UserDashboard.jsx` component:
-  - [ ] Confirm current dashboard uses `Dashboard.jsx` (not deprecated)
-  - [ ] Delete or archive old component
+  - [x] Confirm current dashboard uses `Dashboard.jsx` (not deprecated)
+  - [x] Delete or archive old component
 - [ ] Post-login navigation restructuring:
   - [ ] Redirect authenticated users from landing page to Forums instead of Dashboard
   - [ ] Move Dashboard page to Account section of navbar (accessible through profile/account dropdown)
@@ -390,6 +390,6 @@ Skip for now:
   - [x] `client/.env.example` (VITE_API_URL documentation)
   - [x] `ai-service/.env.example` (if applicable)
 - [ ] Startup script documentation:
-  - [ ] Single canonical recommendation per OS in onboarding
-  - [ ] Label fallback launchers clearly
-  - [ ] Document which method works best for CI/CD
+  - [x] Single canonical recommendation per OS in onboarding
+  - [x] Label fallback launchers clearly
+  - [x] Document which method works best for CI/CD

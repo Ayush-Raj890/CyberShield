@@ -108,6 +108,18 @@ EMAIL_PASS=your_gmail_app_password
 
 You can use a launcher or manual 3-terminal startup.
 
+Recommended startup path by OS:
+
+- Windows: `scripts/start-all.ps1`
+- macOS/Linux: `bash scripts/start-all.sh`
+- Fallback for Windows CMD environments: `scripts/start-all.cmd`
+
+Recommended CI/CD approach:
+
+- Start each service explicitly rather than using the multi-process launcher.
+- Use `npm --prefix server run dev`, `npm --prefix client run build`, and the AI service uvicorn command in separate jobs or steps.
+- This keeps logs, health checks, and failures isolated per service.
+
 Launcher options:
 
 - Windows PowerShell: `scripts/start-all.ps1`

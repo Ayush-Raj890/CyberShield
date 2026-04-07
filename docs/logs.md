@@ -515,6 +515,14 @@
 - Synchronized TODO tracking to mark both missing env example files as complete
 - Confirmed the active dashboard flow remains `Dashboard.jsx`; legacy dashboard no longer exists as a stale artifact
 
+## Day 51
+
+- Closed remaining startup documentation gap:
+  - Added explicit OS-based startup recommendations in onboarding
+  - Clarified fallback launcher options for Windows CMD/PowerShell and macOS/Linux
+  - Documented CI/CD recommendation to start services separately for clearer logs and health checks
+- Updated TODO tracking to mark the legacy dashboard item and startup-script documentation item as complete
+
 ---
 
 ## Notes
