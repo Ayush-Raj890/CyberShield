@@ -540,6 +540,15 @@
   - Frontend production build succeeds (`npm --prefix client run build`)
   - Health endpoint smoke check returns 200 with expected payload
 
+## Day 53
+
+- Updated deployment references to latest Vercel frontend URL:
+  - Added `https://cyber-shield-nzeoni1oj-mystifys-projects.vercel.app` as alternate frontend deployment URL in docs
+  - Updated `server/.env.example` ALLOWED_ORIGINS example to include latest Vercel deployment URL
+- Domain verification snapshot:
+  - `https://cyber-shield-eight.vercel.app` returned 200
+  - latest preview deployment URL returned 401 (likely protected preview access)
+
 ---
 
 ## Notes
