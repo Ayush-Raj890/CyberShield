@@ -25,6 +25,7 @@ import { errorHandler } from "./middlewares/errorMiddleware.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+app.set("trust proxy", 1);
 const isProduction = process.env.NODE_ENV === "production";
 
 const allowedOriginsEnv = process.env.ALLOWED_ORIGINS || "";
