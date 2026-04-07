@@ -70,6 +70,16 @@ Fix: Added `EMAIL_MOCK` mode for local dev and documented App Password requireme
 
 ---
 
+## Operational Note
+
+Description: Full runtime stabilization QA for medium-impact upgrades requires live DB-backed sessions with at least two seeded users and log fixtures.
+
+Status: Partially Validated
+
+Fix: Runtime matrix is now executed and passing for cross-user isolation, auth validate guard responses, and logs filter/CSV parity. Remaining item is token-expiry navigation verification that requires natural token expiry (or controlled short expiry in QA env).
+
+---
+
 ## Rules
 
 - Always log bugs immediately

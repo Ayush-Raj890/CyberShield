@@ -470,6 +470,42 @@
   - Manual date filtering remains available and coexists with preset behavior
 - Ran syntax validation across updated backend and frontend files; no errors reported
 
+## Day 49
+
+- Executed Step 1 stabilization QA checklist (code-backed audit + runtime smoke import evidence)
+- Data isolation checks (code-backed): PASS
+  - Verified routes exist and are protected: `/api/reports/user`, `/api/articles/user`, `/api/forum/user`
+  - Verified ownership filters are backend-enforced with `req.user._id` in controllers (`user` for reports/forum, `createdBy` for articles)
+  - Verified no client-supplied user id is used in ownership queries
+- Auth revalidation checks (code-backed): PASS
+  - Verified protected route calls `GET /api/auth/validate`
+  - Verified invalid session clears local user state and blocks protected rendering
+  - Verified validation loading state exists for graceful transition
+- Error Logs presets checks (code-backed): PASS
+  - Verified backend supports `range=24h|7d` and `type=5xx` query logic
+  - Verified frontend sends `range` and `type` params for both list and CSV export requests
+  - Verified manual date filter and presets coexist
+- Runtime smoke evidence: PASS (`QA_SMOKE_IMPORT_OK`) for updated routes/controllers module load
+- Live runtime API QA execution (DB-backed): PASS
+  - Cross-account isolation validated with two authenticated users and marker-tagged resources:
+    - `ISOLATION_REPORTS=True`
+    - `ISOLATION_ARTICLES=True`
+    - `ISOLATION_FORUM=True`
+  - Auth validation contract validated at runtime:
+    - invalid token -> `401`
+    - no token -> `401`
+    - suspended user token -> `403`
+    - valid token -> success payload
+  - Error logs filter presets validated with seeded fixtures:
+    - `range=24h&type=5xx` includes recent 500 and excludes old 500 / recent 404
+    - `range=7d&type=5xx` excludes 10-day-old 500 fixture
+    - `type=5xx` includes old 500 fixture when no range restriction is applied
+  - CSV export filter parity validated:
+    - 24h+5xx CSV includes recent 500 fixture
+    - excludes old 500 and 404 fixtures
+- Remaining runtime-only check (time-based manual):
+  - Token-expiry navigation behavior with naturally expired JWT window
+
 ---
 
 ## Notes
