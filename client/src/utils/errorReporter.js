@@ -1,6 +1,16 @@
 import axios from "axios";
 
 const ERROR_CONTEXT_KEY = "cybershield_error_context";
+const API_BASE = (() => {
+  const rawBase = import.meta.env.VITE_API_URL;
+
+  if (!rawBase) {
+    return "http://localhost:5000/api";
+  }
+
+  const normalized = rawBase.replace(/\/+$/, "");
+  return normalized.endsWith("/api") ? normalized : `${normalized}/api`;
+})();
 
 export const saveErrorContext = (context) => {
   try {
@@ -35,7 +45,7 @@ export const sendErrorReport = async () => {
 
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
-  await axios.post("http://localhost:5001/api/system/client-errors", {
+  await axios.post(`${API_BASE}/system/client-errors`, {
     ...context,
     userAgent: navigator.userAgent,
     userId: user?._id

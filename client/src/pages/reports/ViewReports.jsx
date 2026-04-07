@@ -4,6 +4,8 @@ import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
 import { AlertCircle, Shield, Mail, Image as ImageIcon, EyeOff, TriangleAlert } from "lucide-react";
 
+const ASSET_HOST = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
+
 export default function ViewReports() {
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
@@ -154,13 +156,13 @@ export default function ViewReports() {
                   </p>
                   {r.evidence.match(/\.(jpg|jpeg|png|gif)$/i) ? (
                     <img
-                      src={`${import.meta.env.VITE_API_URL || "http://localhost:5001"}${r.evidence}`}
+                      src={`${ASSET_HOST}${r.evidence}`}
                       alt="Evidence"
                       className="w-full max-w-md rounded border"
                     />
                   ) : (
                     <a
-                      href={`${import.meta.env.VITE_API_URL || "http://localhost:5001"}${r.evidence}`}
+                      href={`${ASSET_HOST}${r.evidence}`}
                       target="_blank"
                       rel="noreferrer"
                       className="text-blue-500 underline"
