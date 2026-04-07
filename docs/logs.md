@@ -523,6 +523,23 @@
   - Documented CI/CD recommendation to start services separately for clearer logs and health checks
 - Updated TODO tracking to mark the legacy dashboard item and startup-script documentation item as complete
 
+## Day 52
+
+- Production audit + polish pass completed on live deployment setup
+- Added explicit health endpoint for operations and demo checks:
+  - `GET /api/health` -> `{ "status": "ok" }`
+- Hardened CORS behavior for production mode:
+  - Localhost origins are now allowed only outside production
+  - Production origin allowlist is controlled through `ALLOWED_ORIGINS`
+- Added AI cold-start user guidance in Scam Detector UI:
+  - If backend returns AI service wake-up failure, UI now shows: "Server waking up, please wait a few seconds and try again."
+- Updated environment guidance and docs for deployed URLs:
+  - Added live frontend/backend/AI URLs in docs README
+  - Expanded `server/.env.example` ALLOWED_ORIGINS example with deployed frontend domains
+- Validation evidence:
+  - Frontend production build succeeds (`npm --prefix client run build`)
+  - Health endpoint smoke check returns 200 with expected payload
+
 ---
 
 ## Notes

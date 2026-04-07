@@ -25,6 +25,7 @@ import { errorHandler } from "./middlewares/errorMiddleware.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+const isProduction = process.env.NODE_ENV === "production";
 
 const allowedOriginsEnv = process.env.ALLOWED_ORIGINS || "";
 const allowedOrigins = allowedOriginsEnv
@@ -47,7 +48,7 @@ const corsOptions = {
 			return callback(null, false);
 		}
 
-		const isLocalDevOrigin = hostname === "localhost" || hostname === "127.0.0.1";
+		const isLocalDevOrigin = !isProduction && (hostname === "localhost" || hostname === "127.0.0.1");
 
 		const isAllowedByEnv = allowedOrigins.some((allowedOrigin) => {
 			try {
@@ -114,6 +115,10 @@ app.use("/api/users", userRoutes);
 // Health check
 app.get("/", (req, res) => {
 	res.send("API is running...");
+});
+
+app.get("/api/health", (req, res) => {
+	res.json({ status: "ok" });
 });
 
 app.use(errorHandler);

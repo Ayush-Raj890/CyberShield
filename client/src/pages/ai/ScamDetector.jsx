@@ -7,9 +7,11 @@ export default function ScamDetector() {
   const [text, setText] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [wakingHint, setWakingHint] = useState("");
 
   const analyze = async () => {
     setLoading(true);
+    setWakingHint("");
     try {
       const { data } = await API.post("/ai/predict", { text });
       setResult(data);
@@ -19,7 +21,11 @@ export default function ScamDetector() {
 
       toast.success("Analysis complete");
     } catch (error) {
-      toast.error("AI request failed");
+      const message = error?.response?.data?.message || "AI request failed";
+      toast.error(message);
+      if (message.toLowerCase().includes("ai service failed")) {
+        setWakingHint("Server waking up, please wait a few seconds and try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -46,6 +52,12 @@ export default function ScamDetector() {
           >
             {loading ? "Processing..." : "Analyze"}
           </button>
+
+          {wakingHint && (
+            <p className="mt-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
+              {wakingHint}
+            </p>
+          )}
         </div>
 
         {result && (
