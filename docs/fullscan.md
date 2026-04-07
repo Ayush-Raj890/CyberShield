@@ -2,6 +2,11 @@
 
 This document records the highest-signal findings from a deep review of the CyberShield repository.
 
+Status note:
+
+- Several findings below were originally reported during the scan and have since been resolved in code.
+- The encryption fallback note is now historical only; current code requires a strong `ENCRYPTION_KEY` and supports legacy key rotation instead of falling back to `secret123`.
+
 ## Critical Findings
 
 ### Auth middleware can emit duplicate responses

@@ -387,8 +387,8 @@ Skip for now:
 - [ ] RBAC advanced enhancements (granular permissions, audit logging)
 - [ ] Create `.env.example` files for team guidance:
   - [x] `server/.env.example` with all backend variables documented
-  - [ ] `client/.env.example` (VITE_API_URL documentation)
-  - [ ] `ai-service/.env.example` (if applicable)
+  - [x] `client/.env.example` (VITE_API_URL documentation)
+  - [x] `ai-service/.env.example` (if applicable)
 - [ ] Startup script documentation:
   - [ ] Single canonical recommendation per OS in onboarding
   - [ ] Label fallback launchers clearly

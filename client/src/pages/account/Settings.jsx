@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
 import ConfirmActionModal from "../../components/ui/ConfirmActionModal";
 import API from "../../services/api";
+import { performLogout } from "../../utils/logout";
 
 const PREFS_KEY = "userPreferences";
 
@@ -115,9 +116,8 @@ export default function Settings() {
     setDeleting(true);
     try {
       await API.delete("/users/me");
-      localStorage.clear();
       toast.success("Account deleted");
-      navigate("/");
+      performLogout(navigate, "/");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to delete account");
     } finally {

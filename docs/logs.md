@@ -506,6 +506,15 @@
 - Remaining runtime-only check (time-based manual):
   - Token-expiry navigation behavior with naturally expired JWT window
 
+## Day 50
+
+- Completed cleanup and stabilization follow-up work:
+  - Added shared logout helper to standardize local session cleanup + redirect behavior
+  - Removed legacy `UserDashboard.jsx` component from the codebase
+  - Added missing env example files for the client and AI service
+- Synchronized TODO tracking to mark both missing env example files as complete
+- Confirmed the active dashboard flow remains `Dashboard.jsx`; legacy dashboard no longer exists as a stale artifact
+
 ---
 
 ## Notes
