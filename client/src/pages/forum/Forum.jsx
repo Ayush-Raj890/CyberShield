@@ -12,6 +12,8 @@ export default function Forum() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [replyingId, setReplyingId] = useState(null);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 0, hasNextPage: false });
 
   const [postForm, setPostForm] = useState({ title: "", content: "" });
   const [replyDrafts, setReplyDrafts] = useState({});
@@ -30,14 +32,15 @@ export default function Forum() {
   };
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    fetchPosts(page);
+  }, [page]);
 
-  const fetchPosts = async () => {
+  const fetchPosts = async (currentPage = 1) => {
     try {
       setLoading(true);
-      const { data } = await API.get("/forum");
-      setPosts(Array.isArray(data) ? data : []);
+      const { data } = await API.get(`/forum?page=${currentPage}&limit=10`);
+      setPosts(data.items || []);
+      setPagination(data.pagination || { page: currentPage, limit: 10, total: 0, totalPages: 0, hasNextPage: false });
     } catch (error) {
       setPosts([]);
       toast.error("Failed to load forum posts");
@@ -66,7 +69,7 @@ export default function Forum() {
       });
       setPostForm({ title: "", content: "" });
       toast.success("Post created");
-      fetchPosts();
+      fetchPosts(page);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to create post");
     } finally {
@@ -92,7 +95,7 @@ export default function Forum() {
       await API.post(`/forum/${postId}/reply`, { text });
       setReplyDrafts((prev) => ({ ...prev, [postId]: "" }));
       toast.success("Reply posted");
-      fetchPosts();
+      fetchPosts(page);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to post reply");
     } finally {
@@ -189,7 +192,7 @@ export default function Forum() {
                   )}
 
                   <textarea
-                    className="input mb-2 min-h-20"
+                    className="input mb-3 min-h-20"
                     placeholder={user ? "Write a reply..." : "Login to reply"}
                     value={replyDrafts[post._id] || ""}
                     onChange={(e) => setReplyDrafts((prev) => ({ ...prev, [post._id]: e.target.value }))}
@@ -197,7 +200,7 @@ export default function Forum() {
                   />
 
                   <button
-                    className="btn w-full sm:w-auto"
+                    className="btn btn-primary w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-200"
                     onClick={() => replyToPost(post._id)}
                     disabled={!user || replyingId === post._id}
                   >
@@ -206,6 +209,30 @@ export default function Forum() {
                 </div>
               </div>
             ))}
+
+            <div className="flex items-center justify-between gap-3 pt-2">
+              <button
+                type="button"
+                className="btn btn-outline"
+                disabled={page === 1 || loading}
+                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              >
+                Previous
+              </button>
+
+              <span className="text-sm text-gray-500">
+                Page {pagination.page} of {pagination.totalPages || 1}
+              </span>
+
+              <button
+                type="button"
+                className="btn btn-outline"
+                disabled={!pagination.hasNextPage || loading}
+                onClick={() => setPage((prev) => prev + 1)}
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>

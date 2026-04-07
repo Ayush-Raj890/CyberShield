@@ -422,6 +422,107 @@
 - Updated verify flow to compare hashed OTPs while preserving backward compatibility for legacy plaintext OTP records
 - Added `OTP_HASH_SECRET` environment variable support for OTP hashing key control
 
+## Day 47
+
+- Implemented comprehensive admin account management confirmation flow:
+  - Added state-aware suspend/unsuspend button toggle (label changes based on current `isSuspended` state)
+  - Added 2-step confirmation modal with user email/name context for suspend action
+  - Added 2-step confirmation modal for unsuspend action
+  - Added 2-step confirmation modal for remove admin action with improved styling (`btn-secondary`)
+- Extended delete account confirmation flow for self-service account deletion:
+  - Replaced browser `window.confirm()` with modal-based confirmation on Settings page
+  - Added 2-step confirmation modal with danger styling for delete account action
+- Created reusable `ConfirmActionModal` component with configurable variants (danger/secondary/outline):
+  - Accepts `open`, `title`, `description`, `confirmLabel`, `cancelLabel`, `confirmVariant`, `onConfirm`, `onCancel`, `confirmDisabled`, `cancelDisabled` props
+  - Provides consistent confirmation UX across 3 pages: ManageUsers (suspend/unsuspend/demote), Settings (delete account)
+  - Integrated shared modal on ManageUsers page for all destructive account actions
+  - Integrated shared modal on Settings page for delete account danger zone
+- Implemented production-grade forum listing pagination:
+  - **Backend:** Added safe pagination query parameter parsing with defaults (page=1, limit=10)
+  - **Backend:** Added server-side pagination limit cap (`FORUM_PAGE_LIMIT_MAX = 50`) to prevent abuse
+  - **Backend:** Returns consistent paginated response shape: `{ items: posts[], pagination: { page, limit, total, totalPages, hasNextPage } }`
+  - **Backend:** Uses parallel `Promise.all()` for efficient DB operations (fetch + count)
+  - **Backend:** Implements `.sort({ createdAt: -1 }).skip(skip).limit(limit)` for sorted pagination
+  - **Frontend:** Added page state management in Forum page component
+  - **Frontend:** Fetch trigger on page change with `useEffect` dependency on `page` state
+  - **Frontend:** Renders prev/next pagination controls with proper disabled state logic
+  - **Frontend:** Displays "Page X of Y" metadata for user feedback
+  - **Frontend:** Create/reply actions preserve current page and refresh it (no full refetch)
+  - **Database:** Added `createdAt` index to ForumPost model for pagination query performance
+- Updated TODO and documentation files to reflect completion of all confirmation modals and forum pagination tasks
+- All syntax validation passed; backend forum module smoke test confirmed (`FORUM_MODULE_IMPORT_SMOKE_OK`)
+
+## Day 48
+
+- Added role-specific user-owned endpoints to eliminate frontend ownership filtering:
+  - `GET /api/reports/user` (alias to own report listing)
+  - `GET /api/articles/user` (paginated own article listing)
+  - `GET /api/forum/user` (paginated own forum post listing)
+- Updated dashboard data service to consume backend-scoped endpoints (`/reports/user`, `/articles/user`, `/forum/user`) instead of fetching broad collections and filtering client-side
+- Added token revalidation endpoint: `GET /api/auth/validate` (protected) returning `{ valid: true, user }`
+- Hardened protected page access in frontend `PrivateRoute`:
+  - Session validation now calls `/auth/validate` on protected route entry
+  - Added short validation TTL cache to avoid excessive network calls
+  - Invalid/expired tokens are treated as unauthenticated and local session is cleared
+- Added Error Logs preset filters in backend and frontend:
+  - Backend query supports `range=24h|7d` and `type=5xx` on both list and CSV export
+  - Frontend admin Error Logs page now includes Last 24h, Last 7d, and 5xx-only quick presets
+  - Manual date filtering remains available and coexists with preset behavior
+- Ran syntax validation across updated backend and frontend files; no errors reported
+
+## Day 49
+
+- Executed Step 1 stabilization QA checklist (code-backed audit + runtime smoke import evidence)
+- Data isolation checks (code-backed): PASS
+  - Verified routes exist and are protected: `/api/reports/user`, `/api/articles/user`, `/api/forum/user`
+  - Verified ownership filters are backend-enforced with `req.user._id` in controllers (`user` for reports/forum, `createdBy` for articles)
+  - Verified no client-supplied user id is used in ownership queries
+- Auth revalidation checks (code-backed): PASS
+  - Verified protected route calls `GET /api/auth/validate`
+  - Verified invalid session clears local user state and blocks protected rendering
+  - Verified validation loading state exists for graceful transition
+- Error Logs presets checks (code-backed): PASS
+  - Verified backend supports `range=24h|7d` and `type=5xx` query logic
+  - Verified frontend sends `range` and `type` params for both list and CSV export requests
+  - Verified manual date filter and presets coexist
+- Runtime smoke evidence: PASS (`QA_SMOKE_IMPORT_OK`) for updated routes/controllers module load
+- Live runtime API QA execution (DB-backed): PASS
+  - Cross-account isolation validated with two authenticated users and marker-tagged resources:
+    - `ISOLATION_REPORTS=True`
+    - `ISOLATION_ARTICLES=True`
+    - `ISOLATION_FORUM=True`
+  - Auth validation contract validated at runtime:
+    - invalid token -> `401`
+    - no token -> `401`
+    - suspended user token -> `403`
+    - valid token -> success payload
+  - Error logs filter presets validated with seeded fixtures:
+    - `range=24h&type=5xx` includes recent 500 and excludes old 500 / recent 404
+    - `range=7d&type=5xx` excludes 10-day-old 500 fixture
+    - `type=5xx` includes old 500 fixture when no range restriction is applied
+  - CSV export filter parity validated:
+    - 24h+5xx CSV includes recent 500 fixture
+    - excludes old 500 and 404 fixtures
+- Remaining runtime-only check (time-based manual):
+  - Token-expiry navigation behavior with naturally expired JWT window
+
+## Day 50
+
+- Completed cleanup and stabilization follow-up work:
+  - Added shared logout helper to standardize local session cleanup + redirect behavior
+  - Removed legacy `UserDashboard.jsx` component from the codebase
+  - Added missing env example files for the client and AI service
+- Synchronized TODO tracking to mark both missing env example files as complete
+- Confirmed the active dashboard flow remains `Dashboard.jsx`; legacy dashboard no longer exists as a stale artifact
+
+## Day 51
+
+- Closed remaining startup documentation gap:
+  - Added explicit OS-based startup recommendations in onboarding
+  - Clarified fallback launcher options for Windows CMD/PowerShell and macOS/Linux
+  - Documented CI/CD recommendation to start services separately for clearer logs and health checks
+- Updated TODO tracking to mark the legacy dashboard item and startup-script documentation item as complete
+
 ---
 
 ## Notes

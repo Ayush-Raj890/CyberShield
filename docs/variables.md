@@ -5,12 +5,15 @@
 - PORT=5000
 - MONGO_URI=your_mongodb_uri
 - JWT_SECRET=supersecretkey
+- JWT_EXPIRES_IN=24h
 - AI_SERVICE_URL=`http://localhost:8000`
 - ALLOWED_ORIGINS=`http://localhost:3000,http://localhost:5173`
 - DEBUG_REQUEST_LOGS=false
 - REPORT_PUBLIC_LIST_WINDOW_MS=60000
 - REPORT_PUBLIC_LIST_MAX=60
 - ADMIN_REPORTS_PAGE_LIMIT_MAX=50
+- AI_PREDICT_TEXT_MAX_CHARS=10000
+- UPLOAD_MAX_FILE_SIZE_MB=50
 - OTP_HASH_SECRET=strong_random_secret_for_otp_hmac
 - ENCRYPTION_KEY=your_64_char_hex_key
 - ENCRYPTION_LEGACY_KEYS=comma_separated_old_keys
@@ -34,6 +37,12 @@ Encryption migration helper:
 - POST /api/auth/resend-otp
 - POST /api/auth/forgot-password
 - POST /api/auth/reset-password
+- GET /api/auth/validate (protected; token/session validation)
+
+JWT behavior:
+
+- Access tokens default to 24 hours via `JWT_EXPIRES_IN`
+- A refresh token flow is not implemented yet
 
 ### Users
 
@@ -46,6 +55,7 @@ Encryption migration helper:
 
 - POST /api/reports (protected, multipart/form-data)
 - GET /api/reports (public, safe feed; hides sensitive details and excludes contact/evidence/history)
+- GET /api/reports/user (protected, own detailed reports)
 - GET /api/reports/me (protected, own detailed reports)
 - PUT /api/reports/:id (admin)
 
@@ -54,14 +64,26 @@ Report listing response shape (`GET /api/reports`, `GET /api/reports/me`):
 - `items`: report array
 - `pagination`: `{ page, limit, total, totalPages, hasNextPage }`
 
+Upload validation behavior:
+
+- Max file size is controlled by `UPLOAD_MAX_FILE_SIZE_MB` (default 50MB)
+- Reports accept image files and PDFs only
+- Meme uploads accept image files only
+
 ### AI
 
 - POST /api/ai/predict (public, optional auth for XP rewards)
+
+AI predict validation behavior:
+
+- `text` is required and must be a non-empty string
+- `text` length is capped by `AI_PREDICT_TEXT_MAX_CHARS` (default 10000)
 
 ### Articles
 
 - POST /api/articles (protected)
 - GET /api/articles (public, approved only)
+- GET /api/articles/user (protected, own article list)
 - GET /api/articles/:id (public, approved only)
 - GET /api/articles/admin/pending (admin)
 - PUT /api/articles/:id/status (admin)
@@ -69,8 +91,31 @@ Report listing response shape (`GET /api/reports`, `GET /api/reports/me`):
 ### Forum
 
 - GET /api/forum (public)
+- GET /api/forum/user (protected, own forum posts)
 - POST /api/forum (protected)
 - POST /api/forum/:id/reply (protected)
+
+Forum listing response shape (`GET /api/forum`):
+
+- `items`: forum post array
+- `pagination`: `{ page, limit, total, totalPages, hasNextPage }`
+
+Forum pagination behavior:
+
+- `page` defaults to 1 if missing or invalid
+- `limit` defaults to 10 and is capped server-side at 50
+- Posts are sorted by `createdAt` descending before pagination
+
+Forum listing response shape (`GET /api/forum`):
+
+- `items`: forum post array
+- `pagination`: `{ page, limit, total, totalPages, hasNextPage }`
+
+Forum pagination behavior:
+
+- `page` defaults to 1 if missing or invalid
+- `limit` defaults to 10 and is capped server-side at 50
+- Posts are sorted by `createdAt` descending before pagination
 
 ### Videos
 
@@ -103,6 +148,7 @@ Report listing response shape (`GET /api/reports`, `GET /api/reports/me`):
 - DELETE /api/admin/users/:id
 - PUT /api/admin/promote/:id
 - PUT /api/admin/suspend/:id
+- PUT /api/admin/users/:id/unsuspend
 - PUT /api/admin/demote/:id (super admin only)
 - GET /api/admin/reports
 - DELETE /api/admin/articles/:id
@@ -121,6 +167,12 @@ Admin report pagination behavior:
 - POST /api/system/client-errors
 - GET /api/system/client-errors (admin)
 - GET /api/system/client-errors/export (admin CSV)
+
+Client error filter query params:
+
+- `range`: `24h` or `7d`
+- `type`: `5xx` (status codes 500-599)
+- Existing filters remain supported: `source`, `statusCode`, `q`, `fromDate`, `toDate`
 
 ---
 

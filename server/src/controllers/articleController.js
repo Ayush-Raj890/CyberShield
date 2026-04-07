@@ -4,6 +4,20 @@ import Notification from "../models/Notification.js";
 import { addXP } from "../utils/gamification.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 
+const ARTICLE_PAGE_LIMIT_MAX = 50;
+
+const getArticlePagination = (query) => {
+  const rawPage = Number.parseInt(query.page, 10);
+  const rawLimit = Number.parseInt(query.limit, 10);
+
+  const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0
+    ? Math.min(rawLimit, ARTICLE_PAGE_LIMIT_MAX)
+    : 10;
+
+  return { page, limit };
+};
+
 // Create Article (Any authenticated user)
 export const createArticle = async (req, res) => {
   try {
@@ -56,6 +70,37 @@ export const getArticles = async (req, res) => {
       .sort({ createdAt: -1 });
 
     return sendSuccess(res, articles);
+  } catch (error) {
+    return sendError(res, 500, error.message);
+  }
+};
+
+// Get current user's own articles
+export const getMyArticles = async (req, res) => {
+  try {
+    const { page, limit } = getArticlePagination(req.query);
+    const match = { createdBy: req.user._id };
+    const total = await Article.countDocuments(match);
+
+    const articles = await Article.find(match)
+      .select("title category tags status createdAt updatedAt")
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    const totalPages = total > 0 ? Math.ceil(total / limit) : 0;
+
+    return sendSuccess(res, {
+      items: articles,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage: page * limit < total
+      }
+    });
   } catch (error) {
     return sendError(res, 500, error.message);
   }

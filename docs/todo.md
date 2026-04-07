@@ -71,7 +71,7 @@
 - [x] Add lazy-loaded charts for analytics tabs only
 - [x] Add dark mode ready state wiring (without forcing global theme)
 - [ ] Add chart visualization library integration (optional polish)
-- [ ] Add role-specific endpoint hardening (`/reports/user`, `/articles/user`, `/forum/user`) to avoid broad fetch + frontend filtering
+- [x] Add role-specific endpoint hardening (`/reports/user`, `/articles/user`, `/forum/user`) to avoid broad fetch + frontend filtering
 
 ---
 
@@ -280,35 +280,35 @@ Skip for now:
 - [x] Fix password reset suspension bypass:
   - [x] Prevent `isSuspended = false` from password reset flow
   - [x] Keep suspension separate from password recovery
-- [ ] Add AI endpoint input validation caps:
-  - [ ] Limit text payload size to reasonable max (e.g., 10KB)
-  - [ ] Add express-validator on /api/ai/predict route
-- [ ] Add upload file-size limits to multer:
-  - [ ] Set max file size cap (e.g., 50MB)
-  - [ ] Validate file type strictly (images, PDFs only)
-  - [ ] Add error handling for oversized uploads
+- [x] Add AI endpoint input validation caps:
+  - [x] Limit text payload size to reasonable max (e.g., 10KB)
+  - [x] Add express-validator on /api/ai/predict route
+- [x] Add upload file-size limits to multer:
+  - [x] Set max file size cap (e.g., 50MB)
+  - [x] Validate file type strictly (images, PDFs only)
+  - [x] Add error handling for oversized uploads
 - [ ] **BUG FIX:** Implement account suspension revocation:
-  - [ ] Add backend unsuspend endpoint (`PUT /api/admin/users/:id/unsuspend`)
-  - [ ] Show suspend/unsuspend toggle button based on current state in admin UI
-  - [ ] Add 2-step confirmation modal before executing unsuspend
-- [ ] **BUG FIX:** Make remove admin button visible in admin panel:
-  - [ ] Verify Remove Admin button renders in ManageUsers component
-  - [ ] Fix any CSS visibility issues
+  - [x] Add backend unsuspend endpoint (`PUT /api/admin/users/:id/unsuspend`)
+  - [x] Show suspend/unsuspend toggle button based on current state in admin UI
+  - [x] Add 2-step confirmation modal before executing unsuspend
+- [x] **BUG FIX:** Make remove admin button visible in admin panel:
+  - [x] Verify Remove Admin button renders in ManageUsers component
+  - [x] Fix any CSS visibility issues
 - [ ] **BUG FIX:** Add 2-step confirmation for critical operations:
-  - [ ] Remove Admin: Show confirmation modal with email/name display before executing
-  - [ ] Delete Account (self-service): Show confirmation modal with warning before permanent deletion
-  - [ ] Suspend Account: Show confirmation modal before suspending
-  - [ ] Unsuspend Account: Show confirmation modal before unsuspending
-  - [ ] Use consistent modal design across all operations
+  - [x] Remove Admin: Show confirmation modal with email/name display before executing
+  - [x] Delete Account (self-service): Show confirmation modal with warning before permanent deletion
+  - [x] Suspend Account: Show confirmation modal before suspending
+  - [x] Unsuspend Account: Show confirmation modal before unsuspending
+  - [x] Use consistent modal design across all operations
 
 **MEDIUM Priority Findings to Implement:**
 
-- [ ] Shorten JWT token expiry (from 1 week to 24 hours)
-  - [ ] Consider optional refresh token flow
-- [ ] Add forum listing pagination:
-  - [ ] Implement page/limit query params
-  - [ ] Add server-side pagination caps
-  - [ ] Update frontend forum page to use paginated payload
+- [x] Shorten JWT token expiry (from 1 week to 24 hours)
+  - [ ] Consider optional refresh token flow (deferred)
+- [x] Add forum listing pagination:
+  - [x] Implement page/limit query params
+  - [x] Add server-side pagination caps
+  - [x] Update frontend forum page to use paginated payload
 
 ---
 
@@ -357,15 +357,16 @@ Skip for now:
   - [x] Protected create post route (`/forum/create`)
   - [x] Auth-gated reply flow
   - [x] Navbar and dashboard discoverability
+  - [x] Add reply submit button with improved styling (blue gradient button with hover effects)
 - [ ] Error Logs UX enhancements:
-  - [ ] Quick filter presets (Last 24h, Last 7 days)
-  - [ ] One-click status filter presets (e.g., Only 5xx)
-- [ ] Backend token validation on sensitive flows:
-  - [ ] Validate JWT on protected pages before rendering sensitive data
-  - [ ] Don't rely solely on localStorage for auth state
+  - [x] Quick filter presets (Last 24h, Last 7 days)
+  - [x] One-click status filter presets (e.g., Only 5xx)
+- [x] Backend token validation on sensitive flows:
+  - [x] Validate JWT on protected pages before rendering sensitive data
+  - [x] Don't rely solely on localStorage for auth state
 - [ ] Remove legacy `UserDashboard.jsx` component:
-  - [ ] Confirm current dashboard uses `Dashboard.jsx` (not deprecated)
-  - [ ] Delete or archive old component
+  - [x] Confirm current dashboard uses `Dashboard.jsx` (not deprecated)
+  - [x] Delete or archive old component
 - [ ] Post-login navigation restructuring:
   - [ ] Redirect authenticated users from landing page to Forums instead of Dashboard
   - [ ] Move Dashboard page to Account section of navbar (accessible through profile/account dropdown)
@@ -386,9 +387,9 @@ Skip for now:
 - [ ] RBAC advanced enhancements (granular permissions, audit logging)
 - [ ] Create `.env.example` files for team guidance:
   - [x] `server/.env.example` with all backend variables documented
-  - [ ] `client/.env.example` (VITE_API_URL documentation)
-  - [ ] `ai-service/.env.example` (if applicable)
+  - [x] `client/.env.example` (VITE_API_URL documentation)
+  - [x] `ai-service/.env.example` (if applicable)
 - [ ] Startup script documentation:
-  - [ ] Single canonical recommendation per OS in onboarding
-  - [ ] Label fallback launchers clearly
-  - [ ] Document which method works best for CI/CD
+  - [x] Single canonical recommendation per OS in onboarding
+  - [x] Label fallback launchers clearly
+  - [x] Document which method works best for CI/CD

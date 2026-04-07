@@ -5,7 +5,7 @@ const apiBase = (() => {
   const rawBase = import.meta.env.VITE_API_URL;
 
   if (!rawBase) {
-    return "http://localhost:5001/api";
+    return "http://localhost:5000/api";
   }
 
   // Trim trailing slashes from the configured base URL

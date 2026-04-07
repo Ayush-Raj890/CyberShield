@@ -343,3 +343,17 @@ export const resetPassword = async (req, res) => {
     return sendError(res, 500, error.message);
   }
 };
+
+export const validateToken = async (req, res) => {
+  return sendSuccess(res, {
+    valid: true,
+    user: {
+      _id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+      isVerified: req.user.isVerified,
+      isSuspended: req.user.isSuspended
+    }
+  });
+};

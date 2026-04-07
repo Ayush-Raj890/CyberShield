@@ -7,8 +7,10 @@ import {
   verifyOTP,
   resendOTP,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  validateToken
 } from "../controllers/authController.js";
+import { protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -111,5 +113,7 @@ router.post(
   ],
   resetPassword
 );
+
+router.get("/validate", protect, validateToken);
 
 export default router;

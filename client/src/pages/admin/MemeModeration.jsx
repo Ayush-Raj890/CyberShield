@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import AdminNavbar from "../../components/layout/AdminNavbar";
 import API from "../../services/api";
 
-const API_HOST = "http://localhost:5001";
+const API_HOST = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
 
 export default function MemeModeration() {
   const [memes, setMemes] = useState([]);

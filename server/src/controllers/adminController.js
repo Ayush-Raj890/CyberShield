@@ -182,6 +182,34 @@ export const suspendUser = async (req, res) => {
   }
 };
 
+// Unsuspend user (Admin or Super Admin)
+export const unsuspendUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return sendError(res, 404, "User not found");
+    }
+
+    if (user.role === "SUPER_ADMIN") {
+      return sendError(res, 400, "Cannot modify SUPER_ADMIN");
+    }
+
+    if (String(req.user?._id) === String(user._id)) {
+      return sendError(res, 400, "Cannot modify own suspension state");
+    }
+
+    user.isSuspended = false;
+    await user.save();
+
+    console.log(`[ADMIN] admin=${req.user?._id} action=UNSUSPEND_USER target=${user._id}`);
+
+    return sendSuccess(res, { userId: user._id, isSuspended: user.isSuspended }, 200, "User unsuspended");
+  } catch (error) {
+    return sendError(res, 500, error.message);
+  }
+};
+
 // Remove admin role (Super Admin only)
 export const removeAdmin = async (req, res) => {
   try {

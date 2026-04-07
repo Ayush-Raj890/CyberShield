@@ -12,13 +12,15 @@ export default function ErrorLogs() {
   const [search, setSearch] = useState("");
   const [source, setSource] = useState("ALL");
   const [statusCode, setStatusCode] = useState("");
+  const [rangePreset, setRangePreset] = useState("ALL");
+  const [errorTypePreset, setErrorTypePreset] = useState("ALL");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     fetchLogs();
-  }, [page, source, statusCode, fromDate, toDate, search]);
+  }, [page, source, statusCode, fromDate, toDate, rangePreset, errorTypePreset, search]);
 
   const fetchLogs = async () => {
     try {
@@ -35,6 +37,14 @@ export default function ErrorLogs() {
 
       if (statusCode.trim()) {
         params.statusCode = statusCode.trim();
+      }
+
+      if (rangePreset !== "ALL") {
+        params.range = rangePreset;
+      }
+
+      if (errorTypePreset !== "ALL") {
+        params.type = errorTypePreset;
       }
 
       if (search.trim()) {
@@ -73,6 +83,14 @@ export default function ErrorLogs() {
 
       if (statusCode.trim()) {
         params.statusCode = statusCode.trim();
+      }
+
+      if (rangePreset !== "ALL") {
+        params.range = rangePreset;
+      }
+
+      if (errorTypePreset !== "ALL") {
+        params.type = errorTypePreset;
       }
 
       if (search.trim()) {
@@ -115,7 +133,7 @@ export default function ErrorLogs() {
       <div className="p-6 max-w-6xl mx-auto">
         <h2 className="text-xl font-semibold mb-4">Client Error Logs</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-5">
+        <div className="grid grid-cols-1 md:grid-cols-8 gap-3 mb-5">
           <input
             type="text"
             className="input md:col-span-2"
@@ -151,12 +169,40 @@ export default function ErrorLogs() {
             }}
           />
 
+          <select
+            className="input"
+            value={rangePreset}
+            onChange={(e) => {
+              setRangePreset(e.target.value);
+              setFromDate("");
+              setToDate("");
+              setPage(1);
+            }}
+          >
+            <option value="ALL">All time</option>
+            <option value="24h">Last 24h</option>
+            <option value="7d">Last 7d</option>
+          </select>
+
+          <select
+            className="input"
+            value={errorTypePreset}
+            onChange={(e) => {
+              setErrorTypePreset(e.target.value);
+              setPage(1);
+            }}
+          >
+            <option value="ALL">All statuses</option>
+            <option value="5xx">5xx only</option>
+          </select>
+
           <input
             type="date"
             className="input"
             value={fromDate}
             onChange={(e) => {
               setFromDate(e.target.value);
+              setRangePreset("ALL");
               setPage(1);
             }}
           />
@@ -167,6 +213,7 @@ export default function ErrorLogs() {
             value={toDate}
             onChange={(e) => {
               setToDate(e.target.value);
+              setRangePreset("ALL");
               setPage(1);
             }}
           />

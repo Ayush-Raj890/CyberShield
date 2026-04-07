@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { performLogout } from "../../utils/logout";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -37,11 +38,6 @@ export default function Navbar() {
       document.removeEventListener("keydown", handleEscape);
     };
   }, []);
-
-  const logout = () => {
-    localStorage.clear();
-    navigate("/");
-  };
 
   const publicLinks = [
     { label: "AI", path: "/ai" },
@@ -198,7 +194,7 @@ export default function Navbar() {
               </details>
             )}
 
-            <button onClick={logout} className="text-red-500 hover:text-red-600 transition-colors">Logout</button>
+            <button onClick={() => performLogout(navigate)} className="text-red-500 hover:text-red-600 transition-colors">Logout</button>
           </div>
         )}
 

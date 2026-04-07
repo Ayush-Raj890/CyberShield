@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
+import ConfirmActionModal from "../../components/ui/ConfirmActionModal";
 import API from "../../services/api";
+import { performLogout } from "../../utils/logout";
 
 const PREFS_KEY = "userPreferences";
 
@@ -12,6 +14,7 @@ export default function Settings() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const [profileForm, setProfileForm] = useState({ alias: "", bio: "" });
   const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "" });
@@ -110,19 +113,16 @@ export default function Settings() {
   };
 
   const deleteAccount = async () => {
-    const confirmed = window.confirm("This will permanently delete your account and related content. Continue?");
-    if (!confirmed) return;
-
     setDeleting(true);
     try {
       await API.delete("/users/me");
-      localStorage.clear();
       toast.success("Account deleted");
-      navigate("/");
+      performLogout(navigate, "/");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to delete account");
     } finally {
       setDeleting(false);
+      setConfirmDeleteOpen(false);
     }
   };
 
@@ -198,11 +198,28 @@ export default function Settings() {
 
         <div className="card border border-red-400">
           <h3 className="text-red-500 font-semibold mb-2">Danger Zone</h3>
-          <button className="btn btn-danger" type="button" disabled={deleting} onClick={deleteAccount}>
+          <button
+            className="btn btn-danger"
+            type="button"
+            disabled={deleting}
+            onClick={() => setConfirmDeleteOpen(true)}
+          >
             {deleting ? "Deleting..." : "Delete Account"}
           </button>
         </div>
       </div>
+
+      <ConfirmActionModal
+        open={confirmDeleteOpen}
+        title="Delete account?"
+        description="This will permanently delete your account and related content. This action cannot be undone."
+        confirmLabel={deleting ? "Deleting..." : "Confirm Delete"}
+        confirmVariant="danger"
+        onConfirm={deleteAccount}
+        onCancel={() => setConfirmDeleteOpen(false)}
+        confirmDisabled={deleting}
+        cancelDisabled={deleting}
+      />
     </>
   );
 }
