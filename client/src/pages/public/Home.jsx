@@ -101,7 +101,7 @@ export default function Home() {
 
   return (
     <PublicLayout>
-      <section className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50 to-blue-200 page-section">
+      <section className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50 to-blue-200 px-6 py-20 md:py-28">
         <div className="pointer-events-none absolute -top-24 -left-20 h-72 w-72 rounded-full bg-blue-200/70 blur-3xl animate-float" />
         <div className="pointer-events-none absolute -bottom-24 -right-20 h-80 w-80 rounded-full bg-sky-200/60 blur-3xl animate-float" style={{ animationDelay: "1.2s" }} />
 
@@ -175,8 +175,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container-page page-section">
-        <div className="section-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="container-page py-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
             { title: "OTP Verified Accounts", desc: "Email ownership checks" },
             { title: "AI Threat Triage", desc: "Quick SAFE/SUSPICIOUS/MALICIOUS" },
@@ -195,13 +195,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container-page page-section">
+      <section className="container-page py-14">
         <h2 className="text-3xl font-black text-center text-slate-900 mb-3">How To Use CyberShield</h2>
         <p className="text-center text-slate-600 max-w-2xl mx-auto mb-10">
           Follow this simple flow to move from awareness to action in under 5 minutes.
         </p>
 
-        <div className="section-grid md:grid-cols-3">
+        <div className="grid md:grid-cols-3 gap-5">
           {howToUseCards.map((item, index) => (
             <FeatureCard
               key={item.title}
@@ -215,11 +215,11 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-white/90 page-section">
+      <section className="bg-white border-y border-slate-200 px-6 py-14">
         <div className="container-page">
           <h2 className="text-3xl font-black text-center text-slate-900 mb-10">Platform Features</h2>
 
-          <div className="section-grid md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
             {platformFeatures.map((feature, index) => (
               <FeatureCard
                 key={feature.title}
@@ -234,14 +234,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container-page page-section">
+      <section className="container-page py-14">
         <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
           <h2 className="text-2xl font-black text-slate-900 mb-2">How To Access The Community Forum</h2>
           <p className="text-slate-600 mb-4 text-sm">
             The forum is available at /forum with public viewing and authenticated posting for incident insights.
           </p>
 
-          <div className="section-grid md:grid-cols-3 text-sm">
+          <div className="grid md:grid-cols-3 gap-4 text-sm">
             {forumAccessCards.map((item, index) => (
               <FeatureCard
                 key={item.title}
@@ -262,7 +262,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="container-page page-section text-center">
+      <section className="px-6 pb-14 text-center">
+        <div className="container-page">
           <h2 className="text-3xl font-black text-slate-900 mb-4">Start Protecting Yourself Today</h2>
           <p className="text-slate-600 mb-6 max-w-2xl mx-auto">
             Take the first step now: analyze suspicious content instantly or activate your account for complete reporting and tracking.
@@ -279,6 +280,7 @@ export default function Home() {
               Read Security Guides
             </button>
           </div>
+        </div>
       </section>
     </PublicLayout>
   );

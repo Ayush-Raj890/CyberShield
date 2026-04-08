@@ -192,34 +192,30 @@ Skip for now:
 
 **Priority 2 — Design System Components (VERY IMPORTANT)**
 
-- [x] Create reusable `Button` component with variants
-- [x] Create reusable `Card` component
-- [x] Create reusable `Input` component
-- [x] Create reusable `Badge` component
-- [x] Create reusable `Modal` component (basic)
+- [ ] Create reusable `Button` component with variants
+- [ ] Create reusable `Card` component
+- [ ] Create reusable `Input` component
+- [ ] Create reusable `Badge` component
+- [ ] Create reusable `Modal` component (basic)
 
 **Priority 3 — Layout Improvement**
 
-- [x] Add max-width container (`max-w-6xl mx-auto`)
-- [x] Add consistent page padding (`p-6`)
-- [x] Improve section separation (use spacing instead of borders)
-- [x] Align content to grid system
-
-Completed: Priority 3 layout improvement has been applied in the client layout and key pages.
+- [ ] Add max-width container (`max-w-6xl mx-auto`)
+- [ ] Add consistent page padding (`p-6`)
+- [ ] Improve section separation (use spacing instead of borders)
+- [ ] Align content to grid system
 
 **Priority 4 — Navbar Refinement**
 
-- [x] Add subtle background blur or shadow
-- [x] Improve dropdown animation (fade + slide)
-- [x] Add active state indicator
-- [x] Add hover transitions
-
-Completed: Priority 4 navbar refinement has been implemented in the client navbar components.
+- [ ] Add subtle background blur or shadow
+- [ ] Improve dropdown animation (fade + slide)
+- [ ] Add active state indicator
+- [ ] Add hover transitions
 
 **Priority 5 — Dashboard Polish**
 
   
-  - [x] Improve stat cards (bigger numbers, muted labels)
+- [x] Improve stat cards (bigger numbers, muted labels)
 - [x] Add subtle hover effect on cards
 - [x] Improve spacing between sections
 - [x] Add loading skeletons

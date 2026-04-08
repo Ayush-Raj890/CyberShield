@@ -4,10 +4,10 @@ export default function PublicLayout({ children }) {
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100 transition-colors">
       <Navbar />
-      <main className="flex-1 page-stack">
+      <main className="flex-1">
         {children}
       </main>
-      <footer className="page-section bg-white/90 dark:bg-neutral-900/90">
+      <footer className="border-t border-neutral-200 bg-white/90 dark:border-neutral-700 dark:bg-neutral-900/90">
         <div className="container-page py-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">CyberShield</p>
