@@ -214,10 +214,13 @@ Skip for now:
 
 **Priority 5 — Dashboard Polish**
 
-- [ ] Improve stat cards (bigger numbers, muted labels)
-- [ ] Add subtle hover effect on cards
-- [ ] Improve spacing between sections
-- [ ] Add loading skeletons
+  
+- [x] Improve stat cards (bigger numbers, muted labels)
+- [x] Add subtle hover effect on cards
+- [x] Improve spacing between sections
+- [x] Add loading skeletons
+
+Completed: Priority 5 dashboard polish has been implemented in the dashboard components.
 
 **Priority 6 — Feedback & States**
 
