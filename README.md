@@ -1,197 +1,210 @@
-﻿# CyberShield
+# CyberShield
 
-Project documentation has moved to [docs/README.md](docs/README.md).
+CyberShield is a full-stack cybersecurity platform for reporting threats, triaging suspicious messages with AI, moderating community content, and managing users through role-based admin tools.
 
-Start here:
+## Live Deployments
 
-- [Onboarding Guide](docs/onboarding.md)
-- [Project Context](docs/context.md)
-- [TODO](docs/todo.md)
-- [Variables](docs/variables.md)
-- [Logs](docs/logs.md)
-- [Bugs](docs/bugs.md)
+- Frontend: [https://cyber-shield-eight.vercel.app](https://cyber-shield-eight.vercel.app)
+- Frontend preview: [https://cyber-shield-nzeoni1oj-mystifys-projects.vercel.app](https://cyber-shield-nzeoni1oj-mystifys-projects.vercel.app)
+- Backend API: [https://cybershield-backend-inx9.onrender.com](https://cybershield-backend-inx9.onrender.com)
+- AI service: [https://cybershield-ai-sm3o.onrender.com](https://cybershield-ai-sm3o.onrender.com)
 
-## API Endpoints
+## What It Does
 
-Auth:
-- POST /api/auth/register
-- POST /api/auth/login
-- POST /api/auth/verify-otp
-- POST /api/auth/resend-otp
-- POST /api/auth/forgot-password
-- POST /api/auth/reset-password
+- Public threat reporting and safe public feeds
+- OTP-based authentication and password recovery
+- Role-based user governance: USER, ADMIN, SUPER_ADMIN
+- AI-based scam detection with backend proxying to a FastAPI service
+- Community forum with authenticated posting and replies
+- Knowledge Hub with moderation workflow
+- Video Hub and Meme Hub with admin moderation
+- XP, streak, badges, and coin economy systems
+- Error observability with client-side error capture and admin logs
 
-Users:
-- GET /api/users/profile
-- PUT /api/users/profile
-- PUT /api/users/change-password
-- DELETE /api/users/me
+## Current Status
 
-Reports:
-- GET /api/reports
-- POST /api/reports
-- PUT /api/reports/:id
+The project is in release-ready state:
 
-Articles:
-- GET /api/articles
-- POST /api/articles
+- Core product modules are implemented
+- Security hardening is in place
+- Forum pagination is implemented
+- Role-specific user data endpoints are implemented
+- Protected route token validation is implemented
+- Production builds succeed
+- Live backend, AI service, and frontend deployments are available
 
-Videos:
-- GET /api/videos
-- POST /api/videos
-- GET /api/videos/pending
-- PUT /api/videos/:id
+## Tech Stack
 
-Memes:
-- GET /api/memes
-- POST /api/memes
-- POST /api/memes/:id/vote
-- GET /api/memes/admin/flagged
-- PUT /api/memes/:id
+- Frontend: React, Vite, Tailwind CSS
+- Backend: Node.js, Express, MongoDB, Mongoose
+- AI service: FastAPI
+- Auth: JWT + OTP email verification
+- File upload: Multer
+- UI feedback: react-hot-toast
 
-Games:
-- POST /api/game/reward
+## Repository Layout
 
-Admin:
-- GET /api/admin/stats
-- GET /api/admin/users
-- PUT /api/admin/promote/:id
+- `client/` - React frontend
+- `server/` - Express backend
+- `ai-service/` - FastAPI AI service
+- `docs/` - project docs, logs, TODOs, onboarding, and variables
+- `scripts/` - startup helpers
 
-Notifications:
-- GET /api/notifications
-- PUT /api/notifications/:id/read
+## Local Development
 
-Pagination support:
-- GET /api/reports?page=1&limit=10
-- GET /api/admin/reports?page=1&limit=10
+### Prerequisites
 
-## Validation Rules (Current)
+- Node.js 18+
+- Python 3.10+
+- MongoDB connection string
 
-Frontend (Login/Register):
+### Start everything
 
-- Email must match a basic email format check
-- Password must be at least 6 characters
+From the repository root:
 
-Backend (Auth APIs):
+```powershell
+npm run dev
+```
 
-- Required field validation on register/login
-- Email format validation on register/login
-- Password must be at least 6 characters on register
-- Input sanitization and HTML escaping on all auth fields
-- Email verification with 6-digit OTP before login
-- Emails are normalized to lowercase without removing dots (e.g. `abc.def@gmail.com` remains unchanged)
-- Re-register support for unverified accounts (old unverified record removed)
-- OTP resend endpoint with cooldown support in UI
-- OTP verification attempt limiting (max 5 attempts before forcing resend)
-- Forgot password flow with email reset token (15-minute expiry)
-- Report title, description, and category validation with sanitization
-- Report severity and contactEmail optional validation
-- Suspended users are blocked from login and protected API access
+That launches the backend, frontend, and AI service through the root startup script.
 
-AI Predictor:
-
-- Keyword scoring classifier with labels SAFE, SUSPICIOUS, MALICIOUS
-- Thresholds: 0-1 matches = SAFE, 2 = SUSPICIOUS, 3+ = MALICIOUS
-
-## Security Implementation (AppSec)
+### Run individual services
 
 Backend:
-- Global middleware: helmet (secure headers), custom XSS sanitizer middleware, custom NoSQL sanitizer middleware
-- Route-level request validation/sanitization using express-validator on auth and report endpoints
-- Input trimming, HTML escaping, email validation, and category whitelisting
+
+```powershell
+cd server
+npm install
+npm run dev
+```
 
 Frontend:
-- Utility sanitizer module for light-layer XSS prevention (HTML tag removal)
-- Auth and report forms sanitize user input before API calls
 
-## File Upload System
+```powershell
+cd client
+npm install
+npm run dev
+```
 
-Backend:
-- Multer storage configured for disk storage in /uploads directory
-- File type filtering: JPEG, PNG, GIF, PDF
-- Static file serving via Express on /uploads endpoint
-- Report evidence stored as file path in database
+AI service:
 
-Frontend:
-- CreateReport form includes optional file input
-- FormData used for multipart/form-data submissions
-- Evidence preview in ViewReports (images inline, PDFs as links)
+```powershell
+cd ai-service
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
 
-## User-Generated Content & Moderation
+## Environment Variables
 
-Backend:
-- Articles can be submitted by any authenticated user
-- User submissions created with status: PENDING
-- Admin endpoints for viewing pending articles and approving/rejecting
-- Public API only returns APPROVED articles
+### Server
 
-Frontend:
-- Articles page includes submission form toggle
-- Knowledge Hub shows only approved published articles
-- Admin ManageArticles page with Pending vs Published tabs
-- Approve/Reject buttons for pending content with creator contact info
-- Video Hub page shows approved moderator-reviewed video content
-- Video submit page allows authenticated users to submit videos for review
-- Admin Video Moderation page approves/rejects pending videos
-- Meme Hub page shows visible memes with community voting
-- Upload Meme page allows authenticated users to submit image-based memes
-- Admin Meme Moderation page manages flagged memes (approve/remove/toggle voting)
-- Phishing Detector game page adds interactive SAFE/SCAM quiz flow with feedback, score, and rewards
-- Identity labels use alias-first display; when alias exists, username is shown on hover
-- Mobile responsiveness improvements applied across core user flows (navbars, profile, reports, forum, articles, AI)
-- Dark mode switch is pending (tracked in docs/todo.md)
-- Modular dashboard engine now powers both user and admin dashboards
-- User dashboard now includes gamification progress (XP, level, streak, badges)
-- Navbar reorganized into grouped product domains for cleaner navigation UX
+Use `server/.env` or deploy-time environment variables.
 
-Backend:
+```env
+PORT=5000
+MONGO_URI=your_mongodb_uri
+JWT_SECRET=strong_secret
+JWT_EXPIRES_IN=24h
+AI_SERVICE_URL=https://your-ai-service-url
+ALLOWED_ORIGINS=https://your-frontend-url
+ENCRYPTION_KEY=32+_char_strong_key
+EMAIL_USER=your_email
+EMAIL_PASS=app_password
+EMAIL_MOCK=true
+```
 
-- Gamification model and reward engine implemented (XP, levels, streaks, badges)
-- Event-based XP rewards wired to report/article/forum/AI/login actions
-- Game reward endpoint wired to XP + coin rewards with cooldown protection
-- Meme engagement loop rewards added (meme upload, meme liked, meme voted)
-- Meme voting anti-abuse checks added (self-vote blocked, duplicate same-vote no XP, rate limiter)
-- Virtual coin economy added (earn + spend rules with anti-spam action costs)
-- Economy anti-farming controls added (daily earn cap, UTC daily reset, action cooldowns, diminishing rewards)
+### Client
 
-## Upcoming Dashboard Architecture (Locked)
+```env
+VITE_API_URL=https://your-backend-url
+```
 
-- Modular tab-based dashboards
-- Client tabs: Overview, Analytics, Reports
-- Admin tabs: Overview, Analytics, Moderation
-- Real + calculated metrics model
-- Lazy-loaded charts (analytics tab only)
-- Dark mode ready strategy (not globally forced yet)
+### AI Service
 
-## Upcoming Product Expansion (Planned)
+```env
+PORT=8000
+```
 
+## Production Notes
 
-## Public Access Model
+- Backend uses `AI_SERVICE_URL` to call the AI prediction endpoint.
+- Frontend uses `VITE_API_URL` to call the deployed backend.
+- The backend expects production origins to be listed in `ALLOWED_ORIGINS`.
+- The backend exposes a health endpoint at `GET /api/health`.
 
-Public frontend routes:
+## Key API Routes
 
-Protected frontend routes:
+### Auth
 
-Public backend endpoints:
- `scripts/start-all.ps1` on Windows PowerShell
- `scripts/start-all.cmd` on Windows
- `scripts/start-all.sh` on macOS/Linux
-- GET /api/memes
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/verify-otp`
+- `POST /api/auth/resend-otp`
+- `POST /api/auth/forgot-password`
+- `POST /api/auth/reset-password`
+- `GET /api/auth/validate`
 
-## Role Governance
+### Reports
 
-Roles:
-- USER
-- ADMIN
-- SUPER_ADMIN
+- `GET /api/reports`
+- `GET /api/reports/user`
+- `GET /api/reports/me`
+- `POST /api/reports`
+- `PUT /api/reports/:id`
 
-Admin actions:
-- Promote user to ADMIN
-- Suspend user account
-- Manage users/reports/articles
+### AI
 
-Super Admin action:
-- Demote ADMIN to USER
+- `POST /api/ai/predict`
 
-Operational script:
-- `npm run make:super-admin -- your-email@example.com`
+### Forum
+
+- `GET /api/forum`
+- `GET /api/forum/user`
+- `POST /api/forum`
+- `POST /api/forum/:id/reply`
+
+### Articles
+
+- `GET /api/articles`
+- `GET /api/articles/user`
+- `GET /api/articles/admin/pending`
+- `POST /api/articles`
+- `PUT /api/articles/:id/status`
+
+### Admin / Observability
+
+- `GET /api/admin/stats`
+- `GET /api/admin/users`
+- `GET /api/admin/reports`
+- `GET /api/system/client-errors`
+- `GET /api/system/client-errors/export`
+
+## Build And Verification
+
+Frontend production build:
+
+```bash
+npm --prefix client run build
+```
+
+Backend smoke check:
+
+```bash
+npm --prefix server run dev
+```
+
+## Documentation
+
+- [docs/README.md](docs/README.md)
+- [docs/onboarding.md](docs/onboarding.md)
+- [docs/context.md](docs/context.md)
+- [docs/todo.md](docs/todo.md)
+- [docs/variables.md](docs/variables.md)
+- [docs/logs.md](docs/logs.md)
+- [docs/bugs.md](docs/bugs.md)
+
+## Resume Summary
+
+Built and deployed a full-stack cybersecurity platform with AI-based phishing detection, role-based access control, and real-time reporting features.
