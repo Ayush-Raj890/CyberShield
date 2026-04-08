@@ -3,10 +3,13 @@ import toast from "react-hot-toast";
 import API from "../../services/api";
 import AdminNavbar from "../../components/layout/AdminNavbar";
 import { EyeOff, TriangleAlert } from "lucide-react";
+import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 
 export default function ManageReports() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState(null);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
@@ -31,6 +34,7 @@ export default function ManageReports() {
 
   const fetchReports = async () => {
     try {
+      setError("");
       setLoading(true);
       const response = await API.get(`/admin/reports?page=${page}&limit=${limit}`);
       const payload = response.data;
@@ -40,6 +44,9 @@ export default function ManageReports() {
       setHasNextPage(Array.isArray(payload) ? items.length === limit : Boolean(payload?.pagination?.hasNextPage));
     } catch (error) {
       console.error(error);
+      setReports([]);
+      setHasNextPage(false);
+      setError(error.response?.data?.message || "Failed to load reports");
     } finally {
       setLoading(false);
     }
@@ -69,9 +76,25 @@ export default function ManageReports() {
         <h2 className="text-xl mb-4">All Reports</h2>
 
         {loading ? (
-          <p>Loading...</p>
+          <PageState
+            variant="loading"
+            title="Loading reports"
+            description="Fetching the latest incident reports for moderation."
+          />
+        ) : error ? (
+          <PageState
+            variant="error"
+            title="Reports unavailable"
+            description={error}
+            actionLabel="Try again"
+            onAction={fetchReports}
+          />
         ) : reports.length === 0 ? (
-          <div className="card text-gray-500">No reports found.</div>
+          <PageState
+            variant="empty"
+            title="No reports found"
+            description="There are no reports for the current page yet."
+          />
         ) : (
           <>
             {reports.map((r) => (
@@ -137,21 +160,13 @@ export default function ManageReports() {
             ))}
 
             <div className="flex justify-between items-center mt-4">
-              <button
-                className="btn"
-                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                disabled={page === 1 || loading}
-              >
+              <Button variant="outline" onClick={() => setPage((prev) => Math.max(prev - 1, 1))} disabled={page === 1 || loading}>
                 Previous
-              </button>
+              </Button>
               <span className="text-sm text-gray-500">Page {page}</span>
-              <button
-                className="btn"
-                onClick={() => setPage((prev) => prev + 1)}
-                disabled={!hasNextPage || loading}
-              >
+              <Button variant="outline" onClick={() => setPage((prev) => prev + 1)} disabled={!hasNextPage || loading}>
                 Next
-              </button>
+              </Button>
             </div>
           </>
         )}

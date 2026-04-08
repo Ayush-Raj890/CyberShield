@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import API from "../../services/api";
 import AdminNavbar from "../../components/layout/AdminNavbar";
+import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 
 const PAGE_SIZE = 20;
 
@@ -17,6 +19,7 @@ export default function ErrorLogs() {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [exporting, setExporting] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchLogs();
@@ -24,6 +27,7 @@ export default function ErrorLogs() {
 
   const fetchLogs = async () => {
     try {
+      setError("");
       setLoading(true);
 
       const params = {
@@ -66,6 +70,7 @@ export default function ErrorLogs() {
       setLogs([]);
       setTotalPages(1);
       console.error(error);
+      setError(error.response?.data?.message || "Failed to load client error logs");
     } finally {
       setLoading(false);
     }
@@ -220,20 +225,36 @@ export default function ErrorLogs() {
         </div>
 
         <div className="flex justify-end mb-4">
-          <button
+          <Button
             type="button"
-            className="btn btn-primary"
             onClick={exportCsv}
             disabled={exporting || loading}
+            loading={exporting}
           >
-            {exporting ? "Exporting..." : "Export CSV"}
-          </button>
+            Export CSV
+          </Button>
         </div>
 
         {loading ? (
-          <p>Loading...</p>
+          <PageState
+            variant="loading"
+            title="Loading error logs"
+            description="Fetching client-side errors and stack traces."
+          />
+        ) : error ? (
+          <PageState
+            variant="error"
+            title="Error logs unavailable"
+            description={error}
+            actionLabel="Try again"
+            onAction={fetchLogs}
+          />
         ) : logs.length === 0 ? (
-          <div className="card text-gray-500">No error logs found.</div>
+          <PageState
+            variant="empty"
+            title="No error logs found"
+            description="Adjust the filters or wait for new client errors to appear."
+          />
         ) : (
           <div className="space-y-3">
             {logs.map((log) => (
@@ -276,23 +297,21 @@ export default function ErrorLogs() {
         )}
 
         <div className="flex items-center justify-end gap-3 mt-6">
-          <button
+          <Button
             type="button"
-            className="btn"
             onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             disabled={page === 1 || loading}
           >
             Previous
-          </button>
+          </Button>
           <span className="text-sm text-gray-600">Page {page} of {totalPages}</span>
-          <button
+          <Button
             type="button"
-            className="btn"
             onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
             disabled={page >= totalPages || loading}
           >
             Next
-          </button>
+          </Button>
         </div>
       </div>
     </>

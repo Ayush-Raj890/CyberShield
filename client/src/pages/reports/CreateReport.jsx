@@ -2,6 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
+import Button from "../../components/ui/Button";
 
 export default function CreateReport() {
   const [form, setForm] = useState({
@@ -152,9 +153,9 @@ export default function CreateReport() {
             />
           </label>
 
-          <button className="btn btn-primary w-full">
-            {loading ? "Processing..." : "Submit Report"}
-          </button>
+          <Button type="submit" className="w-full" loading={loading}>
+            Submit Report
+          </Button>
         </form>
       </div>
     </>

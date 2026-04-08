@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
+import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 
 export default function Profile() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [error, setError] = useState("");
 
   const [profileForm, setProfileForm] = useState({ alias: "", bio: "" });
   const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "" });
@@ -18,6 +21,7 @@ export default function Profile() {
 
   const fetchProfile = async () => {
     try {
+      setError("");
       setLoading(true);
       const { data: payload } = await API.get("/users/profile");
       setData(payload);
@@ -26,6 +30,7 @@ export default function Profile() {
         bio: payload.user.bio || ""
       });
     } catch (error) {
+      setError(error.response?.data?.message || "Failed to load profile");
       toast.error("Failed to load profile");
     } finally {
       setLoading(false);
@@ -84,7 +89,13 @@ export default function Profile() {
     return (
       <>
         <Navbar />
-        <div className="p-6">Loading profile...</div>
+        <div className="p-4 sm:p-6 max-w-4xl mx-auto">
+          <PageState
+            variant="loading"
+            title="Loading profile"
+            description="Fetching your stats, badges, and account settings."
+          />
+        </div>
       </>
     );
   }
@@ -93,7 +104,15 @@ export default function Profile() {
     return (
       <>
         <Navbar />
-        <div className="p-6 text-gray-500">Profile unavailable.</div>
+        <div className="p-4 sm:p-6 max-w-4xl mx-auto">
+          <PageState
+            variant="error"
+            title="Profile unavailable"
+            description={error || "We could not load your profile data."}
+            actionLabel="Try again"
+            onAction={fetchProfile}
+          />
+        </div>
       </>
     );
   }
@@ -188,9 +207,9 @@ export default function Profile() {
               onChange={(e) => setProfileForm((prev) => ({ ...prev, bio: e.target.value }))}
             />
 
-            <button className="btn btn-primary w-full sm:w-auto" type="submit" disabled={savingProfile}>
-              {savingProfile ? "Saving..." : "Save Profile"}
-            </button>
+            <Button type="submit" className="w-full sm:w-auto" loading={savingProfile}>
+              Save Profile
+            </Button>
           </form>
 
           <form className="card" onSubmit={changePassword}>
@@ -212,9 +231,9 @@ export default function Profile() {
               onChange={(e) => setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))}
             />
 
-            <button className="btn btn-primary w-full sm:w-auto" type="submit" disabled={savingPassword}>
-              {savingPassword ? "Updating..." : "Update Password"}
-            </button>
+            <Button type="submit" className="w-full sm:w-auto" loading={savingPassword}>
+              Update Password
+            </Button>
           </form>
         </div>
       </div>

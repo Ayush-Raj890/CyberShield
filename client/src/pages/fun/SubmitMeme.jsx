@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import Navbar from "../../components/layout/Navbar";
 import API from "../../services/api";
 import { syncUserCoins } from "../../utils/economySync";
+import Button from "../../components/ui/Button";
 
 export default function SubmitMeme() {
   const [file, setFile] = useState(null);
@@ -74,9 +75,9 @@ export default function SubmitMeme() {
             <option value="SCAM">Scam</option>
           </select>
 
-          <button className="btn btn-primary w-full" type="submit" disabled={submitting}>
-            {submitting ? "Uploading..." : "Upload"}
-          </button>
+          <Button type="submit" className="w-full" loading={submitting}>
+            Upload
+          </Button>
         </form>
       </div>
     </>

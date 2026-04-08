@@ -5,6 +5,8 @@ import Navbar from "../../components/layout/Navbar";
 import ConfirmActionModal from "../../components/ui/ConfirmActionModal";
 import API from "../../services/api";
 import { performLogout } from "../../utils/logout";
+import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 
 const PREFS_KEY = "userPreferences";
 
@@ -15,6 +17,7 @@ export default function Settings() {
   const [savingPassword, setSavingPassword] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [error, setError] = useState("");
 
   const [profileForm, setProfileForm] = useState({ alias: "", bio: "" });
   const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "" });
@@ -45,6 +48,7 @@ export default function Settings() {
 
   const fetchProfile = async () => {
     try {
+      setError("");
       setLoading(true);
       const { data } = await API.get("/users/profile");
 
@@ -53,6 +57,7 @@ export default function Settings() {
         bio: data.user.bio || ""
       });
     } catch (error) {
+      setError(error.response?.data?.message || "Failed to load settings");
       toast.error("Failed to load settings");
     } finally {
       setLoading(false);
@@ -130,7 +135,30 @@ export default function Settings() {
     return (
       <>
         <Navbar />
-        <div className="p-4 sm:p-6">Loading settings...</div>
+        <div className="max-w-lg mx-auto p-4 sm:p-6">
+          <PageState
+            variant="loading"
+            title="Loading settings"
+            description="Fetching your profile data and local preferences."
+          />
+        </div>
+      </>
+    );
+  }
+
+  if (error && !profileForm.alias && !profileForm.bio) {
+    return (
+      <>
+        <Navbar />
+        <div className="max-w-lg mx-auto p-4 sm:p-6">
+          <PageState
+            variant="error"
+            title="Settings unavailable"
+            description={error}
+            actionLabel="Try again"
+            onAction={fetchProfile}
+          />
+        </div>
       </>
     );
   }
@@ -153,9 +181,9 @@ export default function Settings() {
             value={profileForm.bio}
             onChange={(e) => setProfileForm((prev) => ({ ...prev, bio: e.target.value }))}
           />
-          <button className="btn btn-primary" type="submit" disabled={savingProfile}>
-            {savingProfile ? "Saving..." : "Save"}
-          </button>
+          <Button type="submit" loading={savingProfile}>
+            Save
+          </Button>
         </form>
 
         <form className="card" onSubmit={changePassword}>
@@ -174,9 +202,9 @@ export default function Settings() {
             value={passwordForm.newPassword}
             onChange={(e) => setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))}
           />
-          <button className="btn btn-primary" type="submit" disabled={savingPassword}>
-            {savingPassword ? "Updating..." : "Update"}
-          </button>
+          <Button type="submit" loading={savingPassword}>
+            Update
+          </Button>
         </form>
 
         <div className="card">
@@ -198,14 +226,14 @@ export default function Settings() {
 
         <div className="card border border-red-400">
           <h3 className="text-red-500 font-semibold mb-2">Danger Zone</h3>
-          <button
-            className="btn btn-danger"
+          <Button
             type="button"
             disabled={deleting}
+            variant="danger"
             onClick={() => setConfirmDeleteOpen(true)}
           >
-            {deleting ? "Deleting..." : "Delete Account"}
-          </button>
+            Delete Account
+          </Button>
         </div>
       </div>
 

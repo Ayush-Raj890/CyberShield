@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import API from "../../services/api";
 import { sanitizeObject } from "../../utils/sanitizer";
 import Navbar from "../../components/layout/Navbar";
+import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 import {
   MessageSquare,
   Search,
@@ -29,6 +31,7 @@ export default function Articles() {
   const [articles, setArticles] = useState([]);
   const [selectedTag, setSelectedTag] = useState("ALL");
   const [loadingList, setLoadingList] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
@@ -80,11 +83,14 @@ export default function Articles() {
 
   const fetchArticles = async () => {
     try {
+      setLoadError("");
       setLoadingList(true);
       const { data } = await API.get("/articles");
       setArticles(data);
     } catch (error) {
       console.error(error);
+      setArticles([]);
+      setLoadError(error.response?.data?.message || "Failed to load articles");
     } finally {
       setLoadingList(false);
     }
@@ -358,37 +364,34 @@ export default function Articles() {
                   Your article will be reviewed by admins before publication.
                 </p>
 
-                <button className="btn btn-primary w-full" disabled={loading}>
-                  {loading ? "Submitting..." : "Submit Article"}
-                </button>
+                <Button type="submit" className="w-full" loading={loading}>
+                  Submit Article
+                </Button>
               </form>
             )}
 
             {loadingList ? (
-              <div className="space-y-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="glass rounded-xl p-6 animate-pulse border border-white/60">
-                    <div className="h-6 bg-slate-200 rounded w-3/4 mb-3" />
-                    <div className="h-4 bg-slate-200 rounded w-1/2" />
-                  </div>
-                ))}
-              </div>
+              <PageState
+                variant="loading"
+                title="Loading articles"
+                description="Fetching the latest community knowledge posts."
+              />
+            ) : loadError ? (
+              <PageState
+                variant="error"
+                title="Articles unavailable"
+                description={loadError}
+                actionLabel="Try again"
+                onAction={fetchArticles}
+              />
             ) : filteredArticles.length === 0 ? (
-              <div className="glass rounded-2xl p-12 text-center animate-fade-in border border-white/60">
-                <MessageSquare className="h-12 w-12 mx-auto text-slate-400 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No articles yet</h3>
-                <p className="text-slate-500 mb-4">
-                  Be the first to share cybersecurity insights in this topic.
-                </p>
-                {isAuthenticated && (
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => setShowForm(true)}
-                  >
-                    Submit an Article
-                  </button>
-                )}
-              </div>
+              <PageState
+                variant="empty"
+                title={searchQuery.trim() || selectedTag !== "ALL" ? "No matching articles" : "No articles yet"}
+                description={searchQuery.trim() || selectedTag !== "ALL" ? "Try a different keyword or topic filter." : "Be the first to share cybersecurity insights in this topic."}
+                actionLabel={isAuthenticated ? "Submit an Article" : "Sign in to submit"}
+                onAction={() => (isAuthenticated ? setShowForm(true) : navigate("/login"))}
+              />
             ) : (
               <div className="space-y-4">
                 {filteredArticles.map((article, index) => {

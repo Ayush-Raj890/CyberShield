@@ -2,6 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
+import Button from "../../components/ui/Button";
 
 export default function ScamDetector() {
   const [text, setText] = useState("");
@@ -40,12 +41,9 @@ export default function ScamDetector() {
             onChange={(e) => setText(e.target.value)}
           />
 
-          <button
-            onClick={analyze}
-            className="btn btn-primary w-full sm:w-auto"
-          >
-            {loading ? "Processing..." : "Analyze"}
-          </button>
+          <Button onClick={analyze} className="w-full sm:w-auto" loading={loading}>
+            Analyze
+          </Button>
         </div>
 
         {result && (

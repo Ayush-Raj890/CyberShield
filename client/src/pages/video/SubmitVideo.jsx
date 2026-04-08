@@ -2,6 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import Navbar from "../../components/layout/Navbar";
 import API from "../../services/api";
+import Button from "../../components/ui/Button";
 
 export default function SubmitVideo() {
   const [form, setForm] = useState({
@@ -67,9 +68,9 @@ export default function SubmitVideo() {
             <option value="TIPS">Tips</option>
           </select>
 
-          <button className="btn btn-primary w-full" type="submit" disabled={submitting}>
-            {submitting ? "Submitting..." : "Submit"}
-          </button>
+          <Button type="submit" className="w-full" loading={submitting}>
+            Submit
+          </Button>
         </form>
       </div>
     </>

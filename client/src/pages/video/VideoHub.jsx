@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Navbar from "../../components/layout/Navbar";
 import API from "../../services/api";
+import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 
 const toEmbedUrl = (url) => {
   if (!url) return "";
@@ -27,6 +29,7 @@ export default function VideoHub() {
   const navigate = useNavigate();
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
   useEffect(() => {
@@ -35,10 +38,13 @@ export default function VideoHub() {
 
   const fetchVideos = async () => {
     try {
+      setError("");
       setLoading(true);
       const { data } = await API.get("/videos");
       setVideos(Array.isArray(data) ? data : []);
     } catch (error) {
+      setVideos([]);
+      setError(error.response?.data?.message || "Failed to load videos");
       toast.error("Failed to load videos");
     } finally {
       setLoading(false);
@@ -54,19 +60,36 @@ export default function VideoHub() {
             <h2 className="text-xl sm:text-2xl font-semibold">Video Hub</h2>
             <p className="text-sm text-gray-500">Short-form awareness content approved by moderators</p>
           </div>
-          <button
+          <Button
             type="button"
-            className="btn btn-primary w-full sm:w-auto"
             onClick={() => navigate(user ? "/videos/submit" : "/login")}
           >
             {user ? "Submit Video" : "Login to Submit"}
-          </button>
+          </Button>
         </div>
 
         {loading ? (
-          <p>Loading videos...</p>
+          <PageState
+            variant="loading"
+            title="Loading videos"
+            description="Fetching approved awareness clips from the moderation queue."
+          />
+        ) : error ? (
+          <PageState
+            variant="error"
+            title="Video feed unavailable"
+            description={error}
+            actionLabel="Try again"
+            onAction={fetchVideos}
+          />
         ) : videos.length === 0 ? (
-          <div className="card text-gray-500">No approved videos yet.</div>
+          <PageState
+            variant="empty"
+            title="No approved videos yet"
+            description="Once moderators approve submissions, they will appear here."
+            actionLabel={user ? "Submit Video" : "Login to Submit"}
+            onAction={() => navigate(user ? "/videos/submit" : "/login")}
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {videos.map((video) => (

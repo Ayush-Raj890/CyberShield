@@ -228,10 +228,12 @@ Completed: Priority 5 dashboard polish has been implemented in the dashboard com
 
 **Priority 6 — Feedback & States**
 
-- [ ] Add loading states (buttons + pages)
-- [ ] Add empty states ("No reports yet")
-- [ ] Add error states (clean alerts)
-- [ ] Add success feedback (toasts or inline)
+- [x] Add loading states (buttons + pages)
+- [x] Add empty states ("No reports yet")
+- [x] Add error states (clean alerts)
+- [x] Add success feedback (toasts or inline)
+
+completed: Priority 6 feedback and states have been implemented across the client application.
 
 **Priority 7 — Micro-Interactions**
 

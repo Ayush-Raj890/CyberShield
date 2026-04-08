@@ -4,20 +4,26 @@ import toast from "react-hot-toast";
 import Navbar from "../../components/layout/Navbar";
 import MemeCard from "../../components/meme/MemeCard";
 import API from "../../services/api";
+import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 
 export default function MemeHub() {
   const navigate = useNavigate();
   const [memes, setMemes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [sort, setSort] = useState("latest");
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
   const fetchMemes = async () => {
     try {
+      setError("");
       setLoading(true);
       const { data } = await API.get(`/memes?sort=${sort}`);
       setMemes(Array.isArray(data) ? data : []);
     } catch (error) {
+      setMemes([]);
+      setError(error.response?.data?.message || "Failed to load memes");
       toast.error("Failed to load memes");
     } finally {
       setLoading(false);
@@ -43,20 +49,37 @@ export default function MemeHub() {
               <option value="latest">Latest</option>
               <option value="trending">Trending</option>
             </select>
-            <button
+            <Button
               type="button"
-              className="btn btn-primary w-full sm:w-auto"
               onClick={() => navigate(user ? "/memes/upload" : "/login")}
             >
               {user ? "Upload Meme" : "Login to Upload"}
-            </button>
+            </Button>
           </div>
         </div>
 
         {loading ? (
-          <p>Loading memes...</p>
+          <PageState
+            variant="loading"
+            title="Loading memes"
+            description="Fetching the latest community memes and engagement stats."
+          />
+        ) : error ? (
+          <PageState
+            variant="error"
+            title="Meme feed unavailable"
+            description={error}
+            actionLabel="Try again"
+            onAction={fetchMemes}
+          />
         ) : memes.length === 0 ? (
-          <div className="card text-gray-500">No memes yet. Be the first to post one.</div>
+          <PageState
+            variant="empty"
+            title="No memes yet"
+            description="Be the first to post one or check back later for new submissions."
+            actionLabel={user ? "Upload Meme" : "Login to Upload"}
+            onAction={() => navigate(user ? "/memes/upload" : "/login")}
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {memes.map((meme) => (
