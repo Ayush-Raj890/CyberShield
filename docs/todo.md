@@ -218,7 +218,8 @@ Completed: Priority 4 navbar refinement has been implemented in the client navba
 
 **Priority 5 — Dashboard Polish**
 
-- [x] Improve stat cards (bigger numbers, muted labels)
+  
+  - [x] Improve stat cards (bigger numbers, muted labels)
 - [x] Add subtle hover effect on cards
 - [x] Improve spacing between sections
 - [x] Add loading skeletons
