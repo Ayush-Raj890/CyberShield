@@ -63,14 +63,14 @@ export default function Navbar() {
   }, []);
 
   const publicLinks = [
-    { label: "AI", path: "/ai" },
+    { label: "Scam Detector", path: "/ai" },
     { label: "Articles", path: "/articles" },
     { label: "Forum", path: "/forum" }
   ];
 
   const signedInLinks = [
     { label: "Dashboard", path: "/dashboard" },
-    { label: "AI", path: "/ai" }
+    { label: "Scam Detector", path: "/ai" }
   ];
 
   return (
