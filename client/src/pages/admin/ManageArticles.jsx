@@ -3,12 +3,16 @@ import toast from "react-hot-toast";
 import API from "../../services/api";
 import AdminNavbar from "../../components/layout/AdminNavbar";
 import { CheckCircle, XCircle, Trash2 } from "lucide-react";
+import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 
 export default function ManageArticles() {
   const [allArticles, setAllArticles] = useState([]);
   const [pendingArticles, setPendingArticles] = useState([]);
   const [activeTab, setActiveTab] = useState("pending");
   const [processing, setProcessing] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const renderDisplayName = (person, fallback = "Unknown") => {
     if (!person) return fallback;
@@ -29,6 +33,8 @@ export default function ManageArticles() {
 
   const fetchArticles = async () => {
     try {
+      setError("");
+      setLoading(true);
       const [pendingRes, allRes] = await Promise.all([
         API.get("/articles/admin/pending"),
         API.get("/articles")
@@ -37,7 +43,12 @@ export default function ManageArticles() {
       setAllArticles(allRes.data);
     } catch (error) {
       console.error(error);
+      setPendingArticles([]);
+      setAllArticles([]);
+      setError(error.response?.data?.message || "Failed to fetch articles");
       toast.error("Failed to fetch articles");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -91,12 +102,28 @@ export default function ManageArticles() {
           </button>
         </div>
 
-        {activeTab === "pending" && (
+        {loading ? (
+          <PageState
+            variant="loading"
+            title="Loading articles"
+            description="Fetching pending submissions and published knowledge posts."
+          />
+        ) : error ? (
+          <PageState
+            variant="error"
+            title="Articles unavailable"
+            description={error}
+            actionLabel="Try again"
+            onAction={fetchArticles}
+          />
+        ) : activeTab === "pending" && (
           <div>
             {pendingArticles.length === 0 ? (
-              <div className="card text-gray-500 text-center py-8">
-                No pending articles.
-              </div>
+              <PageState
+                variant="empty"
+                title="No pending articles"
+                description="New community submissions will appear here for review."
+              />
             ) : (
               pendingArticles.map((a) => (
                 <div key={a._id} className="card mb-4">
@@ -110,22 +137,23 @@ export default function ManageArticles() {
                   )}
 
                   <div className="flex gap-2">
-                    <button
+                    <Button
                       onClick={() => updateArticleStatus(a._id, "APPROVED")}
-                      disabled={processing[a._id]}
-                      className="btn btn-primary flex items-center gap-2"
+                      loading={processing[a._id]}
+                      className="flex items-center gap-2"
                     >
                       <CheckCircle size={16} />
-                      {processing[a._id] ? "Processing..." : "Approve"}
-                    </button>
-                    <button
+                      Approve
+                    </Button>
+                    <Button
                       onClick={() => updateArticleStatus(a._id, "REJECTED")}
-                      disabled={processing[a._id]}
-                      className="btn btn-danger flex items-center gap-2"
+                      variant="danger"
+                      loading={processing[a._id]}
+                      className="flex items-center gap-2"
                     >
                       <XCircle size={16} />
-                      {processing[a._id] ? "Processing..." : "Reject"}
-                    </button>
+                      Reject
+                    </Button>
                   </div>
                 </div>
               ))
@@ -136,9 +164,11 @@ export default function ManageArticles() {
         {activeTab === "published" && (
           <div>
             {allArticles.length === 0 ? (
-              <div className="card text-gray-500 text-center py-8">
-                No articles published yet.
-              </div>
+              <PageState
+                variant="empty"
+                title="No published articles"
+                description="Approved knowledge hub posts will appear here."
+              />
             ) : (
               allArticles.map((a) => (
                 <div key={a._id} className="card mb-3 flex items-center justify-between gap-3">
@@ -147,14 +177,15 @@ export default function ManageArticles() {
                     <p className="text-sm text-gray-500">{a.category}</p>
                   </div>
 
-                  <button
+                  <Button
                     onClick={() => deleteArticle(a._id)}
-                    className="btn btn-danger flex items-center gap-2"
-                    disabled={processing[a._id]}
+                    variant="danger"
+                    loading={processing[a._id]}
+                    className="flex items-center gap-2"
                   >
                     <Trash2 size={16} />
-                    {processing[a._id] ? "Processing..." : "Delete"}
-                  </button>
+                    Delete
+                  </Button>
                 </div>
               ))
             )}

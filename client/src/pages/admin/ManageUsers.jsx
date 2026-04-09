@@ -3,10 +3,13 @@ import toast from "react-hot-toast";
 import API from "../../services/api";
 import AdminNavbar from "../../components/layout/AdminNavbar";
 import ConfirmActionModal from "../../components/ui/ConfirmActionModal";
+import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 
 export default function ManageUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [deletingId, setDeletingId] = useState(null);
   const [processingId, setProcessingId] = useState(null);
@@ -21,11 +24,14 @@ export default function ManageUsers() {
 
   const fetchUsers = async () => {
     try {
+      setError("");
       setLoading(true);
       const { data } = await API.get("/admin/users");
       setUsers(data);
     } catch (error) {
       console.error(error);
+      setUsers([]);
+      setError(error.response?.data?.message || "Failed to load users");
     } finally {
       setLoading(false);
     }
@@ -168,9 +174,25 @@ export default function ManageUsers() {
         />
 
         {loading ? (
-          <p>Loading...</p>
+          <PageState
+            variant="loading"
+            title="Loading users"
+            description="Fetching the current user directory and admin controls."
+          />
+        ) : error ? (
+          <PageState
+            variant="error"
+            title="Users unavailable"
+            description={error}
+            actionLabel="Try again"
+            onAction={fetchUsers}
+          />
         ) : filteredUsers.length === 0 ? (
-          <div className="card text-gray-500">No users found.</div>
+          <PageState
+            variant="empty"
+            title={search ? "No matching users" : "No users found"}
+            description={search ? "Try a different name or email filter." : "No accounts match the current query."}
+          />
         ) : (
           filteredUsers.map((u) => (
             <div key={u._id} className="card mb-3 flex items-center justify-between gap-3">
@@ -184,47 +206,31 @@ export default function ManageUsers() {
 
               <div className="flex flex-wrap gap-2 justify-end">
                 {isAdmin && u.role === "USER" && !u.isSuspended && (
-                  <button
-                    onClick={() => promoteUser(u._id)}
-                    className="btn btn-primary"
-                    disabled={processingId === u._id}
-                  >
-                    {processingId === u._id ? "Processing..." : "Make Admin"}
-                  </button>
+                  <Button onClick={() => promoteUser(u._id)} loading={processingId === u._id}>
+                    Make Admin
+                  </Button>
                 )}
 
                 {isAdmin && u.role !== "SUPER_ADMIN" && (
-                  <button
+                  <Button
                     onClick={() => openSuspensionModal(u)}
-                    className={u.isSuspended ? "btn btn-secondary" : "btn btn-danger"}
-                    disabled={processingId === u._id}
+                    variant={u.isSuspended ? "secondary" : "danger"}
+                    loading={processingId === u._id}
                   >
-                    {processingId === u._id
-                      ? "Processing..."
-                      : u.isSuspended
-                      ? "Unsuspend"
-                      : "Suspend"}
-                  </button>
+                    {u.isSuspended ? "Unsuspend" : "Suspend"}
+                  </Button>
                 )}
 
                 {isSuperAdmin && u.role === "ADMIN" && (
-                  <button
-                    onClick={() => openRemoveAdminModal(u)}
-                    className="btn btn-secondary"
-                    disabled={processingId === u._id}
-                  >
-                    {processingId === u._id ? "Processing..." : "Remove Admin"}
-                  </button>
+                  <Button onClick={() => openRemoveAdminModal(u)} variant="secondary" loading={processingId === u._id}>
+                    Remove Admin
+                  </Button>
                 )}
 
                 {isSuperAdmin && (
-                  <button
-                    onClick={() => deleteUser(u._id)}
-                    className="btn btn-danger"
-                    disabled={deletingId === u._id || processingId === u._id}
-                  >
-                    {deletingId === u._id ? "Processing..." : "Delete"}
-                  </button>
+                  <Button onClick={() => deleteUser(u._id)} variant="danger" loading={deletingId === u._id} disabled={processingId === u._id}>
+                    Delete
+                  </Button>
                 )}
               </div>
             </div>

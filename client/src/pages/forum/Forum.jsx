@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
+import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 
 export default function Forum() {
   const navigate = useNavigate();
@@ -10,6 +12,7 @@ export default function Forum() {
 
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
   const [replyingId, setReplyingId] = useState(null);
   const [page, setPage] = useState(1);
@@ -37,12 +40,15 @@ export default function Forum() {
 
   const fetchPosts = async (currentPage = 1) => {
     try {
+      setError("");
       setLoading(true);
       const { data } = await API.get(`/forum?page=${currentPage}&limit=10`);
       setPosts(data.items || []);
       setPagination(data.pagination || { page: currentPage, limit: 10, total: 0, totalPages: 0, hasNextPage: false });
     } catch (error) {
       setPosts([]);
+      setPagination({ page: currentPage, limit: 10, total: 0, totalPages: 0, hasNextPage: false });
+      setError(error.response?.data?.message || "Failed to load forum posts");
       toast.error("Failed to load forum posts");
     } finally {
       setLoading(false);
@@ -120,12 +126,9 @@ export default function Forum() {
           </div>
 
           <div className="mt-4">
-            <button
-              className="btn w-full sm:w-auto"
-              onClick={() => (user ? navigate("/forum/create") : navigate("/login"))}
-            >
+            <Button className="w-full sm:w-auto" onClick={() => (user ? navigate("/forum/create") : navigate("/login"))}>
               {user ? "Create Post" : "Login To Create Post"}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -153,15 +156,33 @@ export default function Forum() {
             disabled={!user || creating}
           />
 
-          <button className="btn btn-primary w-full sm:w-auto" onClick={createPost} disabled={!user || creating}>
-            {creating ? "Publishing..." : "Create Post"}
-          </button>
+          <Button onClick={createPost} disabled={!user} loading={creating} className="w-full sm:w-auto">
+            Create Post
+          </Button>
         </div>
 
         {loading ? (
-          <p>Loading forum...</p>
+          <PageState
+            variant="loading"
+            title="Loading forum"
+            description="Fetching the latest community discussions."
+          />
+        ) : error ? (
+          <PageState
+            variant="error"
+            title="Forum unavailable"
+            description={error}
+            actionLabel="Try again"
+            onAction={() => fetchPosts(page)}
+          />
         ) : posts.length === 0 ? (
-          <div className="card text-gray-500">No posts yet. Start the first discussion.</div>
+          <PageState
+            variant="empty"
+            title="No posts yet"
+            description="Start the first discussion or check back once the community posts."
+            actionLabel={user ? "Create Post" : "Login To Create Post"}
+            onAction={() => (user ? navigate("/forum/create") : navigate("/login"))}
+          />
         ) : (
           <div className="space-y-4">
             {posts.map((post) => (
@@ -199,39 +220,30 @@ export default function Forum() {
                     disabled={!user || replyingId === post._id}
                   />
 
-                  <button
-                    className="btn btn-primary w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-200"
+                  <Button
                     onClick={() => replyToPost(post._id)}
-                    disabled={!user || replyingId === post._id}
+                    disabled={!user}
+                    loading={replyingId === post._id}
+                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                   >
-                    {replyingId === post._id ? "Posting..." : "Reply"}
-                  </button>
+                    Reply
+                  </Button>
                 </div>
               </div>
             ))}
 
             <div className="flex items-center justify-between gap-3 pt-2">
-              <button
-                type="button"
-                className="btn btn-outline"
-                disabled={page === 1 || loading}
-                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              >
+              <Button type="button" variant="outline" disabled={page === 1 || loading} onClick={() => setPage((prev) => Math.max(prev - 1, 1))}>
                 Previous
-              </button>
+              </Button>
 
               <span className="text-sm text-gray-500">
                 Page {pagination.page} of {pagination.totalPages || 1}
               </span>
 
-              <button
-                type="button"
-                className="btn btn-outline"
-                disabled={!pagination.hasNextPage || loading}
-                onClick={() => setPage((prev) => prev + 1)}
-              >
+              <Button type="button" variant="outline" disabled={!pagination.hasNextPage || loading} onClick={() => setPage((prev) => prev + 1)}>
                 Next
-              </button>
+              </Button>
             </div>
           </div>
         )}

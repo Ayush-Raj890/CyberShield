@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
-import { ArrowLeft, BookOpen, Clock, User, Tag } from "lucide-react";
+import { ArrowLeft, Clock, User, Tag } from "lucide-react";
+import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 
 export default function ArticleDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchArticle();
@@ -16,11 +19,14 @@ export default function ArticleDetail() {
 
   const fetchArticle = async () => {
     try {
+      setError("");
       setLoading(true);
       const { data } = await API.get(`/articles/${id}`);
       setArticle(data);
     } catch (error) {
       console.error(error);
+      setError(error.response?.data?.message || "Failed to load article");
+      setArticle(null);
     } finally {
       setLoading(false);
     }
@@ -59,16 +65,11 @@ export default function ArticleDetail() {
       <>
         <Navbar />
         <div className="max-w-6xl mx-auto px-4 py-6 sm:px-6 sm:py-8">
-          <div className="glass rounded-2xl p-6 animate-pulse border border-white/60">
-            <div className="h-5 bg-slate-200 rounded w-28 mb-6" />
-            <div className="h-8 bg-slate-200 rounded w-3/4 mb-4" />
-            <div className="h-4 bg-slate-200 rounded w-1/3 mb-8" />
-            <div className="space-y-3">
-              <div className="h-4 bg-slate-200 rounded" />
-              <div className="h-4 bg-slate-200 rounded" />
-              <div className="h-4 bg-slate-200 rounded w-11/12" />
-            </div>
-          </div>
+          <PageState
+            variant="loading"
+            title="Loading article"
+            description="Fetching the article details and related metadata."
+          />
         </div>
       </>
     );
@@ -79,14 +80,13 @@ export default function ArticleDetail() {
       <>
         <Navbar />
         <div className="max-w-6xl mx-auto px-4 py-6 sm:px-6 sm:py-8">
-          <div className="glass rounded-2xl p-10 text-center border border-white/60">
-            <BookOpen className="h-10 w-10 text-slate-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Article not found</h2>
-            <p className="text-slate-500 mb-5">This article may be unavailable or removed.</p>
-            <button onClick={() => navigate("/articles")} className="btn btn-primary">
-              Back to Knowledge Hub
-            </button>
-          </div>
+          <PageState
+            variant="error"
+            title="Article unavailable"
+            description={error || "This article may be unavailable or removed."}
+            actionLabel="Back to Knowledge Hub"
+            onAction={() => navigate("/articles")}
+          />
         </div>
       </>
     );
@@ -100,13 +100,12 @@ export default function ArticleDetail() {
         <div className="flex flex-col md:flex-row gap-8">
           <aside className="md:w-64 shrink-0">
             <div className="glass rounded-2xl p-4 sticky top-24 animate-fade-in border border-white/60">
-              <button
-                onClick={() => navigate("/articles")}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100 transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Hub
-              </button>
+              <div className="mt-3">
+                <Button variant="outline" className="w-full" onClick={() => navigate("/articles")}>
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Hub
+                </Button>
+              </div>
 
               <div className="mt-4 space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-slate-600">

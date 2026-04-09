@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
 import { AlertCircle, Shield, Mail, Image as ImageIcon, EyeOff, TriangleAlert } from "lucide-react";
+import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 
 const ASSET_HOST = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
 
@@ -10,6 +12,7 @@ export default function ViewReports() {
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
@@ -22,6 +25,7 @@ export default function ViewReports() {
 
   const fetchReports = async () => {
     try {
+      setError("");
       setLoading(true);
       const endpoint = user ? "/reports/me" : "/reports";
       const response = await API.get(`${endpoint}?page=${page}&limit=${limit}`);
@@ -35,6 +39,9 @@ export default function ViewReports() {
       setHasNextPage(hasNext);
     } catch (error) {
       console.error(error);
+      setReports([]);
+      setHasNextPage(false);
+      setError(error.response?.data?.message || "Failed to load reports");
     } finally {
       setLoading(false);
     }
@@ -77,13 +84,9 @@ export default function ViewReports() {
       <div className="p-4 sm:p-6 max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
           <h2 className="text-lg sm:text-xl font-semibold">My Reports</h2>
-          <button
-            type="button"
-            className="btn btn-primary w-full sm:w-auto"
-            onClick={() => navigate(user ? "/create-report" : "/login")}
-          >
+          <Button type="button" className="w-full sm:w-auto" onClick={() => navigate(user ? "/create-report" : "/login") }>
             {user ? "Create Report" : "Login to Create Report"}
-          </button>
+          </Button>
         </div>
 
         <input
@@ -95,11 +98,27 @@ export default function ViewReports() {
         />
 
         {loading ? (
-          <p>Loading...</p>
+          <PageState
+            variant="loading"
+            title="Loading reports"
+            description="Fetching the latest incident reports and evidence."
+          />
+        ) : error ? (
+          <PageState
+            variant="error"
+            title="Reports unavailable"
+            description={error}
+            actionLabel="Try again"
+            onAction={fetchReports}
+          />
         ) : filteredReports.length === 0 ? (
-          <div className="card text-center text-gray-500 py-8">
-            No data available
-          </div>
+          <PageState
+            variant="empty"
+            title={search ? "No matching reports" : "No reports yet"}
+            description={search ? "Try a different title or clear the search box." : "Create your first report to start tracking incidents."}
+            actionLabel={user ? "Create Report" : "Login to Create Report"}
+            onAction={() => navigate(user ? "/create-report" : "/login")}
+          />
         ) : (
           <>
             {filteredReports.map((r) => (
@@ -191,21 +210,13 @@ export default function ViewReports() {
             ))}
 
             <div className="flex flex-wrap justify-between items-center gap-2 mt-4">
-              <button
-                className="btn"
-                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                disabled={page === 1 || loading}
-              >
+              <Button variant="outline" onClick={() => setPage((prev) => Math.max(prev - 1, 1))} disabled={page === 1 || loading}>
                 Previous
-              </button>
+              </Button>
               <span className="text-sm text-gray-500">Page {page}</span>
-              <button
-                className="btn"
-                onClick={() => setPage((prev) => prev + 1)}
-                disabled={!hasNextPage || loading}
-              >
+              <Button variant="outline" onClick={() => setPage((prev) => prev + 1)} disabled={!hasNextPage || loading}>
                 Next
-              </button>
+              </Button>
             </div>
           </>
         )}
