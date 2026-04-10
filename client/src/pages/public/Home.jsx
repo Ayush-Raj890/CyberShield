@@ -1,98 +1,54 @@
 import { useNavigate } from "react-router-dom";
 import {
-  ShieldAlert,
   Bot,
   BookOpenText,
-  MessagesSquare,
-  Lock,
-  UserCog,
-  Search,
-  UserPlus,
-  FileText,
-  Eye,
-  MessageSquare,
+  ShieldAlert,
+  ArrowRight,
+  CheckCircle2,
+  AlertTriangle,
 } from "lucide-react";
 import PublicLayout from "../../components/layout/PublicLayout";
 import FeatureCard from "../../components/ui/FeatureCard";
 
-const howToUseCards = [
+const coreFeatureCards = [
   {
-    icon: Search,
-    title: "1. Explore Public Modules",
-    description: "Open AI Detector and Knowledge Hub to identify suspicious wording, fake urgency, and spoofed links.",
+    icon: Bot,
+    title: "AI Scam Detection",
+    description: "Classify suspicious text as SAFE, SUSPICIOUS, or MALICIOUS with confidence signals.",
     href: "/ai",
   },
-  {
-    icon: UserPlus,
-    title: "2. Secure Your Account",
-    description: "Register, complete OTP email verification, and activate protected reporting with account-linked history.",
-    href: "/register",
-  },
-  {
-    icon: FileText,
-    title: "3. Take Action",
-    description: "File incidents with evidence, follow status updates, and help strengthen shared threat awareness.",
-    href: "/create-report",
-  },
-];
-
-const platformFeatures = [
   {
     icon: ShieldAlert,
     title: "Incident Reporting",
-    description: "Report phishing, scam, fraud, or harassment events with optional anonymity and evidence uploads.",
+    description: "Submit evidence-backed reports and track moderation updates from your dashboard.",
     href: "/create-report",
-  },
-  {
-    icon: Bot,
-    title: "AI Threat Detection",
-    description: "Analyze suspicious text and messages with fast SAFE/SUSPICIOUS/MALICIOUS threat classification.",
-    href: "/ai",
   },
   {
     icon: BookOpenText,
     title: "Knowledge Hub",
-    description: "Read vetted cybersecurity guidance on phishing, account safety, and secure digital habits.",
+    description: "Learn practical prevention patterns with curated cybersecurity guides.",
     href: "/articles",
-  },
-  {
-    icon: MessagesSquare,
-    title: "Community Forum Access",
-    description: "Join moderated discussions, ask incident-response questions, and share prevention strategies.",
-    href: "/forum",
-  },
-  {
-    icon: Lock,
-    title: "Privacy-first Handling",
-    description: "Sensitive reports are protected with encryption-backed storage and admin-only handling workflows.",
-    href: "/reports",
-  },
-  {
-    icon: UserCog,
-    title: "Admin Moderation",
-    description: "Active moderation and role controls keep the platform trustworthy, safe, and abuse-resistant.",
-    href: "/admin",
   },
 ];
 
-const forumAccessCards = [
+const supportingCards = [
   {
-    icon: UserPlus,
-    title: "1. Register + Verify OTP",
-    description: "Create account and verify your email to unlock community access.",
-    href: "/register",
+    icon: CheckCircle2,
+    title: "Learning Loop",
+    description: "After detection, jump to recommended reads and prevention checklists.",
+    href: "/articles",
   },
   {
-    icon: Eye,
-    title: "2. Visit Forum",
-    description: "Open /forum from navbar or dashboard to read all posts publicly.",
+    icon: AlertTriangle,
+    title: "Community Tools",
+    description: "Forum, videos, memes, and mini-games stay available under Community.",
     href: "/forum",
   },
   {
-    icon: MessageSquare,
-    title: "3. Post and Reply",
-    description: "Login is required for creating posts and replies, while reading remains public.",
-    href: "/login",
+    icon: ShieldAlert,
+    title: "Operational Safety",
+    description: "OTP verification, moderated workflows, and secure evidence handling.",
+    href: "/admin",
   },
 ];
 
@@ -108,21 +64,21 @@ export default function Home() {
         <div className="relative container-page grid lg:grid-cols-2 gap-10 items-center">
           <div className="animate-fade-up">
             <p className="uppercase tracking-[0.24em] text-blue-700 text-xs mb-4 font-semibold">
-              Cybersecurity Made Simple
+              AI-Powered Threat Reporting
             </p>
             <h1 className="text-4xl md:text-6xl font-black leading-tight text-slate-900 mb-5">
-              CyberShield
+              Detect Scams Early. Report Incidents Fast.
             </h1>
             <p className="text-slate-700 md:text-lg leading-relaxed max-w-2xl">
-              A practical cybersecurity platform to report phishing, scam, and account-compromise incidents,
-              triage suspicious messages with AI, and follow trusted response playbooks before threats escalate.
+              CyberShield helps you verify suspicious messages, understand risk signals, and take immediate action
+              with structured incident reporting and practical awareness guidance.
             </p>
 
-            <div className="mt-5 flex flex-wrap gap-2 text-xs sm:text-sm">
+            <div className="mt-5 flex flex-wrap gap-2 text-xs sm:text-sm text-blue-800">
               {[
-                "Phishing and scam detection",
-                "Evidence-backed incident reports",
-                "Community threat awareness",
+                "Main loop: Detect -> Explain -> Report",
+                "Evidence-backed reporting",
+                "Actionable security guidance",
               ].map((signal) => (
                 <span key={signal} className="rounded-full border border-blue-200 bg-white/80 px-3 py-1 font-medium text-blue-800">
                   {signal}
@@ -131,18 +87,18 @@ export default function Home() {
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <button className="btn btn-primary animate-fade-up" style={{ animationDelay: "120ms" }} onClick={() => navigate("/login")}>
-                Get Started
+              <button className="btn btn-primary animate-fade-up" style={{ animationDelay: "120ms" }} onClick={() => navigate("/ai")}>
+                Check A Suspicious Message
               </button>
               <button className="btn btn-secondary animate-fade-up" style={{ animationDelay: "220ms" }} onClick={() => navigate("/ai")}>
-                Try AI Detector
+                View Sample Detection Flow
               </button>
               <button
                 className="px-1 py-2 text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors animate-fade-up"
                 style={{ animationDelay: "320ms" }}
-                onClick={() => navigate("/articles")}
+                onClick={() => navigate("/create-report")}
               >
-                Explore Knowledge Hub
+                Report An Incident
               </button>
             </div>
           </div>
@@ -150,25 +106,25 @@ export default function Home() {
           <div className="grid gap-4 animate-fade-in" style={{ animationDelay: "180ms" }}>
             <div className="rounded-2xl border border-blue-100 bg-white/90 shadow-sm p-5 animate-fade-up" style={{ animationDelay: "220ms" }}>
               <p className="text-xs uppercase tracking-wide text-blue-600 mb-1">Step 1</p>
-              <h3 className="font-bold text-slate-900">Use Public Tools</h3>
+              <h3 className="font-bold text-slate-900">Analyze Suspicious Text</h3>
               <p className="text-sm text-slate-600 mt-1">
-                Start with AI Scam Detector and Knowledge Hub to scan links, SMS, and social messages without login.
+                Paste a suspicious message into AI Detector to get a threat label and confidence.
               </p>
             </div>
 
             <div className="rounded-2xl border border-blue-100 bg-white/90 shadow-sm p-5 animate-fade-up" style={{ animationDelay: "320ms" }}>
               <p className="text-xs uppercase tracking-wide text-blue-600 mb-1">Step 2</p>
-              <h3 className="font-bold text-slate-900">Register and Verify</h3>
+              <h3 className="font-bold text-slate-900">Review Action Guidance</h3>
               <p className="text-sm text-slate-600 mt-1">
-                Create an account, complete OTP verification, and unlock secure report tracking and updates.
+                Use result guidance to avoid risky actions and capture relevant evidence.
               </p>
             </div>
 
             <div className="rounded-2xl border border-blue-100 bg-white/90 shadow-sm p-5 animate-fade-up" style={{ animationDelay: "420ms" }}>
               <p className="text-xs uppercase tracking-wide text-blue-600 mb-1">Step 3</p>
-              <h3 className="font-bold text-slate-900">Report, Track, and Collaborate</h3>
+              <h3 className="font-bold text-slate-900">Report and Track</h3>
               <p className="text-sm text-slate-600 mt-1">
-                Submit incidents with screenshots or links, monitor moderation status, and share prevention tips.
+                Submit incidents and follow report status from your account dashboard.
               </p>
             </div>
           </div>
@@ -176,33 +132,38 @@ export default function Home() {
       </section>
 
       <section className="container-page py-10">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {[
-            { title: "OTP Verified Accounts", desc: "Email ownership checks" },
-            { title: "AI Threat Triage", desc: "Quick SAFE/SUSPICIOUS/MALICIOUS" },
-            { title: "Moderated Community", desc: "Abuse-resistant discussions" },
-            { title: "Evidence Upload Support", desc: "Screenshots and URLs accepted" },
-          ].map((item, index) => (
-            <div
-              key={item.title}
-              className="rounded-xl border border-slate-200 bg-white shadow-sm px-4 py-3 animate-fade-up"
-              style={{ animationDelay: `${120 + index * 100}ms` }}
-            >
-              <p className="text-sm font-semibold text-slate-800">{item.title}</p>
-              <p className="mt-1 text-xs text-slate-600">{item.desc}</p>
-            </div>
-          ))}
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.18em] text-blue-700 font-semibold">Main Product Loop</p>
+          <div className="mt-4 grid md:grid-cols-3 gap-3 text-sm">
+            {[
+              "1. Detect potential scam",
+              "2. Understand risk signals",
+              "3. Report and track response",
+            ].map((step) => (
+              <div key={step} className="rounded-xl border border-blue-100 bg-blue-50/50 px-4 py-3 font-medium text-slate-800">
+                {step}
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <button className="btn btn-primary" onClick={() => navigate("/ai")}>
+              Start Detection
+            </button>
+            <button className="btn btn-secondary" onClick={() => navigate("/create-report")}>
+              Go To Reporting
+            </button>
+          </div>
         </div>
       </section>
 
       <section className="container-page py-14">
-        <h2 className="text-3xl font-black text-center text-slate-900 mb-3">How To Use CyberShield</h2>
+        <h2 className="text-3xl font-black text-center text-slate-900 mb-3">Core Systems</h2>
         <p className="text-center text-slate-600 max-w-2xl mx-auto mb-10">
-          Follow this simple flow to move from awareness to action in under 5 minutes.
+          CyberShield focuses on three primary value pillars.
         </p>
 
         <div className="grid md:grid-cols-3 gap-5">
-          {howToUseCards.map((item, index) => (
+          {coreFeatureCards.map((item, index) => (
             <FeatureCard
               key={item.title}
               icon={item.icon}
@@ -217,10 +178,10 @@ export default function Home() {
 
       <section className="bg-white border-y border-slate-200 px-6 py-14">
         <div className="container-page">
-          <h2 className="text-3xl font-black text-center text-slate-900 mb-10">Platform Features</h2>
+          <h2 className="text-3xl font-black text-center text-slate-900 mb-10">Supporting Systems</h2>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {platformFeatures.map((feature, index) => (
+          <div className="grid md:grid-cols-3 gap-5">
+            {supportingCards.map((feature, index) => (
               <FeatureCard
                 key={feature.title}
                 icon={feature.icon}
@@ -236,27 +197,30 @@ export default function Home() {
 
       <section className="container-page py-14">
         <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
-          <h2 className="text-2xl font-black text-slate-900 mb-2">How To Access The Community Forum</h2>
+          <h2 className="text-2xl font-black text-slate-900 mb-2">Explore Community Modules</h2>
           <p className="text-slate-600 mb-4 text-sm">
-            The forum is available at /forum with public viewing and authenticated posting for incident insights.
+            Forum, videos, memes, and games are available under the Community section once you complete the core loop.
           </p>
 
-          <div className="grid md:grid-cols-3 gap-4 text-sm">
-            {forumAccessCards.map((item, index) => (
-              <FeatureCard
-                key={item.title}
-                icon={item.icon}
-                title={item.title}
-                description={item.description}
-                href={item.href}
-                delay={index * 90}
-              />
+          <div className="grid md:grid-cols-4 gap-3 text-sm">
+            {[
+              { label: "Forum", href: "/forum" },
+              { label: "Video Hub", href: "/videos" },
+              { label: "Meme Hub", href: "/memes" },
+              { label: "Phishing Game", href: "/games" },
+            ].map((item) => (
+              <button
+                key={item.label}
+                className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left font-semibold text-slate-800 hover:bg-slate-100 transition-colors"
+                onClick={() => navigate(item.href)}
+              >
+                {item.label}
+              </button>
             ))}
           </div>
 
           <div className="mt-5 flex flex-wrap gap-3">
-            <button className="btn btn-primary" onClick={() => navigate("/register")}>Create Account</button>
-            <button className="btn btn-secondary" onClick={() => navigate("/login")}>Login</button>
+            <button className="btn btn-primary" onClick={() => navigate("/articles")}>Open Knowledge Hub</button>
             <button className="btn btn-secondary" onClick={() => navigate("/forum")}>Open Forum</button>
           </div>
         </div>
@@ -264,20 +228,21 @@ export default function Home() {
 
       <section className="px-6 pb-14 text-center">
         <div className="container-page">
-          <h2 className="text-3xl font-black text-slate-900 mb-4">Start Protecting Yourself Today</h2>
+          <h2 className="text-3xl font-black text-slate-900 mb-4">Start With Detection, Then Take Action</h2>
           <p className="text-slate-600 mb-6 max-w-2xl mx-auto">
-            Take the first step now: analyze suspicious content instantly or activate your account for complete reporting and tracking.
+            Use the AI checker first, then report incidents with confidence and follow recommended mitigation steps.
           </p>
 
           <div className="flex flex-wrap justify-center gap-3">
             <button className="btn btn-primary" onClick={() => navigate("/ai")}>
-              Try AI Detector
+              Analyze Suspicious Message
             </button>
-            <button className="btn btn-primary" onClick={() => navigate("/register")}>
-              Create Account
+            <button className="btn btn-secondary" onClick={() => navigate("/create-report")}>
+              File A Report
             </button>
-            <button className="btn btn-primary" onClick={() => navigate("/articles")}>
+            <button className="inline-flex items-center gap-2 px-1 py-2 text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors" onClick={() => navigate("/articles")}>
               Read Security Guides
+              <ArrowRight size={16} />
             </button>
           </div>
         </div>

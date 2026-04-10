@@ -114,6 +114,10 @@ app.use("/api/system", systemRoutes);
 app.use("/api/users", userRoutes);
 
 // Health check
+app.get("/api/health", (req, res) => {
+	res.status(200).json({ status: "ok" });
+});
+
 app.get("/", (req, res) => {
 	res.send("API is running...");
 });
