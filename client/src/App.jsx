@@ -48,7 +48,7 @@ export default function App() {
     let isMounted = true;
 
     Promise.allSettled([
-      warmUrl(`${getApiBase()}/health`),
+      warmUrl(`${getApiBase()}/system/health`),
       warmUrl(getAiBase())
     ]).finally(() => {
       if (isMounted) {

@@ -5,6 +5,26 @@ import { protect } from "../middlewares/authMiddleware.js";
 import { adminOnly } from "../middlewares/roleMiddleware.js";
 
 const router = express.Router();
+const startedAt = Date.now();
+
+router.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+router.get("/version", (req, res) => {
+  res.status(200).json({
+    version: process.env.APP_VERSION || process.env.npm_package_version || "unknown"
+  });
+});
+
+router.get("/uptime", (req, res) => {
+  const uptimeSeconds = Math.floor((Date.now() - startedAt) / 1000);
+
+  res.status(200).json({
+    uptimeSeconds,
+    startedAt: new Date(startedAt).toISOString()
+  });
+});
 
 router.get("/client-errors", protect, adminOnly, getClientErrors);
 router.get("/client-errors/export", protect, adminOnly, exportClientErrorsCsv);
