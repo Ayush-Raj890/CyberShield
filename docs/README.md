@@ -175,7 +175,9 @@ High-impact features queued:
 Backend (Node + Express):
 
 - Base URL: `http://localhost:5000`
-- Health: GET /
+- Health: GET /api/system/health
+- Version: GET /api/system/version
+- Uptime: GET /api/system/uptime
 
 AI Service (FastAPI):
 
@@ -195,8 +197,6 @@ Auth:
 - POST /api/auth/login
 - POST /api/auth/verify-otp
 - POST /api/auth/resend-otp
-- POST /api/auth/forgot-password
-- POST /api/auth/reset-password
 - POST /api/auth/forgot-password
 - POST /api/auth/reset-password
 
@@ -287,6 +287,9 @@ Notifications:
 
 System:
 
+- GET /api/system/health
+- GET /api/system/version
+- GET /api/system/uptime
 - POST /api/system/client-errors (public for client error reporting)
 - GET /api/system/client-errors (admin)
 - GET /api/system/client-errors/export (admin, CSV)

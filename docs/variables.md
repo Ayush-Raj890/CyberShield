@@ -106,17 +106,6 @@ Forum pagination behavior:
 - `limit` defaults to 10 and is capped server-side at 50
 - Posts are sorted by `createdAt` descending before pagination
 
-Forum listing response shape (`GET /api/forum`):
-
-- `items`: forum post array
-- `pagination`: `{ page, limit, total, totalPages, hasNextPage }`
-
-Forum pagination behavior:
-
-- `page` defaults to 1 if missing or invalid
-- `limit` defaults to 10 and is capped server-side at 50
-- Posts are sorted by `createdAt` descending before pagination
-
 ### Videos
 
 - GET /api/videos (public, approved only)
@@ -164,6 +153,9 @@ Admin report pagination behavior:
 
 ### System (Error Observability)
 
+- GET /api/system/health
+- GET /api/system/version
+- GET /api/system/uptime
 - POST /api/system/client-errors
 - GET /api/system/client-errors (admin)
 - GET /api/system/client-errors/export (admin CSV)

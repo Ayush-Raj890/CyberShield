@@ -1,5 +1,13 @@
 # Development Logs
 
+## Day 54
+
+- Refactored navbar architecture into focused layout components (`NavGroup`, `NavDropdown`, `AccountMenu`, `AdminMenu`, `MobileMenu`) to reduce merge risk in `Navbar.jsx`
+- Added centralized frontend route registry (`client/src/routes/routes.config.js`) and wired navbar + app routes to shared path constants and nav sections
+- Consolidated system runtime endpoints under `/api/system/*` and moved health ownership to `systemRoutes`
+- Updated frontend warm-up ping from `/api/health` to `/api/system/health`
+- Synced docs for route ownership and system health/version/uptime endpoints; removed duplicate API/doc entries
+
 ## Day 1
 
 - Initialized project structure

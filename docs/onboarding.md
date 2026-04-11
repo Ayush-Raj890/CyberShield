@@ -160,6 +160,11 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 1. Server health:
 
+- Open `http://localhost:5000/api/system/health`
+- Expected: `{"status":"ok"}`
+
+Optional root check:
+
 - Open `http://localhost:5000/`
 - Expected: `API is running...`
 
@@ -186,7 +191,12 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 - Server endpoint `/api/ai/predict` forwards text to AI service `/api/predict`.
 - If AI service is down or `AI_SERVICE_URL` is wrong, server returns AI service failed.
 
-## 9) Common startup issues and fixes
+## 9) Route ownership map
+
+- Frontend route constants and nav section paths are centralized in `client/src/routes/routes.config.js`.
+- Update route config first, then consume constants in routing and navigation components.
+
+## 10) Common startup issues and fixes
 
 Issue: AI service failed in server logs
 
@@ -208,7 +218,7 @@ Issue: Client cannot call backend
 - Cause: server not running on port 5000.
 - Fix: run `npm run dev` in `server` and confirm `http://localhost:5000/`.
 
-## 10) First-day sanity checklist
+## 11) First-day sanity checklist
 
 - Server dependencies installed
 - Client dependencies installed
@@ -221,14 +231,14 @@ Issue: Client cannot call backend
 - AI detector returns classification successfully
 - Forgot-password flow sends token (or logs mock email)
 
-## 11) Recommended daily workflow
+## 12) Recommended daily workflow
 
 1. Start AI service first
 1. Start server second
 1. Start client last
 1. Keep all 3 terminals active while developing
 
-## 12) Quick copy-paste startup pack
+## 13) Quick copy-paste startup pack
 
 Use this when dependencies are already installed.
 
@@ -254,7 +264,7 @@ cd ai-service
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-## 12) One-command startup (Windows)
+## 14) One-command startup (Windows)
 
 From the repository root, run one of these:
 
@@ -269,6 +279,7 @@ start-dev.cmd
 ```
 
 What it does:
+
 - Opens 3 separate PowerShell windows
 - Starts server (`npm run dev`)
 - Starts client (`npm run dev`)
