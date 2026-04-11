@@ -1,21 +1,9 @@
 import axios from "axios";
 import { saveErrorContext } from "../utils/errorReporter";
+import { getApiBaseUrl } from "../utils/runtimeConfig";
 
-const apiBase = (() => {
-  const rawBase = import.meta.env.VITE_API_URL;
-
-  if (!rawBase) {
-    return "http://localhost:5000/api";
-  }
-
-  // Trim trailing slashes from the configured base URL
-  const normalized = rawBase.replace(/\/+$/, "");
-
-  // Only append "/api" if it's not already present at the end
-  return normalized.endsWith("/api") ? normalized : `${normalized}/api`;
-})();
 const API = axios.create({
-  baseURL: apiBase
+  baseURL: getApiBaseUrl()
 });
 
 // Attach token automatically

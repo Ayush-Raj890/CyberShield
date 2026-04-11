@@ -21,6 +21,42 @@ export default function ErrorLogs() {
   const [exporting, setExporting] = useState(false);
   const [error, setError] = useState("");
 
+  const buildFilterParams = ({ includePagination = true } = {}) => {
+    const params = includePagination
+      ? { page, limit: PAGE_SIZE }
+      : {};
+
+    if (source !== "ALL") {
+      params.source = source;
+    }
+
+    if (statusCode.trim()) {
+      params.statusCode = statusCode.trim();
+    }
+
+    if (rangePreset !== "ALL") {
+      params.range = rangePreset;
+    }
+
+    if (errorTypePreset !== "ALL") {
+      params.type = errorTypePreset;
+    }
+
+    if (search.trim()) {
+      params.q = search.trim();
+    }
+
+    if (fromDate) {
+      params.fromDate = fromDate;
+    }
+
+    if (toDate) {
+      params.toDate = toDate;
+    }
+
+    return params;
+  };
+
   useEffect(() => {
     fetchLogs();
   }, [page, source, statusCode, fromDate, toDate, rangePreset, errorTypePreset, search]);
@@ -29,39 +65,7 @@ export default function ErrorLogs() {
     try {
       setError("");
       setLoading(true);
-
-      const params = {
-        page,
-        limit: PAGE_SIZE
-      };
-
-      if (source !== "ALL") {
-        params.source = source;
-      }
-
-      if (statusCode.trim()) {
-        params.statusCode = statusCode.trim();
-      }
-
-      if (rangePreset !== "ALL") {
-        params.range = rangePreset;
-      }
-
-      if (errorTypePreset !== "ALL") {
-        params.type = errorTypePreset;
-      }
-
-      if (search.trim()) {
-        params.q = search.trim();
-      }
-
-      if (fromDate) {
-        params.fromDate = fromDate;
-      }
-
-      if (toDate) {
-        params.toDate = toDate;
-      }
+      const params = buildFilterParams({ includePagination: true });
 
       const { data } = await API.get("/system/client-errors", { params });
       setLogs(data.items || []);
@@ -79,36 +83,7 @@ export default function ErrorLogs() {
   const exportCsv = async () => {
     try {
       setExporting(true);
-
-      const params = {};
-
-      if (source !== "ALL") {
-        params.source = source;
-      }
-
-      if (statusCode.trim()) {
-        params.statusCode = statusCode.trim();
-      }
-
-      if (rangePreset !== "ALL") {
-        params.range = rangePreset;
-      }
-
-      if (errorTypePreset !== "ALL") {
-        params.type = errorTypePreset;
-      }
-
-      if (search.trim()) {
-        params.q = search.trim();
-      }
-
-      if (fromDate) {
-        params.fromDate = fromDate;
-      }
-
-      if (toDate) {
-        params.toDate = toDate;
-      }
+      const params = buildFilterParams({ includePagination: false });
 
       const response = await API.get("/system/client-errors/export", {
         params,

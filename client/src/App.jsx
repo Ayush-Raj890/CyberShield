@@ -1,27 +1,7 @@
 import { useEffect, useState } from "react";
 import AppRoutes from "./routes/AppRoutes";
 import ErrorBoundary from "./components/ErrorBoundary";
-
-const getApiBase = () => {
-  const rawBase = import.meta.env.VITE_API_URL;
-
-  if (!rawBase) {
-    return "http://localhost:5001/api";
-  }
-
-  const normalized = rawBase.replace(/\/+$/, "");
-  return normalized.endsWith("/api") ? normalized : `${normalized}/api`;
-};
-
-const getAiBase = () => {
-  const rawBase = import.meta.env.VITE_AI_SERVICE_URL;
-
-  if (!rawBase) {
-    return "http://localhost:8000";
-  }
-
-  return rawBase.replace(/\/+$/, "");
-};
+import { getAiServiceBaseUrl, getApiBaseUrl } from "./utils/runtimeConfig";
 
 const warmUrl = async (url) => {
   const controller = new AbortController();
@@ -48,8 +28,8 @@ export default function App() {
     let isMounted = true;
 
     Promise.allSettled([
-      warmUrl(`${getApiBase()}/system/health`),
-      warmUrl(getAiBase())
+      warmUrl(`${getApiBaseUrl()}/system/health`),
+      warmUrl(getAiServiceBaseUrl())
     ]).finally(() => {
       if (isMounted) {
         setIsWarming(false);
