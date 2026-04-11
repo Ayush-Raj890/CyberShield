@@ -3,16 +3,27 @@ import toast from "react-hot-toast";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
 import Button from "../../components/ui/Button";
+import PageState from "../../components/ui/PageState";
 
 export default function ScamDetector() {
   const [text, setText] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [wakingHint, setWakingHint] = useState("");
+  const [analysisError, setAnalysisError] = useState("");
+
+  const canAnalyze = text.trim().length > 0 && !loading;
 
   const analyze = async () => {
+    if (!text.trim()) {
+      toast.error("Please enter a message or URL first");
+      return;
+    }
+
     setLoading(true);
     setWakingHint("");
+    setAnalysisError("");
+
     try {
       const { data } = await API.post("/ai/predict", { text });
       setResult(data);
@@ -23,6 +34,7 @@ export default function ScamDetector() {
       toast.success("Analysis complete");
     } catch (error) {
       const message = error?.response?.data?.message || "AI request failed";
+      setAnalysisError(message);
       toast.error(message);
       if (message.toLowerCase().includes("ai service failed")) {
         setWakingHint("Server waking up, please wait a few seconds and try again.");
@@ -44,10 +56,12 @@ export default function ScamDetector() {
             placeholder="Enter message or URL..."
             className="input"
             rows="4"
+            value={text}
             onChange={(e) => setText(e.target.value)}
+            disabled={loading}
           />
 
-          <Button onClick={analyze} className="w-full sm:w-auto" loading={loading}>
+          <Button onClick={analyze} className="w-full sm:w-auto" loading={loading} disabled={!canAnalyze}>
             Analyze
           </Button>
 
@@ -55,6 +69,18 @@ export default function ScamDetector() {
             <p className="mt-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
               {wakingHint}
             </p>
+          )}
+
+          {analysisError && (
+            <div className="mt-4">
+              <PageState
+                variant="error"
+                title="Analysis failed"
+                description={analysisError}
+                actionLabel="Try again"
+                onAction={analyze}
+              />
+            </div>
           )}
         </div>
 

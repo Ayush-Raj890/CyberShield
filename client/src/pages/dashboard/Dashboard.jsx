@@ -3,6 +3,8 @@ import toast from "react-hot-toast";
 import DashboardCore from "../../components/ui/DashboardCore";
 import Navbar from "../../components/layout/Navbar";
 import AdminNavbar from "../../components/layout/AdminNavbar";
+import PageState from "../../components/ui/PageState";
+import Loader from "../../components/ui/Loader";
 import {
   getAdminDashboardData,
   getUserDashboardData
@@ -14,6 +16,7 @@ export default function Dashboard() {
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchDashboard();
@@ -21,6 +24,7 @@ export default function Dashboard() {
 
   const fetchDashboard = async () => {
     try {
+      setError("");
       setLoading(true);
 
       if (isAdmin) {
@@ -32,7 +36,10 @@ export default function Dashboard() {
       const userData = await getUserDashboardData(user?._id);
       setData(userData);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to load dashboard");
+      const message = error.response?.data?.message || "Failed to load dashboard";
+      setData(null);
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -42,16 +49,26 @@ export default function Dashboard() {
     return (
       <>
         {isAdmin ? <AdminNavbar /> : <Navbar />}
-        <div className="p-4 sm:p-6 text-sm text-neutral-500 dark:text-neutral-300">Loading dashboard...</div>
+        <div className="p-4 sm:p-6">
+          <Loader label="Loading dashboard..." />
+        </div>
       </>
     );
   }
 
-  if (!data) {
+  if (error || !data) {
     return (
       <>
         {isAdmin ? <AdminNavbar /> : <Navbar />}
-        <div className="p-4 sm:p-6 text-sm text-neutral-500 dark:text-neutral-300">Dashboard unavailable.</div>
+        <div className="p-4 sm:p-6 max-w-4xl mx-auto">
+          <PageState
+            variant="error"
+            title="Dashboard unavailable"
+            description={error || "Something went wrong while loading dashboard data."}
+            actionLabel="Try again"
+            onAction={fetchDashboard}
+          />
+        </div>
       </>
     );
   }
