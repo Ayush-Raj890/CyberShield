@@ -1,369 +1,490 @@
-# CyberShield Docs
+# CyberShield Internal Docs
 
-This folder contains project planning, tracking, and implementation notes for CyberShield.
+Internal engineering documentation for **CyberShield**.
+This folder exists to help maintain, extend, debug, and ship the platform without descending into ritual chaos.
 
-Quick links:
+> Public-facing overview lives in the root `README.md`
+> This docs folder is for developers, maintainers, reviewers, and future-you.
 
-- [Onboarding Guide](onboarding.md)
+---
 
-Live deployments:
+## Quick Navigation
 
-- Frontend (primary): [cyber-shield-eight.vercel.app](https://cyber-shield-eight.vercel.app)
-- Frontend (alternate): [cyber-shield-nzeoni1oj-mystifys-projects.vercel.app](https://cyber-shield-nzeoni1oj-mystifys-projects.vercel.app)
-- Backend API: [cybershield-backend-inx9.onrender.com](https://cybershield-backend-inx9.onrender.com)
-- AI service: [cybershield-ai-sm3o.onrender.com](https://cybershield-ai-sm3o.onrender.com)
+### Live Deployments
 
-Startup shortcuts:
+| Service | URL |
+| --- | --- |
+| Frontend | [cyber-shield-eight.vercel.app](https://cyber-shield-eight.vercel.app) |
+| Preview Frontend | [cyber-shield-nzeoni1oj-mystifys-projects.vercel.app](https://cyber-shield-nzeoni1oj-mystifys-projects.vercel.app) |
+| Backend API | [cybershield-backend-inx9.onrender.com](https://cybershield-backend-inx9.onrender.com) |
+| AI Service | [cybershield-ai-sm3o.onrender.com](https://cybershield-ai-sm3o.onrender.com) |
 
-- `scripts/start-all.ps1` on Windows PowerShell
-- `npm run dev` from the repository root
-- `scripts/start-all.cmd` on Windows
-- `scripts/start-all.sh` on macOS/Linux
+---
 
-## Current Build Status
+### Core Docs
 
-Implemented backend modules:
+| File | Purpose |
+| --- | --- |
+| `onboarding.md` | Setup + local development |
+| `../public/SYSTEM_DESIGN.md` | Architecture + flow |
+| `../public/SECURITY.md` | Security model + controls |
+| `ROADMAP.md` | Future direction |
+| `todo.md` | Task tracker |
+| `logs.md` | Change history |
+| `bugs.md` | Known issues + fixes |
+| `qa-checklist.md` | Test matrix |
+| `interview-pack.md` | Viva / interview prep |
 
-- Authentication API (register/login + email OTP verification + resend OTP)
-- Forgot password + reset password via email token flow
-- User Profile API (profile read/update + password change + ownership stats)
-- Gamification engine (XP, levels, streaks, badges, event-based rewards)
-- Virtual economy engine (coin earn/spend rules for engagement and anti-spam)
-- Incident Reporting API (create/get/update status + evidence upload)
-- AI detection integration route (public prediction endpoint)
-- Knowledge Hub API (user submission + approval-based publishing)
-- Community Forum API (public read, authenticated post/reply)
-- Video Hub API (submit, public approved feed, admin moderation)
-- Meme Hub API (upload, feed, voting, auto-flagging, admin moderation)
-- Game API (phishing reward endpoint with auth + anti-abuse cooldown)
-- Admin APIs (stats, users, reports, article deletion, promote/suspend/demote user roles)
-- Notification API (list + mark read)
-- System observability API (client error logs, filter, CSV export)
+---
 
-Implemented AI module:
+## Current Product State
 
-- FastAPI service with /api/predict
-- MVP scam classifier (keyword-based)
-- Upgraded keyword scoring classifier with tiered outputs (SAFE / SUSPICIOUS / MALICIOUS)
-- Confidence mapping: SAFE 0.8, SUSPICIOUS 0.6, MALICIOUS 0.9
+CyberShield is in a **release-ready functional state** with live deployments.
 
-Implemented frontend modules:
+## Implemented Pillars
 
-- Public Home page and public discovery flow
-- Auth pages (Login/Register)
-- User Profile page (`/profile`)
-- Settings page (`/settings`) with profile/password/preferences/danger zone actions
-- Alias-first identity display with username hover hint (forum, articles, admin, profile)
-- User Dashboard (navigation hub)
-- Unified modular dashboard engine (`user`/`admin`) with lazy analytics
-- Dashboard gamification panels (XP, level, streak, badges)
-- Dashboard wallet snapshot (daily earn progress, remaining budget, UTC reset hint)
-- Report pages (Create Report, View Reports)
-- Enhanced reports with file upload (evidence), severity levels, and contact email
-- Report detail view with evidence image/document viewing
-- AI Detector page (`/ai`)
-- Knowledge Hub pages (Articles list + Article detail + user submission form)
-- User-submitted article submission with approval workflow
-- Community Forum pages (`/forum`, `/forum/create`)
-- Video Hub pages (`/videos`, `/videos/submit`)
-- Meme Hub pages (`/memes`, `/memes/upload`)
-- Phishing Detector game page (`/games`) with reusable question card module
-- Contextual quick-create CTAs on Reports, Video Hub, and Meme Hub pages
-- Admin pages (Dashboard, Manage Reports, Manage Users, Manage Articles)
-- Admin page (Video Moderation)
-- Admin page (Meme Moderation)
-- Admin pages (Notifications, Error Logs)
-- Hybrid routing model (public content + protected write/admin actions)
-- Shared API service with auth interceptor
-- Reusable Navbar layout component
-- Domain-grouped Navbar UX (Core, Activity, Learn, Account, Admin)
-- Centralized frontend route ownership via shared route registry (`client/src/routes/routes.config.js`)
-- Reusable AdminNavbar layout component
-- Shared runtime base URL helpers (`getApiBaseUrl`, `getAiServiceBaseUrl`) for consistent environment resolution
-- Mobile responsiveness pass across primary user flows (navbars, profile, reports, forum, articles, AI)
-- Global UI design system (`.card`, `.btn`, `.btn-primary`, `.btn-danger`, `.input`)
-- Expanded reusable UI primitives (`Input`, `Badge`, `Modal`, `EmptyState`, `Loader`)
-- Polished status indicators for reports and AI prediction result cards
-- Lucide icons integrated for premium navigation and dashboard hierarchy
-- Toast notifications (`react-hot-toast`) replacing alert popups
-- Loading states for submit/analyze/admin actions
-- Frontend auth validation for login/register (email format + minimum password length)
-- Backend auth validation for register/login (required fields + email format + minimum password length)
-- Frontend input sanitization utility for XSS prevention (light layer)
-- Backend global security middleware: helmet + custom XSS sanitizer + custom NoSQL sanitizer
-- Backend request validation/sanitization using express-validator on key auth/report/system routes
-- File upload system via multer for report evidence (images/PDFs)
-- Enhanced Report model with severity, contactEmail, and evidence file path
-- User-submitted articles with admin approval workflow
-- Article model with status field (PENDING, APPROVED, REJECTED)
-- Admin moderation interface for pending article review
-- Public API only shows approved articles
-- Admin endpoints for pending article management and status updates
-- Admin user governance controls (Make Admin, Suspend, Remove Admin)
-- Super Admin operational tooling via CLI script
-- Global React error fallback pages (`/500`, wildcard 404)
-- Client error reporting button from 500 page
-- Light-only theme currently active (dark mode switch tracked in TODO)
+```text
+1. Protect     -> AI detection + incident reporting
+2. Learn       -> Knowledge Hub + awareness content
+3. Community   -> Forum + memes + videos
+4. Govern      -> Admin moderation + observability
+5. Engage      -> XP / coins / streak systems
+```
 
-## Architecture Locked (Next Phase)
+---
 
-Dashboard system has been locked as a modular, scalable design for upcoming implementation:
+## Module Status
 
-- Premium tab-based dashboards for both client and admin
-- Hybrid metrics model (real API data + frontend-calculated insights)
-- Dark mode ready strategy (state-ready, not forced globally)
-- Charts loaded on-demand when analytics tab is active (lazy import)
+---
 
-Planned tab structure:
+## 1. Authentication and Identity
 
-- Client: Overview | Analytics | Reports
-- Admin: Overview | Analytics | Moderation
+### Backend Auth Flows
 
-Planned build order:
+- Register and login
+- Email OTP verification
+- OTP resend
+- Forgot password
+- Reset password
+- JWT auth
+- Role model:
+  - USER
+  - ADMIN
+  - SUPER_ADMIN
 
-1. Refactor reusable analytics dashboard component to dynamic props-driven model
-2. Build ClientDashboard and AdminDashboard containers
-3. Integrate API data sources and calculated metrics
-4. Add async/lazy chart loading in analytics tabs
+### Frontend Identity Flows
 
-Implementation status:
+- Login page
+- Register page
+- Verification page
+- Protected route validation
+- Settings page
+- Profile page
 
-- Core dashboard engine is implemented and routed for both user and admin
-- Lazy analytics loading is implemented
-- Chart visualization library integration remains pending
+---
 
-## Meme + Fun Hub
+## 2. AI Threat Detection
 
-Gamified learning module designed to increase engagement and cybersecurity awareness:
+### Implemented
 
-- **Meme Hub (Implemented):**
-  - User image upload with caption/category
-  - Public visible feed
-  - Community upvote/downvote system
-  - Auto-flagging threshold for community-driven moderation
-  - Admin flagged queue with approve/remove actions and voting toggle
-  - Vote throttling guard (rate limiter)
-  - Engagement loop rewards (meme create, meme liked, meme voted participation)
-  - Anti-abuse checks (self-vote blocked, duplicate same-vote no XP)
-- **Mini Games:** Phishing Detector (implemented), URL Checker (planned), Password Strength (planned)
-- **Gamification Integration:** Meme upload, meme like, and meme voting XP actions added; meme-focused badges added
-- **Economy Integration (Implemented):** Coin rewards (daily login/report/meme/likes) and action costs (meme upload/downvote/forum post/comment)
-- **Economy Visibility (Implemented):** Dashboard now surfaces daily cap progress, remaining earn budget, and UTC reset countdown
+- FastAPI prediction service
+- Backend proxy route
+- Tiered outputs:
 
-## Product Growth Roadmap (Planned)
+```text
+SAFE
+SUSPICIOUS
+MALICIOUS
+```
 
-Strategic shift:
+- Confidence scoring
+- Explanation card UI
+- Public access flow
 
-- From functional utility app -> retention-first product
-- Focus on motivation loops, habit loops, and repeat engagement
+### Planned
 
-Four product pillars:
+- ML model upgrade
+- Historical scoring
+- Explainability improvements
 
-1. Protect (already established): reports, AI triage, privacy workflows
-2. Learn (expansion planned): structured learning, short-form video hub, gamified learning
-3. Community (expansion planned): forum discussions, meme sharing, engagement loops
-4. Engagement (new pillar): XP/levels, streaks, badges, mini-games, smart insights
+---
 
-High-impact features queued:
+## 3. Incident Reporting
 
-- Gamification system (XP, levels, badges, streaks) - foundational implementation completed
-- Short content hub (Video Hub + moderation workflow) - foundational implementation completed
-- Meme submission and moderation flow (with vote-driven auto-flagging) - foundational implementation completed
-- Mini security games (phishing detector, URL checker, password strength) - planning phase completed, awaiting implementation decisions
-- Smart insights and challenge loops (awareness score, weekly goals)
-- Coin economy UI expansion (dedicated wallet history and analytics) - pending polish
+### Implemented Reporting Capabilities
 
-## Active Services
+- Threat report submission
+- Severity levels
+- File evidence upload
+- Safe public feed
+- Private owner-scoped reports
+- Admin moderation and report views
+- Pagination contract
 
-Backend (Node + Express):
+### Frontend Pages
 
-- Base URL: `http://localhost:5000`
-- Health: GET /api/system/health
-- Version: GET /api/system/version
-- Uptime: GET /api/system/uptime
+- Create report
+- View reports
+- Report details
+- Dashboard integration
 
-AI Service (FastAPI):
+---
 
-- Base URL: `http://localhost:8000`
-- Health: GET /
-- Predict: POST /api/predict
+## 4. Knowledge Hub
 
-Frontend (Vite + React):
+### Implemented Knowledge Workflows
 
-- Base URL: `http://localhost:3000` (or next available port)
+- Public approved articles
+- User submissions
+- Approval workflow
+- Admin review queue
+
+### Frontend Pages (Knowledge Hub)
+
+- Articles list
+- Detail page
+- Submit article
+
+---
+
+## 5. Community Layer
+
+### Forum
+
+- Public read
+- Authenticated posting
+- Replies
+
+### Video Hub
+
+- Submission system
+- Approved public feed
+- Admin moderation
+
+### Meme Hub
+
+- Image upload
+- Voting
+- Auto-flagging
+- Admin moderation
+- Reward hooks
+
+---
+
+## 6. Gamification and Economy
+
+### Implemented Economy Systems
+
+- XP
+- Levels
+- Badges
+- Streaks
+- Coins
+- Daily earn caps
+- Spend controls (anti-spam)
+
+### Integrated With
+
+- Reports
+- Meme actions
+- Forum actions
+- Mini games
+
+---
+
+## 7. Admin Governance
+
+### Implemented Governance Tools
+
+- Dashboard
+- User list
+- Promote and demote
+- Suspend and unsuspend
+- Report management
+- Article moderation
+- Meme moderation
+- Video moderation
+- Notifications
+- Error logs
+
+---
+
+## 8. Observability
+
+### Implemented Observability Tools
+
+- Client-side error reporting
+- Error log filters
+- CSV export
+- Health endpoint
+- Version endpoint
+- Uptime endpoint
+
+---
+
+## Architecture Summary
+
+```text
+React Client
+   ->
+Express API
+   ->
+MongoDB Atlas
+
+Express API
+   ->
+FastAPI AI Service
+```
+
+### Responsibilities
+
+| Layer | Responsibility |
+| --- | --- |
+| client | UI, routing, user flow |
+| server | auth, APIs, validation, moderation |
+| ai-service | classification engine |
+
+More detail in `../public/SYSTEM_DESIGN.md`.
+
+---
+
+## Frontend Route Map
+
+### Public
+
+```text
+/
+/login
+/register
+/verify
+/forgot-password
+/reports
+/ai
+/articles
+/articles/:id
+/forum
+/videos
+/memes
+```
+
+### Protected User
+
+```text
+/dashboard
+/profile
+/settings
+/create-report
+/forum/create
+/videos/submit
+/memes/upload
+/games
+```
+
+### Admin
+
+```text
+/admin
+/admin/reports
+/admin/users
+/admin/articles
+/admin/videos
+/admin/memes
+/admin/notifications
+/admin/error-logs
+```
+
+### Error Routes
+
+```text
+/500
+*
+```
+
+---
 
 ## Backend API Summary
 
-Auth:
+### Auth
 
-- POST /api/auth/register
-- POST /api/auth/login
-- POST /api/auth/verify-otp
-- POST /api/auth/resend-otp
-- POST /api/auth/forgot-password
-- POST /api/auth/reset-password
+```text
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/verify-otp
+POST /api/auth/resend-otp
+POST /api/auth/forgot-password
+POST /api/auth/reset-password
+GET  /api/auth/validate
+```
 
-Users:
+### Reports
 
-- GET /api/users/profile (protected, includes gamification + recent reports)
-- PUT /api/users/profile (protected)
-- PUT /api/users/change-password (protected)
-- DELETE /api/users/me (protected)
+```text
+GET  /api/reports
+GET  /api/reports/me
+POST /api/reports
+PUT  /api/reports/:id
+```
 
-Reports:
+### AI
 
-- POST /api/reports (protected, multipart/form-data)
-- GET /api/reports (public safe feed)
-- GET /api/reports/me (protected own reports)
-- PUT /api/reports/:id
+```text
+POST /api/ai/predict
+```
 
-AI (backend proxy):
+### Forum API
 
-- POST /api/ai/predict (public, optional auth for XP tracking)
+```text
+GET  /api/forum
+POST /api/forum
+POST /api/forum/:id/reply
+```
 
-Knowledge Hub:
+### Articles
 
-- GET /api/articles (public, approved only)
-- GET /api/articles/:id (public, approved only)
-- POST /api/articles (protected, user submission)
-- GET /api/articles/admin/pending (admin)
-- PUT /api/articles/:id/status (admin)
+```text
+GET  /api/articles
+POST /api/articles
+PUT  /api/articles/:id/status
+```
 
-Forum:
+### Admin API
 
-- GET /api/forum (public)
-- POST /api/forum (auth)
-- POST /api/forum/:id/reply (auth)
+```text
+GET    /api/admin/stats
+GET    /api/admin/users
+PUT    /api/admin/promote/:id
+PUT    /api/admin/suspend/:id
+PUT    /api/admin/users/:id/unsuspend
+DELETE /api/admin/users/:id
+```
 
-Videos:
+### System
 
-- GET /api/videos (public, approved only)
-- POST /api/videos (protected, submission)
-- GET /api/videos/pending (admin)
-- PUT /api/videos/:id (admin status update)
+```text
+GET  /api/system/health
+GET  /api/system/version
+GET  /api/system/uptime
+GET  /api/system/client-errors
+GET  /api/system/client-errors/export
+POST /api/system/client-errors
+```
 
-Memes:
+---
 
-- GET /api/memes (public visible feed)
-- POST /api/memes (protected, image upload)
-- POST /api/memes/:id/vote (protected, up/down voting)
-- GET /api/memes/admin/flagged (admin)
-- PUT /api/memes/:id (admin moderation)
+## Environment Reference
 
-Games:
+### Backend Env
 
-- POST /api/game/reward (protected, correct-answer reward)
+```env
+PORT=5000
+MONGO_URI=
+JWT_SECRET=
+AI_SERVICE_URL=http://localhost:8000
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+ENCRYPTION_KEY=
+EMAIL_USER=
+EMAIL_PASS=
+EMAIL_MOCK=false
+```
 
-Admin:
+### Frontend Env
 
-- GET /api/admin/stats
-- GET /api/admin/users
-- DELETE /api/admin/users/:id
-- PUT /api/admin/promote/:id
-- PUT /api/admin/suspend/:id
-- PUT /api/admin/demote/:id (super admin only)
-- GET /api/admin/reports
-- DELETE /api/admin/articles/:id
+```env
+VITE_API_URL=http://localhost:5000/api
+```
 
-## Pagination Conventions
+---
 
-Report listing endpoints use a shared paginated response contract:
+## Recommended Dev Workflow
 
-- `items`: array of records for the current page
-- `pagination`: object with `page`, `limit`, `total`, `totalPages`, `hasNextPage`
+### Start All
 
-Endpoints currently using this contract:
+```bash
+npm run dev
+```
 
-- GET /api/reports
-- GET /api/reports/me
-- GET /api/admin/reports
+### Before Every Merge
 
-Server-side pagination controls:
+```text
+frontend runs
+backend runs
+build passes
+no merge markers
+auth works
+key flows tested
+```
 
-- Public report listing rate and window are controlled by `REPORT_PUBLIC_LIST_MAX` and `REPORT_PUBLIC_LIST_WINDOW_MS`.
-- Admin report page size is capped by `ADMIN_REPORTS_PAGE_LIMIT_MAX` regardless of requested limit.
+---
 
-Notifications:
+## Current Priorities
 
-- GET /api/notifications
-- PUT /api/notifications/:id/read
+### Short-Term
 
-System:
+```text
+1. Demo polish
+2. Analytics visuals
+3. Stronger onboarding
+4. AI model improvements
+5. Monitoring
+```
 
-- GET /api/system/health
-- GET /api/system/version
-- GET /api/system/uptime
-- POST /api/system/client-errors (public for client error reporting)
-- GET /api/system/client-errors (admin)
-- GET /api/system/client-errors/export (admin, CSV)
+### Medium-Term
 
-Tooling:
+```text
+1. Search and filter upgrades
+2. Better moderation workflows
+3. Notification improvements
+4. Better retention loops
+```
 
-- `npm run make:super-admin -- your-email@example.com`
-- `npm run reset:password -- your-email@example.com NewPassword123`
-
-## Frontend Route Summary
-
-- / (Public Home)
-- /login
-- /register
-- /verify
-- /forgot-password
-- /dashboard (protected)
-- /profile (protected)
-- /settings (protected)
-- /create-report (protected)
-- /reports (public)
-- /ai (public)
-- /articles (public)
-- /articles/:id (public)
-- /forum (public)
-- /forum/create (protected)
-- /videos (public)
-- /videos/submit (protected)
-- /memes (public)
-- /memes/upload (protected)
-- /games (protected)
-- /admin (protected, admin only)
-- /admin/reports (protected, admin only)
-- /admin/users (protected, admin only)
-- /admin/articles (protected, admin only)
-- /admin/videos (protected, admin only)
-- /admin/memes (protected, admin only)
-- /admin/notifications (protected, admin only)
-- /admin/error-logs (protected, admin only)
-- /500
-- \* (404 fallback)
-
-## Environment
-
-Backend .env expected keys:
-
-- PORT=5000
-- MONGO_URI=your_mongodb_uri
-- JWT_SECRET=supersecretkey
-- AI_SERVICE_URL=`http://localhost:8000`
-- ALLOWED_ORIGINS=`http://localhost:3000,http://localhost:5173`
-- DEBUG_REQUEST_LOGS=false
-- REPORT_PUBLIC_LIST_WINDOW_MS=60000
-- REPORT_PUBLIC_LIST_MAX=60
-- ADMIN_REPORTS_PAGE_LIMIT_MAX=50
-- AUTH_VERIFY_OTP_WINDOW_MS=900000
-- AUTH_VERIFY_OTP_MAX=10
-- AUTH_RESET_PASSWORD_WINDOW_MS=3600000
-- AUTH_RESET_PASSWORD_MAX=5
-- AI_PREDICT_WINDOW_MS=900000
-- AI_PREDICT_MAX=50
-- ENCRYPTION_KEY=your_64_char_hex_key
-- ENCRYPTION_LEGACY_KEYS=comma_separated_old_keys
-- EMAIL_USER=your_gmail_address
-- EMAIL_PASS=your_gmail_app_password
-- EMAIL_MOCK=false
+---
 
 ## Tracking Files
 
-- context.md: project scope and constraints
-- todo.md: planned and completed tasks
-- logs.md: implementation history
-- variables.md: constants, routes, and enums
-- bugs.md: known issues and fixes
+| File | Use |
+| --- | --- |
+| `todo.md` | task progress |
+| `logs.md` | implementation history |
+| `bugs.md` | issues and fixes |
+| `variables.md` | constants and routes |
+| `context.md` | project scope |
+
+---
+
+## Maintainer Rules
+
+```text
+1. Update docs after meaningful changes
+2. Keep controllers thin
+3. Prefer reusable UI primitives
+4. No random feature sprawl
+5. Test before merge
+```
+
+---
+
+## Internal Status Verdict
+
+```text
+Engineering maturity: strong student / junior+
+Architecture quality: good
+Scope control: historically chaotic, now improving
+Deployment readiness: achieved
+Portfolio value: high
+```
+
+---
+
+## Suggested Next Focus
+
+- Presentation quality
+- Metrics dashboards
+- Case study write-up
+- Interview storytelling
+- Selective polish over expansion
+
+---
+
+## Maintained By
+
+@Mystify7777
