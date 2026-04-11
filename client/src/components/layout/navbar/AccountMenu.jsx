@@ -1,6 +1,12 @@
 import NavDropdown from "./NavDropdown";
 
-export default function AccountMenu({ activeDropdown, onToggle, onNavigate, onLogout }) {
+export default function AccountMenu({ activeDropdown, onToggle, onNavigate, onLogout, items }) {
+  const accountItems = items || [
+    { label: "Dashboard", path: "/dashboard" },
+    { label: "Profile", path: "/profile" },
+    { label: "Settings", path: "/settings" }
+  ];
+
   return (
     <NavDropdown
       label="Account"
@@ -10,9 +16,7 @@ export default function AccountMenu({ activeDropdown, onToggle, onNavigate, onLo
       widthClass="w-40"
       onNavigate={onNavigate}
       items={[
-        { label: "Dashboard", path: "/dashboard" },
-        { label: "Profile", path: "/profile" },
-        { label: "Settings", path: "/settings" },
+        ...accountItems,
         {
           label: "Logout",
           className: "text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30",

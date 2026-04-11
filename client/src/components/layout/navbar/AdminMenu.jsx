@@ -1,6 +1,13 @@
 import NavDropdown from "./NavDropdown";
 
-export default function AdminMenu({ activeDropdown, onToggle, onNavigate }) {
+export default function AdminMenu({ activeDropdown, onToggle, onNavigate, items }) {
+  const adminItems = items || [
+    { label: "Admin Dashboard", path: "/admin" },
+    { label: "Manage Users", path: "/admin/users" },
+    { label: "Moderation", path: "/admin/reports" },
+    { label: "Video Moderation", path: "/admin/videos" }
+  ];
+
   return (
     <NavDropdown
       label="Admin"
@@ -9,12 +16,7 @@ export default function AdminMenu({ activeDropdown, onToggle, onNavigate }) {
       onToggle={onToggle}
       widthClass="w-44"
       onNavigate={onNavigate}
-      items={[
-        { label: "Admin Dashboard", path: "/admin" },
-        { label: "Manage Users", path: "/admin/users" },
-        { label: "Moderation", path: "/admin/reports" },
-        { label: "Video Moderation", path: "/admin/videos" }
-      ]}
+      items={adminItems}
     />
   );
 }

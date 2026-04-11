@@ -30,109 +30,110 @@ import ErrorLogs from "../pages/admin/ErrorLogs";
 import NotFound from "../pages/errors/NotFound";
 import ServerError from "../pages/errors/ServerError";
 import PrivateRoute from "../components/PrivateRoute";
+import { PATHS } from "./routes.config";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/verify" element={<VerifyOTP />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path={PATHS.HOME} element={<Home />} />
+        <Route path={PATHS.LOGIN} element={<Login />} />
+        <Route path={PATHS.REGISTER} element={<Register />} />
+        <Route path={PATHS.VERIFY_OTP} element={<VerifyOTP />} />
+        <Route path={PATHS.FORGOT_PASSWORD} element={<ForgotPassword />} />
         <Route
-          path="/dashboard"
+          path={PATHS.DASHBOARD}
           element={<PrivateRoute><Dashboard /></PrivateRoute>}
         />
         <Route
-          path="/profile"
+          path={PATHS.PROFILE}
           element={<PrivateRoute><Profile /></PrivateRoute>}
         />
         <Route
-          path="/settings"
+          path={PATHS.SETTINGS}
           element={<PrivateRoute><Settings /></PrivateRoute>}
         />
         <Route
-          path="/create-report"
+          path={PATHS.CREATE_REPORT}
           element={<PrivateRoute><CreateReport /></PrivateRoute>}
         />
         <Route
-          path="/reports"
+          path={PATHS.REPORTS}
           element={<ViewReports />}
         />
         <Route
-          path="/ai"
+          path={PATHS.AI}
           element={<ScamDetector />}
         />
         <Route
-          path="/articles"
+          path={PATHS.ARTICLES}
           element={<Articles />}
         />
         <Route
-          path="/articles/:id"
+          path={PATHS.ARTICLE_DETAIL}
           element={<ArticleDetail />}
         />
         <Route
-          path="/forum"
+          path={PATHS.FORUM}
           element={<Forum />}
         />
         <Route
-          path="/videos"
+          path={PATHS.VIDEOS}
           element={<VideoHub />}
         />
         <Route
-          path="/memes"
+          path={PATHS.MEMES}
           element={<MemeHub />}
         />
         <Route
-          path="/videos/submit"
+          path={PATHS.SUBMIT_VIDEO}
           element={<PrivateRoute><SubmitVideo /></PrivateRoute>}
         />
         <Route
-          path="/memes/upload"
+          path={PATHS.UPLOAD_MEME}
           element={<PrivateRoute><SubmitMeme /></PrivateRoute>}
         />
         <Route
-          path="/games"
+          path={PATHS.GAMES}
           element={<PrivateRoute><PhishingGame /></PrivateRoute>}
         />
         <Route
-          path="/forum/create"
+          path={PATHS.CREATE_FORUM_POST}
           element={<PrivateRoute><CreatePost /></PrivateRoute>}
         />
         <Route
-          path="/admin"
+          path={PATHS.ADMIN}
           element={<PrivateRoute adminOnly={true}><Dashboard /></PrivateRoute>}
         />
         <Route
-          path="/admin/reports"
+          path={PATHS.ADMIN_REPORTS}
           element={<PrivateRoute adminOnly={true}><ManageReports /></PrivateRoute>}
         />
         <Route
-          path="/admin/users"
+          path={PATHS.ADMIN_USERS}
           element={<PrivateRoute adminOnly={true}><ManageUsers /></PrivateRoute>}
         />
         <Route
-          path="/admin/articles"
+          path={PATHS.ADMIN_ARTICLES}
           element={<PrivateRoute adminOnly={true}><ManageArticles /></PrivateRoute>}
         />
         <Route
-          path="/admin/videos"
+          path={PATHS.ADMIN_VIDEOS}
           element={<PrivateRoute adminOnly={true}><VideoModeration /></PrivateRoute>}
         />
         <Route
-          path="/admin/memes"
+          path={PATHS.ADMIN_MEMES}
           element={<PrivateRoute adminOnly={true}><MemeModeration /></PrivateRoute>}
         />
         <Route
-          path="/admin/notifications"
+          path={PATHS.ADMIN_NOTIFICATIONS}
           element={<PrivateRoute adminOnly={true}><Notifications /></PrivateRoute>}
         />
         <Route
-          path="/admin/error-logs"
+          path={PATHS.ADMIN_ERROR_LOGS}
           element={<PrivateRoute adminOnly={true}><ErrorLogs /></PrivateRoute>}
         />
-        <Route path="/500" element={<ServerError />} />
+        <Route path={PATHS.SERVER_ERROR} element={<ServerError />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

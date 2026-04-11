@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { performLogout } from "../../utils/logout";
+import { NAV_SECTIONS, PATHS } from "../../routes/routes.config";
 import NavGroup from "./navbar/NavGroup";
 import NavDropdown from "./navbar/NavDropdown";
 import AccountMenu from "./navbar/AccountMenu";
@@ -56,13 +57,10 @@ export default function Navbar() {
         onToggle={toggleDropdown}
         onNavigate={closeDropdownAndGo}
         widthClass="w-48"
-        items={[
-          { label: "AI Detector", path: "/ai" },
-          { label: "Report Incident", path: "/create-report" }
-        ]}
+        items={NAV_SECTIONS.guestCore}
       />
 
-      <button onClick={() => navigate("/articles")} className="text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors">Learn</button>
+      <button onClick={() => navigate(PATHS.ARTICLES)} className="text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors">Learn</button>
 
       <NavDropdown
         label="Community"
@@ -71,16 +69,11 @@ export default function Navbar() {
         onToggle={toggleDropdown}
         onNavigate={closeDropdownAndGo}
         widthClass="w-44"
-        items={[
-          { label: "Forum", path: "/forum" },
-          { label: "Video Hub", path: "/videos" },
-          { label: "Meme Hub", path: "/memes" },
-          { label: "Phishing Game", path: "/games" }
-        ]}
+        items={NAV_SECTIONS.guestCommunity}
       />
 
-      <button onClick={() => navigate("/login")} className="text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors">Login</button>
-      <button onClick={() => navigate("/register")} className="btn btn-primary text-sm">Get Started</button>
+      <button onClick={() => navigate(PATHS.LOGIN)} className="text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors">Login</button>
+      <button onClick={() => navigate(PATHS.REGISTER)} className="btn btn-primary text-sm">Get Started</button>
     </NavGroup>
   );
 
@@ -93,10 +86,7 @@ export default function Navbar() {
         onToggle={toggleDropdown}
         onNavigate={closeDropdownAndGo}
         widthClass="w-48"
-        items={[
-          { label: "AI Detector", path: "/ai" },
-          { label: "Reports", path: "/reports" }
-        ]}
+        items={NAV_SECTIONS.core}
       />
 
       <NavDropdown
@@ -106,7 +96,7 @@ export default function Navbar() {
         onToggle={toggleDropdown}
         onNavigate={closeDropdownAndGo}
         widthClass="w-44"
-        items={[{ label: "Knowledge Hub", path: "/articles" }]}
+        items={NAV_SECTIONS.learn}
       />
 
       <NavDropdown
@@ -116,12 +106,7 @@ export default function Navbar() {
         onToggle={toggleDropdown}
         onNavigate={closeDropdownAndGo}
         widthClass="w-44"
-        items={[
-          { label: "Forum", path: "/forum" },
-          { label: "Video Hub", path: "/videos" },
-          { label: "Meme Hub", path: "/memes" },
-          { label: "Phishing Game", path: "/games" }
-        ]}
+        items={NAV_SECTIONS.community}
       />
 
       <AccountMenu
@@ -129,6 +114,7 @@ export default function Navbar() {
         onToggle={toggleDropdown}
         onNavigate={closeDropdownAndGo}
         onLogout={() => performLogout(navigate)}
+        items={NAV_SECTIONS.account}
       />
 
       {isAdmin && (
@@ -136,6 +122,7 @@ export default function Navbar() {
           activeDropdown={activeDropdown}
           onToggle={toggleDropdown}
           onNavigate={closeDropdownAndGo}
+          items={NAV_SECTIONS.admin}
         />
       )}
     </NavGroup>
@@ -144,7 +131,7 @@ export default function Navbar() {
   return (
     <header ref={navRef} className="sticky top-0 z-40 border-b border-neutral-200 bg-white/95 dark:border-neutral-700 dark:bg-neutral-900/95 backdrop-blur transition-colors">
       <div className="container-page py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-        <button onClick={() => navigate("/")} className="text-xl font-bold text-primary-700 dark:text-primary-100 text-center sm:text-left">
+        <button onClick={() => navigate(PATHS.HOME)} className="text-xl font-bold text-primary-700 dark:text-primary-100 text-center sm:text-left">
           CyberShield
         </button>
 
