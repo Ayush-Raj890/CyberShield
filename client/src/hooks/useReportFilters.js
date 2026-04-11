@@ -6,6 +6,7 @@ import {
   getStatusLabel,
   getSubcategoryLabel,
   getSubcategoryOptions,
+  REPORT_TAXONOMY,
   REPORT_CATEGORY_OPTIONS,
   REPORT_SEVERITY_OPTIONS,
   REPORT_SOURCE_CHANNEL_OPTIONS,
@@ -30,14 +31,53 @@ const getDefaultFilters = (defaultSort) => ({
 });
 
 const isPositiveInteger = (value) => Number.isInteger(value) && value > 0;
+const toQueryToken = (value) => String(value ?? "")
+  .trim()
+  .replace(/[^A-Za-z0-9]+/g, "_")
+  .replace(/_+/g, "_")
+  .replace(/^_|_$/g, "")
+  .toUpperCase();
+
+const REPORT_CATEGORY_VALUES = new Set(REPORT_CATEGORY_OPTIONS.map((option) => option.value));
+const REPORT_STATUS_VALUES = new Set(REPORT_STATUS_OPTIONS.map((option) => option.value));
+const REPORT_SEVERITY_VALUES = new Set(REPORT_SEVERITY_OPTIONS.map((option) => option.value));
+const REPORT_SOURCE_VALUES = new Set(REPORT_SOURCE_CHANNEL_OPTIONS.map((option) => option.value));
+const REPORT_SUBCATEGORY_VALUES = new Set(
+  Object.values(REPORT_TAXONOMY).flatMap((category) => category.subcategories.map((option) => option.value))
+);
+
+const normalizeCategoryValue = (value) => {
+  const token = toQueryToken(value);
+  return REPORT_CATEGORY_VALUES.has(token) ? token : "";
+};
+
+const normalizeSubcategoryValue = (value) => {
+  const token = toQueryToken(value);
+  return REPORT_SUBCATEGORY_VALUES.has(token) ? token : "";
+};
+
+const normalizeStatusValue = (value) => {
+  const token = toQueryToken(value);
+  return REPORT_STATUS_VALUES.has(token) ? token : "";
+};
+
+const normalizeSeverityValue = (value) => {
+  const token = toQueryToken(value);
+  return REPORT_SEVERITY_VALUES.has(token) ? token : "";
+};
+
+const normalizeSourceValue = (value) => {
+  const token = toQueryToken(value);
+  return REPORT_SOURCE_VALUES.has(token) ? token : "";
+};
 
 const normalizeFilters = (filters, defaultSort) => ({
   q: filters.q || "",
-  category: filters.category || "",
-  subcategory: filters.subcategory || "",
-  status: filters.status || "",
-  severity: filters.severity || "",
-  source: filters.source || "",
+  category: normalizeCategoryValue(filters.category),
+  subcategory: normalizeSubcategoryValue(filters.subcategory),
+  status: normalizeStatusValue(filters.status),
+  severity: normalizeSeverityValue(filters.severity),
+  source: normalizeSourceValue(filters.source),
   sort: REPORT_SORT_OPTIONS.some((option) => option.value === filters.sort) ? filters.sort : defaultSort,
   page: isPositiveInteger(filters.page) ? filters.page : 1
 });

@@ -73,7 +73,7 @@ export const getAllReportsAdmin = async (req, res) => {
       .populate("user", "name alias email")
       .sort({ createdAt: -1 });
 
-    const filteredReports = filterAndSortReports(reports, req.query);
+    const filteredReports = filterAndSortReports(reports, { ...req.query, includeContactEmail: "true" });
     const { items, pagination } = paginateReports(filteredReports, page, limit);
 
     const safeReports = items.map((report) => {

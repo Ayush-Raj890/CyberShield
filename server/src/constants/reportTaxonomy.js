@@ -125,6 +125,7 @@ export const REPORT_SEVERITY_RANKS = {
 };
 
 export const REPORT_STATUS_RANKS = {
+  // Lower number means higher moderation priority.
   SUBMITTED: 1,
   PENDING: 1,
   UNDER_REVIEW: 2,
