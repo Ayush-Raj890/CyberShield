@@ -26,6 +26,7 @@
 - [x] Fetch reports API
 - [x] Upload evidence (file upload with multer)
 - [x] Enhanced report fields (severity, contact email)
+- [x] Stabilize My Reports filtering (request cancellation, latest-response guard, debounce)
 
 ---
 

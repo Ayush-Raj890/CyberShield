@@ -1,5 +1,15 @@
 # Development Logs
 
+## Day 60
+
+- Stabilized My Reports filtering under rapid multi-filter changes.
+- Implemented frontend request lifecycle guards in `ViewReports.jsx`:
+  - in-flight request cancellation with `AbortController`
+  - latest-request-only state updates via request-id guard
+  - 250ms debounce on filter-triggered fetches
+- Preserved existing reports API contract (`/reports/me` and existing query params unchanged).
+- Added backend trace logs in `reportController.getMyReports` (`QUERY`, `BEFORE`, `AFTER`) to validate incoming params and filtered result counts during runtime debugging.
+
 ## Day 59
 
 - Added demo showcase seeding workflow via `seed:demo` and `seed:demo:reset`.

@@ -256,7 +256,7 @@ CyberShield is an AI-powered cyber awareness platform that helps users identify 
 
 - Analytics trends
 - Better observability
-- Search and filtering
+- Search and filtering polish (completed baseline; ongoing UX tuning)
 - Stronger moderation tooling
 - ML model upgrades
 - Dark mode

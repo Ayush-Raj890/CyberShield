@@ -14,6 +14,15 @@ This log is grouped by phase to make the timeline easier to scan:
 
 ## Phase 1: Foundation and Core Platform
 
+## Day 60
+
+- Stabilized My Reports filtering under rapid multi-filter changes.
+- Added frontend request lifecycle controls in `client/src/pages/reports/ViewReports.jsx`:
+  - in-flight request cancellation
+  - latest-response-only state updates
+  - 250ms debounce for filter-triggered fetches
+- Added temporary backend trace logs in `server/src/controllers/reportController.js` (`QUERY`, `BEFORE`, `AFTER`) to validate filter behavior against incoming query params.
+
 ## Day 1
 
 - Initialized project structure

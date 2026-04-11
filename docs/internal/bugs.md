@@ -122,6 +122,23 @@ Note: This is a common issue in shared search utilities. Keep public search fiel
 
 ---
 
+## Bug 10
+
+Description: My Reports could show broad or stale results after rapid multi-filter changes, even when the final selected filters were valid.
+
+Status: Fixed
+
+Root Cause: Multiple overlapping frontend requests were allowed to resolve out of order. Older responses could overwrite the latest filtered response state, causing UI/query mismatch symptoms.
+
+Fix: Added request lifecycle controls in [client/src/pages/reports/ViewReports.jsx](../../client/src/pages/reports/ViewReports.jsx):
+- cancel in-flight requests with `AbortController`
+- apply request-id guard so only the latest response can call `setReports`
+- debounce filter-triggered fetches by 250ms to reduce burst requests
+
+Verification: Added temporary trace logs in [server/src/controllers/reportController.js](../../server/src/controllers/reportController.js) for `QUERY`, `BEFORE`, and `AFTER` counts to confirm backend filtering behavior matches incoming query params.
+
+---
+
 ## Rules
 
 - Always log bugs immediately

@@ -115,7 +115,10 @@ Forgot password request -> reset token email -> reset password -> login with new
 Login -> View profile stats -> Update alias/bio -> Change password
 
 4. Report Flow:
-Create report -> Status lifecycle (`PENDING`/`REVIEWED`/`RESOLVED`) -> Timeline updates
+Create report -> Extended status lifecycle (`SUBMITTED`/`UNDER_REVIEW`/`INVESTIGATING`/`NEED_MORE_INFO`/`RESOLVED`/`CLOSED`) -> Timeline updates
+
+4a. Report Filter Consistency Flow:
+My Reports filter changes -> debounced request dispatch -> in-flight request cancellation + latest-request guard -> only final matching response updates UI state
 
 5. Forum Flow:
 Public read -> Authenticated create/reply
