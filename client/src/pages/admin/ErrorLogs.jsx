@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import API from "../../services/api";
 import AdminNavbar from "../../components/layout/AdminNavbar";
 import Button from "../../components/ui/Button";
+import Badge from "../../components/ui/Badge";
+import Card from "../../components/ui/Card";
+import Input from "../../components/ui/Input";
 import PageState from "../../components/ui/PageState";
 
 const PAGE_SIZE = 20;
@@ -114,9 +117,9 @@ export default function ErrorLogs() {
         <h2 className="text-xl font-semibold mb-4">Client Error Logs</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-8 gap-3 mb-5">
-          <input
+          <Input
             type="text"
-            className="input md:col-span-2"
+            className="md:col-span-2"
             placeholder="Search message/path/method"
             value={search}
             onChange={(e) => {
@@ -138,9 +141,8 @@ export default function ErrorLogs() {
             <option value="API">API</option>
           </select>
 
-          <input
+          <Input
             type="number"
-            className="input"
             placeholder="Status code"
             value={statusCode}
             onChange={(e) => {
@@ -176,9 +178,8 @@ export default function ErrorLogs() {
             <option value="5xx">5xx only</option>
           </select>
 
-          <input
+          <Input
             type="date"
-            className="input"
             value={fromDate}
             onChange={(e) => {
               setFromDate(e.target.value);
@@ -187,9 +188,8 @@ export default function ErrorLogs() {
             }}
           />
 
-          <input
+          <Input
             type="date"
-            className="input"
             value={toDate}
             onChange={(e) => {
               setToDate(e.target.value);
@@ -233,21 +233,15 @@ export default function ErrorLogs() {
         ) : (
           <div className="space-y-3">
             {logs.map((log) => (
-              <div key={log._id} className="card">
+              <Card key={log._id}>
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-700">
-                      {log.source || "UNKNOWN"}
-                    </span>
+                    <Badge>{log.source || "UNKNOWN"}</Badge>
                     {log.statusCode && (
-                      <span className="px-2 py-1 rounded text-xs bg-red-100 text-red-700">
-                        {log.statusCode}
-                      </span>
+                      <Badge variant="danger">{log.statusCode}</Badge>
                     )}
                     {log.method && (
-                      <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-700">
-                        {log.method}
-                      </span>
+                      <Badge variant="info">{log.method}</Badge>
                     )}
                   </div>
                   <span className="text-xs text-gray-500">
@@ -266,7 +260,7 @@ export default function ErrorLogs() {
                     </pre>
                   </details>
                 )}
-              </div>
+              </Card>
             ))}
           </div>
         )}
