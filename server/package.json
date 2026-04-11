@@ -8,7 +8,10 @@
     "start": "node src/server.js",
     "make:super-admin": "node src/scripts/makeSuperAdmin.js",
     "reset:password": "node src/scripts/resetUserPassword.js",
-    "migrate:encryption": "node src/scripts/migrateEncryption.js"
+    "migrate:encryption": "node src/scripts/migrateEncryption.js",
+    "qa:smoke": "node src/scripts/qaSmoke.js",
+    "seed:demo": "node src/scripts/seedDemoData.js",
+    "seed:demo:reset": "node src/scripts/seedDemoData.js --reset"
   },
   "keywords": [],
   "author": "",

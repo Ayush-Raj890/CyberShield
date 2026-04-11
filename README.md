@@ -42,6 +42,21 @@ The project is in release-ready state:
 - File upload: Multer
 - UI feedback: react-hot-toast
 
+## Architecture
+
+CyberShield uses a split-service architecture:
+
+- `client` handles UX and route-level access control.
+- `server` handles auth, validation, moderation, reporting, and observability.
+- `ai-service` isolates prediction logic behind a backend proxy.
+
+Request flow:
+
+1. Client sends requests to backend (`/api/*`).
+2. Backend enforces auth, sanitization, validation, and rate limits.
+3. AI requests are proxied from backend to FastAPI (`/api/predict`).
+4. Backend returns normalized response payloads to the client.
+
 ## Repository Layout
 
 - `client/` - React frontend
@@ -109,6 +124,13 @@ JWT_SECRET=strong_secret
 JWT_EXPIRES_IN=24h
 AI_SERVICE_URL=https://your-ai-service-url
 ALLOWED_ORIGINS=https://your-frontend-url
+DEBUG_REQUEST_LOGS=false
+AUTH_VERIFY_OTP_WINDOW_MS=900000
+AUTH_VERIFY_OTP_MAX=10
+AUTH_RESET_PASSWORD_WINDOW_MS=3600000
+AUTH_RESET_PASSWORD_MAX=5
+AI_PREDICT_WINDOW_MS=900000
+AI_PREDICT_MAX=50
 ENCRYPTION_KEY=32+_char_strong_key
 EMAIL_USER=your_email
 EMAIL_PASS=app_password
@@ -132,7 +154,8 @@ PORT=8000
 - Backend uses `AI_SERVICE_URL` to call the AI prediction endpoint.
 - Frontend uses `VITE_API_URL` to call the deployed backend.
 - The backend expects production origins to be listed in `ALLOWED_ORIGINS`.
-- The backend exposes a health endpoint at `GET /api/health`.
+- System runtime endpoints are `GET /api/system/health`, `GET /api/system/version`, and `GET /api/system/uptime`.
+- Keep `DEBUG_REQUEST_LOGS=true` for local debugging and `false` in production.
 
 ## Key API Routes
 
@@ -149,7 +172,6 @@ PORT=8000
 ### Reports
 
 - `GET /api/reports`
-- `GET /api/reports/user`
 - `GET /api/reports/me`
 - `POST /api/reports`
 - `PUT /api/reports/:id`
@@ -198,6 +220,13 @@ npm --prefix server run dev
 ## Documentation
 
 - [docs/README.md](docs/README.md)
+- [docs/qa-checklist.md](docs/qa-checklist.md)
+- [docs/qa-report.md](docs/qa-report.md)
+- [docs/SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md)
+- [docs/SECURITY.md](docs/SECURITY.md)
+- [docs/ROADMAP.md](docs/ROADMAP.md)
+- [docs/interview-pack.md](docs/interview-pack.md)
+- [docs/demo-showcase.md](docs/demo-showcase.md)
 - [docs/onboarding.md](docs/onboarding.md)
 - [docs/context.md](docs/context.md)
 - [docs/todo.md](docs/todo.md)
@@ -205,6 +234,20 @@ npm --prefix server run dev
 - [docs/logs.md](docs/logs.md)
 - [docs/bugs.md](docs/bugs.md)
 
+## Screenshots
+
+Add screenshots under `docs/screenshots/` and link them here for recruiter/demo review:
+
+- Landing + AI quick-analyze
+- User dashboard
+- Admin dashboard
+- Report submission flow
+- Moderation panels
+
 ## Resume Summary
 
 Built and deployed a full-stack cybersecurity platform with AI-based phishing detection, role-based access control, and real-time reporting features.
+
+## Interview Pitch
+
+CyberShield is an AI-powered cyber awareness and incident reporting platform that helps users detect scams, report threats, and learn safe digital practices through an interactive ecosystem.

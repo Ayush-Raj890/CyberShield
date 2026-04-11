@@ -1,5 +1,30 @@
 # Development Logs
 
+## Day 59
+
+- Added demo showcase seeding workflow via `seed:demo` and `seed:demo:reset`.
+- Implemented deterministic demo dataset generation (10 reports, 5 articles, 5 forum posts, 5 memes, 2 users, 1 admin).
+- Added `docs/demo-showcase.md` with commands, seeded account credentials, and cleanup behavior.
+
+## Day 58
+
+- Added backend analytics counter layer with persistent metric storage.
+- Wired counters for reports submitted, AI scans, threats flagged, article views, and moderation actions.
+- Extended admin dashboard stats API and frontend mapping to surface activity counters and active-user count.
+
+## Day 57
+
+- Implemented automated QA smoke suite (`npm --prefix server run qa:smoke`).
+- Added generated proof artifact `docs/qa-report.md` with endpoint-by-endpoint results.
+- Updated QA checklist with quick-start commands and latest smoke snapshot.
+
+## Day 56
+
+- Entered ship-mode documentation phase focused on proof, polish, and presentation.
+- Upgraded root README with architecture, corrected system endpoints, expanded env coverage, and interview positioning sections.
+- Added release-facing docs: `qa-checklist.md`, `SYSTEM_DESIGN.md`, `SECURITY.md`, `ROADMAP.md`, and `interview-pack.md`.
+- Established manual end-to-end QA matrix covering guest, registered user, admin, and failure-path scenarios.
+
 ## Day 55
 
 - Added shared runtime config helper (`client/src/utils/runtimeConfig.js`) and rewired API/AI URL consumers to reduce duplicate base URL logic.
