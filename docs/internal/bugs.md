@@ -80,6 +80,20 @@ Fix: Runtime matrix is now executed and passing for cross-user isolation, auth v
 
 ---
 
+## Bug 7
+
+Description: Report filters/search appeared broken because the shared report list utility could not load at runtime after the taxonomy refactor.
+
+Status: Fixed
+
+Root Cause: The server-side filter utility imported `normalizeReportSourceChannel` from [server/src/constants/reportTaxonomy.js](../../server/src/constants/reportTaxonomy.js), but that export was missing. The report list route then failed before applying category/search/status filters.
+
+Fix: Added the missing export to the server taxonomy constants and re-validated the shared report filter pipeline in [server/src/utils/reportList.js](../../server/src/utils/reportList.js).
+
+Note: This is a common refactor bug when shared constants are split across client/server copies. Always re-run a runtime import check after moving normalization helpers.
+
+---
+
 ## Rules
 
 - Always log bugs immediately

@@ -146,6 +146,8 @@ export const normalizeReportStatus = (value) => REPORT_STATUS_ALIASES[value] || 
 
 export const normalizeReportSeverity = (value) => value || "LOW";
 
+export const normalizeReportSourceChannel = (value) => value || "UNKNOWN";
+
 export const isValidCategorySubcategory = (category, subcategory) => {
   const subcategories = REPORT_CATEGORIES[category];
   if (!subcategories) return false;
