@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import Video from "../models/Video.js";
 import { sendError, sendSuccess } from "../utils/response.js";
+import { incrementMetric, METRIC_KEYS } from "../utils/metrics.js";
 
 export const createVideo = async (req, res) => {
   try {
@@ -63,6 +64,8 @@ export const updateVideoStatus = async (req, res) => {
 
     video.status = status;
     await video.save();
+
+    await incrementMetric(METRIC_KEYS.MODERATION_ACTIONS);
 
     return sendSuccess(res, video, 200, `Video ${status.toLowerCase()}`);
   } catch (error) {

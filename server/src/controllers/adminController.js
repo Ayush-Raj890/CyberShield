@@ -3,6 +3,7 @@ import Report from "../models/Report.js";
 import Article from "../models/Article.js";
 import { decrypt, encrypt } from "../utils/encryption.js";
 import { sendError, sendSuccess } from "../utils/response.js";
+import { getMetricsSnapshot, incrementMetric, METRIC_KEYS } from "../utils/metrics.js";
 
 const ADMIN_REPORTS_PAGE_LIMIT_MAX = Number(process.env.ADMIN_REPORTS_PAGE_LIMIT_MAX) || 50;
 
@@ -21,7 +22,9 @@ const getAdminPagination = (query) => {
 // Dashboard stats
 export const getDashboardStats = async (req, res) => {
   try {
+    const activeWindow = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const totalUsers = await User.countDocuments();
+    const activeUsers = await User.countDocuments({ lastActive: { $gte: activeWindow } });
     const totalReports = await Report.countDocuments();
     const totalArticles = await Article.countDocuments();
 
@@ -29,11 +32,15 @@ export const getDashboardStats = async (req, res) => {
       status: "PENDING"
     });
 
+    const metrics = await getMetricsSnapshot();
+
     return sendSuccess(res, {
       totalUsers,
+      activeUsers,
       totalReports,
       totalArticles,
-      pendingReports
+      pendingReports,
+      metrics
     });
   } catch (error) {
     return sendError(res, 500, error.message);
@@ -60,6 +67,7 @@ export const deleteUser = async (req, res) => {
     }
 
     await user.deleteOne();
+    await incrementMetric(METRIC_KEYS.MODERATION_ACTIONS);
 
     return sendSuccess(res, { deletedUserId: req.params.id }, 200, "User removed");
   } catch (error) {
@@ -131,6 +139,7 @@ export const deleteArticle = async (req, res) => {
     }
 
     await article.deleteOne();
+    await incrementMetric(METRIC_KEYS.MODERATION_ACTIONS);
 
     return sendSuccess(res, { deletedArticleId: req.params.id }, 200, "Article deleted");
   } catch (error) {
@@ -153,6 +162,7 @@ export const promoteToAdmin = async (req, res) => {
 
     user.role = "ADMIN";
     await user.save();
+    await incrementMetric(METRIC_KEYS.MODERATION_ACTIONS);
 
     return sendSuccess(res, { userId: user._id, role: user.role }, 200, "User promoted to admin");
   } catch (error) {
@@ -175,6 +185,7 @@ export const suspendUser = async (req, res) => {
 
     user.isSuspended = true;
     await user.save();
+    await incrementMetric(METRIC_KEYS.MODERATION_ACTIONS);
 
     return sendSuccess(res, { userId: user._id, isSuspended: user.isSuspended }, 200, "User suspended");
   } catch (error) {
@@ -201,6 +212,7 @@ export const unsuspendUser = async (req, res) => {
 
     user.isSuspended = false;
     await user.save();
+    await incrementMetric(METRIC_KEYS.MODERATION_ACTIONS);
 
     console.log(`[ADMIN] admin=${req.user?._id} action=UNSUSPEND_USER target=${user._id}`);
 
@@ -225,6 +237,7 @@ export const removeAdmin = async (req, res) => {
 
     user.role = "USER";
     await user.save();
+    await incrementMetric(METRIC_KEYS.MODERATION_ACTIONS);
 
     return sendSuccess(res, { userId: user._id, role: user.role }, 200, "Admin removed");
   } catch (error) {

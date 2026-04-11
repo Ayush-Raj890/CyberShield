@@ -3,6 +3,7 @@ import Meme from "../models/Meme.js";
 import { addXP } from "../utils/gamification.js";
 import { addCoins, enforceActionCooldown, spendCoins } from "../utils/economy.js";
 import { sendError, sendSuccess } from "../utils/response.js";
+import { incrementMetric, METRIC_KEYS } from "../utils/metrics.js";
 
 const FLAG_MIN_TOTAL_VOTES = 20;
 const FLAG_DOWNVOTE_RATIO = 1.5;
@@ -167,6 +168,7 @@ export const updateMeme = async (req, res) => {
     if (typeof commentsEnabled === "boolean") meme.commentsEnabled = commentsEnabled;
 
     await meme.save();
+    await incrementMetric(METRIC_KEYS.MODERATION_ACTIONS);
 
     return sendSuccess(res, meme, 200, "Meme updated");
   } catch (error) {

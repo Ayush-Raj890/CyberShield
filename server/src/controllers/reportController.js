@@ -5,6 +5,7 @@ import { encrypt, decrypt } from "../utils/encryption.js";
 import { addXP } from "../utils/gamification.js";
 import { addCoins } from "../utils/economy.js";
 import { sendError, sendSuccess } from "../utils/response.js";
+import { incrementMetric, METRIC_KEYS } from "../utils/metrics.js";
 
 const PUBLIC_PAGE_LIMIT_MAX = 20;
 const PRIVATE_PAGE_LIMIT_MAX = 50;
@@ -86,6 +87,7 @@ export const createReport = async (req, res) => {
 
     await addXP(req.user._id, "REPORT_CREATED");
     await addCoins(req.user._id, "REPORT_CREATED");
+    await incrementMetric(METRIC_KEYS.REPORTS_SUBMITTED);
 
     return sendSuccess(res, report, 201);
   } catch (error) {
@@ -202,6 +204,8 @@ export const updateReportStatus = async (req, res) => {
       message: `Report marked as ${newStatus}`,
       type: "REPORT"
     });
+
+    await incrementMetric(METRIC_KEYS.MODERATION_ACTIONS);
 
     return sendSuccess(res, report);
   } catch (error) {

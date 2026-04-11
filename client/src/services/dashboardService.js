@@ -63,6 +63,7 @@ export const transformUserDashboard = ({ profile, reports, articles, forumPosts,
 };
 
 export const transformAdminDashboard = ({ stats, reports, pendingArticles }) => {
+  const metrics = stats?.metrics || {};
   const byCategory = reports.reduce((acc, report) => {
     const key = report.category || "OTHER";
     acc[key] = (acc[key] || 0) + 1;
@@ -82,7 +83,12 @@ export const transformAdminDashboard = ({ stats, reports, pendingArticles }) => 
       users: stats?.totalUsers ?? 0,
       reports: stats?.totalReports ?? 0,
       pendingReports: stats?.pendingReports ?? 0,
-      activeUsers: stats?.totalUsers ?? 0
+      activeUsers: stats?.activeUsers ?? 0,
+      reportsSubmitted: metrics.reportsSubmitted ?? stats?.totalReports ?? 0,
+      aiScansRun: metrics.aiScansRun ?? 0,
+      threatsFlagged: metrics.threatsFlagged ?? 0,
+      articleViews: metrics.articleViews ?? 0,
+      moderationActions: metrics.moderationActions ?? 0
     },
     analytics: {
       reportsByCategory: byCategory,

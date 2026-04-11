@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import Notification from "../models/Notification.js";
 import { addXP } from "../utils/gamification.js";
 import { sendError, sendSuccess } from "../utils/response.js";
+import { incrementMetric, METRIC_KEYS } from "../utils/metrics.js";
 
 const ARTICLE_PAGE_LIMIT_MAX = 50;
 
@@ -116,6 +117,8 @@ export const getArticleById = async (req, res) => {
       return sendError(res, 404, "Article not found");
     }
 
+    await incrementMetric(METRIC_KEYS.ARTICLE_VIEWS);
+
     return sendSuccess(res, article);
   } catch (error) {
     return sendError(res, 500, error.message);
@@ -152,6 +155,8 @@ export const updateArticleStatus = async (req, res) => {
 
     article.status = status;
     await article.save();
+
+    await incrementMetric(METRIC_KEYS.MODERATION_ACTIONS);
 
     return sendSuccess(res, article);
   } catch (error) {
