@@ -75,7 +75,7 @@ Store public screenshots in [assets](assets).
 - [AI detector](assets/ai-detector.png)
 - [User dashboard](assets/user-dashboard.png)
 - [Admin panel](assets/admin-dashboard.png)
-- [Reports](assets/report-page.png)
+- [Reports](assets/reports-page.png)
 
 ## Architecture
 
