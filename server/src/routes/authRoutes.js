@@ -25,8 +25,12 @@ const authLoginWindowMs = parsePositiveNumber(process.env.AUTH_LOGIN_WINDOW_MS, 
 const authLoginMax = parsePositiveNumber(process.env.AUTH_LOGIN_MAX, 10);
 const authResendOtpWindowMs = parsePositiveNumber(process.env.AUTH_RESEND_OTP_WINDOW_MS, 60 * 60 * 1000);
 const authResendOtpMax = parsePositiveNumber(process.env.AUTH_RESEND_OTP_MAX, 3);
+const authVerifyOtpWindowMs = parsePositiveNumber(process.env.AUTH_VERIFY_OTP_WINDOW_MS, 15 * 60 * 1000);
+const authVerifyOtpMax = parsePositiveNumber(process.env.AUTH_VERIFY_OTP_MAX, 10);
 const authForgotPasswordWindowMs = parsePositiveNumber(process.env.AUTH_FORGOT_PASSWORD_WINDOW_MS, 60 * 60 * 1000);
 const authForgotPasswordMax = parsePositiveNumber(process.env.AUTH_FORGOT_PASSWORD_MAX, 5);
+const authResetPasswordWindowMs = parsePositiveNumber(process.env.AUTH_RESET_PASSWORD_WINDOW_MS, 60 * 60 * 1000);
+const authResetPasswordMax = parsePositiveNumber(process.env.AUTH_RESET_PASSWORD_MAX, 5);
 
 const createAuthLimiter = (windowMs, max, actionLabel) => rateLimit({
   windowMs,
@@ -42,7 +46,9 @@ const createAuthLimiter = (windowMs, max, actionLabel) => rateLimit({
 const registerLimiter = createAuthLimiter(authRegisterWindowMs, authRegisterMax, "registration");
 const loginLimiter = createAuthLimiter(authLoginWindowMs, authLoginMax, "login");
 const resendOtpLimiter = createAuthLimiter(authResendOtpWindowMs, authResendOtpMax, "OTP resend");
+const verifyOtpLimiter = createAuthLimiter(authVerifyOtpWindowMs, authVerifyOtpMax, "OTP verification");
 const forgotPasswordLimiter = createAuthLimiter(authForgotPasswordWindowMs, authForgotPasswordMax, "password reset request");
+const resetPasswordLimiter = createAuthLimiter(authResetPasswordWindowMs, authResetPasswordMax, "password reset");
 
 const emailChain = () => body("email")
   .isEmail()
@@ -72,6 +78,7 @@ router.post(
 
 router.post(
   "/verify-otp",
+  verifyOtpLimiter,
   [
     emailChain(),
     body("otp")
@@ -101,6 +108,7 @@ router.post(
 
 router.post(
   "/reset-password",
+  resetPasswordLimiter,
   [
     emailChain(),
     body("token")

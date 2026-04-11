@@ -52,12 +52,6 @@ export const registerUser = async (req, res) => {
       `Your OTP is: ${otp}. It expires in 10 minutes.`
     );
 
-    const maskedEmail =
-      typeof normalizedEmail === "string" && normalizedEmail.includes("@")
-        ? `${normalizedEmail[0]}***@${normalizedEmail.split("@")[1]}`
-        : "[redacted]";
-    console.log(`[AUTH] OTP email dispatched to ${maskedEmail}`);
-
     return sendSuccess(res, {
       _id: user._id,
       name: user.name,
@@ -98,8 +92,6 @@ export const resendOTP = async (req, res) => {
     await user.save();
 
     await sendEmail(normalizedEmail, "Resend OTP", `Your OTP is: ${otp}. It expires in 10 minutes.`);
-
-    console.log(`[AUTH] OTP resent to ${normalizedEmail}`);
 
     return sendSuccess(res, { resent: true }, 200, "OTP resent");
   } catch (error) {
