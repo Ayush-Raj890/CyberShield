@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
@@ -39,7 +39,20 @@ export default function ViewReports() {
   const isAuthenticated = Boolean(localStorage.getItem("token"));
   const limit = 10;
 
-  const fetchReports = useCallback(async (activeFilters) => {
+  // Request lifecycle management: prevent stale responses from overwriting fresh results
+  const abortControllerRef = useRef(null);
+  const requestIdRef = useRef(0);
+  const debounceTimeoutRef = useRef(null);
+
+  const fetchReports = useCallback(async (activeFilters, currentRequestId) => {
+    // Abort any previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
     try {
       setError("");
       setLoading(true);
@@ -56,7 +69,16 @@ export default function ViewReports() {
       if (activeFilters?.sort) requestParams.set("sort", activeFilters.sort);
       requestParams.set("page", String(safePage));
       requestParams.set("limit", String(limit));
-      const response = await API.get(`${endpoint}?${requestParams.toString()}`);
+
+      const response = await API.get(`${endpoint}?${requestParams.toString()}`, {
+        signal: abortController.signal
+      });
+
+      // Only update state if this is still the latest request
+      if (currentRequestId !== requestIdRef.current) {
+        return;
+      }
+
       const payload = response.data;
       const items = Array.isArray(payload) ? payload : (payload?.items || []);
 
@@ -69,6 +91,16 @@ export default function ViewReports() {
         hasNextPage: items.length === limit
       } : (payload?.pagination || { page: safePage, limit, total: 0, totalPages: 0, hasNextPage: false }));
     } catch (error) {
+      // Ignore abort errors (they mean a newer request is in flight)
+      if (error.name === "AbortError") {
+        return;
+      }
+
+      // Only update error state if this is still the latest request
+      if (currentRequestId !== requestIdRef.current) {
+        return;
+      }
+
       console.error(error);
       const safePage = Number.isInteger(activeFilters?.page) && activeFilters.page > 0 ? activeFilters.page : 1;
       setReports([]);
@@ -80,7 +112,25 @@ export default function ViewReports() {
   }, [isAuthenticated, limit]);
 
   useEffect(() => {
-    fetchReports(filters);
+    // Clear any pending debounce
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Increment request ID for this filter change
+    const nextRequestId = ++requestIdRef.current;
+
+    // Debounce the fetch by 250ms to coalesce rapid filter changes into one request
+    debounceTimeoutRef.current = setTimeout(() => {
+      fetchReports(filters, nextRequestId);
+    }, 250);
+
+    // Cleanup: cancel debounce on unmount or before next effect
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
   }, [fetchReports, filters]);
 
   const getSeverityColor = (severity) => {
