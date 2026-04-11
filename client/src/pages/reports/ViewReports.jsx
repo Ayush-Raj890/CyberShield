@@ -5,57 +5,72 @@ import Navbar from "../../components/layout/Navbar";
 import { AlertCircle, Shield, Mail, Image as ImageIcon, EyeOff, TriangleAlert } from "lucide-react";
 import Button from "../../components/ui/Button";
 import PageState from "../../components/ui/PageState";
+import ReportFiltersToolbar from "../../components/reports/ReportFiltersToolbar";
 import {
   getCategoryLabel,
   getSourceChannelLabel,
   getStatusLabel,
-  getSubcategoryLabel
+  getSubcategoryLabel,
+  getSubcategoryOptions,
+  REPORT_PUBLIC_STATUS_VALUES
 } from "../../constants/reportTaxonomy";
+import { useReportFilters } from "../../hooks/useReportFilters";
 
 const ASSET_HOST = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
 
 export default function ViewReports() {
   const navigate = useNavigate();
+  const {
+    filters,
+    setFilter,
+    clearFilters,
+    activeChips,
+    queryString,
+    categoryOptions,
+    severityOptions,
+    sourceOptions,
+    statusOptions,
+    sortOptions
+  } = useReportFilters({ defaultSort: "newest" });
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(false);
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 0, hasNextPage: false });
   const user = JSON.parse(localStorage.getItem("user") || "null");
   const limit = 10;
 
   useEffect(() => {
     fetchReports();
-  }, [page]);
+  }, [queryString]);
 
   const fetchReports = async () => {
     try {
       setError("");
       setLoading(true);
       const endpoint = user ? "/reports/me" : "/reports";
-      const response = await API.get(`${endpoint}?page=${page}&limit=${limit}`);
+      const requestParams = new URLSearchParams(queryString);
+      requestParams.set("limit", String(limit));
+      const response = await API.get(`${endpoint}?${requestParams.toString()}`);
       const payload = response.data;
       const items = Array.isArray(payload) ? payload : (payload?.items || []);
-      const hasNext = Array.isArray(payload)
-        ? items.length === limit
-        : Boolean(payload?.pagination?.hasNextPage);
 
       setReports(items);
-      setHasNextPage(hasNext);
+      setPagination(Array.isArray(payload) ? {
+        page: filters.page,
+        limit,
+        total: items.length,
+        totalPages: 1,
+        hasNextPage: items.length === limit
+      } : (payload?.pagination || { page: filters.page, limit, total: 0, totalPages: 0, hasNextPage: false }));
     } catch (error) {
       console.error(error);
       setReports([]);
-      setHasNextPage(false);
+      setPagination({ page: filters.page, limit, total: 0, totalPages: 0, hasNextPage: false });
       setError(error.response?.data?.message || "Failed to load reports");
     } finally {
       setLoading(false);
     }
   };
-
-  const filteredReports = reports.filter((r) =>
-    r.title.toLowerCase().includes(search.toLowerCase())
-  );
 
   const getSeverityColor = (severity) => {
     switch (severity) {
@@ -109,12 +124,19 @@ export default function ViewReports() {
           </Button>
         </div>
 
-        <input
-          type="text"
-          placeholder="Search reports by title"
-          className="input mb-4"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+        <ReportFiltersToolbar
+          filters={filters}
+          onChange={setFilter}
+          onClear={clearFilters}
+          activeChips={activeChips}
+          totalCount={pagination.total}
+          visibleCount={reports.length}
+          categoryOptions={categoryOptions}
+          subcategoryOptions={filters.category ? getSubcategoryOptions(filters.category) : []}
+          statusOptions={statusOptions.filter((option) => REPORT_PUBLIC_STATUS_VALUES.has(option.value))}
+          severityOptions={severityOptions}
+          sourceOptions={sourceOptions}
+          sortOptions={sortOptions}
         />
 
         {loading ? (
@@ -131,17 +153,17 @@ export default function ViewReports() {
             actionLabel="Try again"
             onAction={fetchReports}
           />
-        ) : filteredReports.length === 0 ? (
+        ) : reports.length === 0 ? (
           <PageState
             variant="empty"
-            title={search ? "No matching reports" : "No reports yet"}
-            description={search ? "Try a different title or clear the search box." : "Create your first report to start tracking incidents."}
-            actionLabel={user ? "Create Report" : "Login to Create Report"}
-            onAction={() => navigate(user ? "/create-report" : "/login")}
+            title={activeChips.length > 0 ? "No reports match current filters" : "No reports yet"}
+            description={activeChips.length > 0 ? "Try adjusting or clearing the active filters." : "Create your first report to start tracking incidents."}
+            actionLabel={activeChips.length > 0 ? "Clear Filters" : user ? "Create Report" : "Login to Create Report"}
+            onAction={activeChips.length > 0 ? clearFilters : () => navigate(user ? "/create-report" : "/login")}
           />
         ) : (
           <>
-            {filteredReports.map((r) => (
+            {reports.map((r) => (
               <div key={r._id} className="card mb-4">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
                 <h3 className="font-semibold text-lg flex-1">{r.title}</h3>
@@ -238,11 +260,11 @@ export default function ViewReports() {
             ))}
 
             <div className="flex flex-wrap justify-between items-center gap-2 mt-4">
-              <Button variant="outline" onClick={() => setPage((prev) => Math.max(prev - 1, 1))} disabled={page === 1 || loading}>
+              <Button variant="outline" onClick={() => setFilter("page", Math.max((pagination.page || filters.page) - 1, 1))} disabled={(pagination.page || filters.page) === 1 || loading}>
                 Previous
               </Button>
-              <span className="text-sm text-gray-500">Page {page}</span>
-              <Button variant="outline" onClick={() => setPage((prev) => prev + 1)} disabled={!hasNextPage || loading}>
+              <span className="text-sm text-gray-500">Page {pagination.page || filters.page}</span>
+              <Button variant="outline" onClick={() => setFilter("page", (pagination.page || filters.page) + 1)} disabled={!pagination.hasNextPage || loading}>
                 Next
               </Button>
             </div>

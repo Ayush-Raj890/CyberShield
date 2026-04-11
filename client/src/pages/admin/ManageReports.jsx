@@ -5,12 +5,15 @@ import AdminNavbar from "../../components/layout/AdminNavbar";
 import { EyeOff, TriangleAlert } from "lucide-react";
 import Button from "../../components/ui/Button";
 import PageState from "../../components/ui/PageState";
+import ReportFiltersToolbar from "../../components/reports/ReportFiltersToolbar";
 import {
   REPORT_STATUS_OPTIONS,
   getCategoryLabel,
   getStatusLabel,
-  getSubcategoryLabel
+  getSubcategoryLabel,
+  getSubcategoryOptions
 } from "../../constants/reportTaxonomy";
+import { useReportFilters } from "../../hooks/useReportFilters";
 
 const getStatusBadgeClass = (status) => {
   switch (status) {
@@ -43,13 +46,24 @@ const getStatusBadgeClass = (status) => {
 };
 
 export default function ManageReports() {
+  const {
+    filters,
+    setFilter,
+    clearFilters,
+    activeChips,
+    queryString,
+    categoryOptions,
+    severityOptions,
+    sourceOptions,
+    statusOptions,
+    sortOptions
+  } = useReportFilters({ defaultSort: "sensitive" });
+  const limit = 10;
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState(null);
-  const [page, setPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(false);
-  const limit = 10;
+  const [pagination, setPagination] = useState({ page: 1, limit, total: 0, totalPages: 0, hasNextPage: false });
 
   const renderDisplayName = (person) => {
     if (!person) return "N/A";
@@ -66,22 +80,29 @@ export default function ManageReports() {
 
   useEffect(() => {
     fetchReports();
-  }, [page]);
+  }, [queryString]);
 
   const fetchReports = async () => {
     try {
       setError("");
       setLoading(true);
-      const response = await API.get(`/admin/reports?page=${page}&limit=${limit}`);
+      const requestParams = new URLSearchParams(queryString);
+      requestParams.set("limit", String(limit));
+      const response = await API.get(`/admin/reports?${requestParams.toString()}`);
       const payload = response.data;
       const items = Array.isArray(payload) ? payload : (payload?.items || []);
-      const prioritized = [...items].sort((a, b) => Number(b.isSensitive) - Number(a.isSensitive));
-      setReports(prioritized);
-      setHasNextPage(Array.isArray(payload) ? items.length === limit : Boolean(payload?.pagination?.hasNextPage));
+      setReports(items);
+      setPagination(Array.isArray(payload) ? {
+        page: filters.page,
+        limit,
+        total: items.length,
+        totalPages: 1,
+        hasNextPage: items.length === limit
+      } : (payload?.pagination || { page: filters.page, limit, total: 0, totalPages: 0, hasNextPage: false }));
     } catch (error) {
       console.error(error);
       setReports([]);
-      setHasNextPage(false);
+      setPagination({ page: filters.page, limit, total: 0, totalPages: 0, hasNextPage: false });
       setError(error.response?.data?.message || "Failed to load reports");
     } finally {
       setLoading(false);
@@ -111,6 +132,21 @@ export default function ManageReports() {
       <div className="p-6">
         <h2 className="text-xl mb-4">All Reports</h2>
 
+        <ReportFiltersToolbar
+          filters={filters}
+          onChange={setFilter}
+          onClear={clearFilters}
+          activeChips={activeChips}
+          totalCount={pagination.total}
+          visibleCount={reports.length}
+          categoryOptions={categoryOptions}
+          subcategoryOptions={filters.category ? getSubcategoryOptions(filters.category) : []}
+          statusOptions={statusOptions}
+          severityOptions={severityOptions}
+          sourceOptions={sourceOptions}
+          sortOptions={sortOptions}
+        />
+
         {loading ? (
           <PageState
             variant="loading"
@@ -128,8 +164,10 @@ export default function ManageReports() {
         ) : reports.length === 0 ? (
           <PageState
             variant="empty"
-            title="No reports found"
-            description="There are no reports for the current page yet."
+            title={activeChips.length > 0 ? "No reports match current filters" : "No reports found"}
+            description={activeChips.length > 0 ? "Try adjusting or clearing the active filters." : "There are no reports for the current page yet."}
+            actionLabel={activeChips.length > 0 ? "Clear Filters" : undefined}
+            onAction={activeChips.length > 0 ? clearFilters : undefined}
           />
         ) : (
           <>
@@ -195,11 +233,11 @@ export default function ManageReports() {
             ))}
 
             <div className="flex justify-between items-center mt-4">
-              <Button variant="outline" onClick={() => setPage((prev) => Math.max(prev - 1, 1))} disabled={page === 1 || loading}>
+              <Button variant="outline" onClick={() => setFilter("page", Math.max((pagination.page || filters.page) - 1, 1))} disabled={(pagination.page || filters.page) === 1 || loading}>
                 Previous
               </Button>
-              <span className="text-sm text-gray-500">Page {page}</span>
-              <Button variant="outline" onClick={() => setPage((prev) => prev + 1)} disabled={!hasNextPage || loading}>
+              <span className="text-sm text-gray-500">Page {pagination.page || filters.page}</span>
+              <Button variant="outline" onClick={() => setFilter("page", (pagination.page || filters.page) + 1)} disabled={!pagination.hasNextPage || loading}>
                 Next
               </Button>
             </div>

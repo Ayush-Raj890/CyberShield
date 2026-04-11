@@ -7,21 +7,10 @@ import { addCoins } from "../utils/economy.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 import { incrementMetric, METRIC_KEYS } from "../utils/metrics.js";
 import { REPORT_STATUS_VALUES } from "../constants/reportTaxonomy.js";
+import { filterAndSortReports, getListPagination, paginateReports } from "../utils/reportList.js";
 
 const PUBLIC_PAGE_LIMIT_MAX = 20;
 const PRIVATE_PAGE_LIMIT_MAX = 50;
-
-const getPagination = (query, maxLimit) => {
-  const rawPage = Number(query.page);
-  const rawLimit = Number(query.limit);
-
-  const page = Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 1;
-  const limit = Number.isFinite(rawLimit) && rawLimit > 0
-    ? Math.min(Math.floor(rawLimit), maxLimit)
-    : Math.min(10, maxLimit);
-
-  return { page, limit };
-};
 
 const serializePublicReport = (report) => {
   const safeDescription = report.isSensitive
@@ -106,29 +95,18 @@ export const createReport = async (req, res) => {
 // Get public report feed (safe, non-sensitive projection)
 export const getReports = async (req, res) => {
   try {
-    const { page, limit } = getPagination(req.query, PUBLIC_PAGE_LIMIT_MAX);
-    const total = await Report.countDocuments();
-
+    const { page, limit } = getListPagination(req.query, PUBLIC_PAGE_LIMIT_MAX);
     const reports = await Report.find()
       .select("title description category subcategory severity sourceChannel status isAnonymous isSensitive createdAt updatedAt")
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+      .sort({ createdAt: -1 });
 
-    const safeReports = reports.map((report) => serializePublicReport(report));
-
-    const totalPages = total > 0 ? Math.ceil(total / limit) : 0;
-    const hasNextPage = page * limit < total;
+    const filteredReports = filterAndSortReports(reports, req.query);
+    const { items, pagination } = paginateReports(filteredReports, page, limit);
+    const safeReports = items.map((report) => serializePublicReport(report));
 
     return sendSuccess(res, {
       items: safeReports,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-        hasNextPage
-      }
+      pagination
     });
   } catch (error) {
     return sendError(res, 500, error.message);
@@ -138,17 +116,17 @@ export const getReports = async (req, res) => {
 // Get current user's own reports (detailed view)
 export const getMyReports = async (req, res) => {
   try {
-    const { page, limit } = getPagination(req.query, PRIVATE_PAGE_LIMIT_MAX);
+    const { page, limit } = getListPagination(req.query, PRIVATE_PAGE_LIMIT_MAX);
     const match = { user: req.user._id };
-    const total = await Report.countDocuments(match);
 
     const reports = await Report.find(match)
       .select("title description category subcategory severity sourceChannel status contactEmail evidence isAnonymous isSensitive history createdAt updatedAt")
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+      .sort({ createdAt: -1 });
 
-    const safeReports = reports.map((report) => {
+    const filteredReports = filterAndSortReports(reports, req.query);
+    const { items, pagination } = paginateReports(filteredReports, page, limit);
+
+    const safeReports = items.map((report) => {
       const item = report.toObject();
       if (item.isSensitive) {
         const { data, usedLegacy } = decrypt(item.description, {
@@ -172,18 +150,9 @@ export const getMyReports = async (req, res) => {
       return item;
     });
 
-    const totalPages = total > 0 ? Math.ceil(total / limit) : 0;
-    const hasNextPage = page * limit < total;
-
     return sendSuccess(res, {
       items: safeReports,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-        hasNextPage
-      }
+      pagination
     });
   } catch (error) {
     return sendError(res, 500, error.message);

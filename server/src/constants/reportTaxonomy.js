@@ -104,6 +104,48 @@ export const REPORT_INTERNAL_STATUS_VALUES = REPORT_STATUS_VALUES.filter(
 export const LEGACY_REPORT_CATEGORIES = ["PHISHING", "SCAM", "HARASSMENT", "OTHER"];
 export const LEGACY_REPORT_STATUSES = ["PENDING", "REVIEWED", "RESOLVED"];
 
+export const REPORT_CATEGORY_ALIASES = {
+  PHISHING: "PHISHING_IMPERSONATION",
+  SCAM: "FINANCIAL_FRAUD",
+  HARASSMENT: "HARASSMENT_ABUSE",
+  OTHER: "OTHER"
+};
+
+export const REPORT_STATUS_ALIASES = {
+  PENDING: "SUBMITTED",
+  REVIEWED: "UNDER_REVIEW",
+  RESOLVED: "RESOLVED"
+};
+
+export const REPORT_SEVERITY_RANKS = {
+  CRITICAL: 4,
+  HIGH: 3,
+  MEDIUM: 2,
+  LOW: 1
+};
+
+export const REPORT_STATUS_RANKS = {
+  SUBMITTED: 1,
+  PENDING: 1,
+  UNDER_REVIEW: 2,
+  REVIEWED: 2,
+  INVESTIGATING: 3,
+  NEED_MORE_INFO: 4,
+  RESOLVED: 5,
+  CLOSED: 6,
+  DUPLICATE: 7,
+  FALSE_POSITIVE: 8,
+  ESCALATED: 9,
+  SENSITIVE_HOLD: 10,
+  ARCHIVED: 11
+};
+
+export const normalizeReportCategory = (value) => REPORT_CATEGORY_ALIASES[value] || value || "OTHER";
+
+export const normalizeReportStatus = (value) => REPORT_STATUS_ALIASES[value] || value || "SUBMITTED";
+
+export const normalizeReportSeverity = (value) => value || "LOW";
+
 export const isValidCategorySubcategory = (category, subcategory) => {
   const subcategories = REPORT_CATEGORIES[category];
   if (!subcategories) return false;

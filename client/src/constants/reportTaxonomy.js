@@ -131,12 +131,44 @@ export const REPORT_PUBLIC_STATUS_VALUES = new Set([
 
 const LEGACY_LABELS = {
   PENDING: "Submitted",
-  REVIEWED: "Under Review"
+  REVIEWED: "Under Review",
+  PHISHING: "Phishing & Impersonation",
+  SCAM: "Financial Fraud",
+  HARASSMENT: "Harassment & Abuse"
 };
 
-export const getSubcategoryOptions = (category) => REPORT_TAXONOMY[category]?.subcategories || [];
+export const REPORT_SORT_OPTIONS = [
+  { value: "newest", label: "Newest First" },
+  { value: "oldest", label: "Oldest First" },
+  { value: "severity", label: "Severity High → Low" },
+  { value: "status", label: "Status" },
+  { value: "sensitive", label: "Sensitive First" }
+];
 
-export const getCategoryLabel = (category) => REPORT_TAXONOMY[category]?.label || category;
+export const REPORT_CATEGORY_ALIASES = {
+  PHISHING: "PHISHING_IMPERSONATION",
+  SCAM: "FINANCIAL_FRAUD",
+  HARASSMENT: "HARASSMENT_ABUSE",
+  OTHER: "OTHER"
+};
+
+export const REPORT_STATUS_ALIASES = {
+  PENDING: "SUBMITTED",
+  REVIEWED: "UNDER_REVIEW",
+  RESOLVED: "RESOLVED"
+};
+
+export const normalizeReportCategory = (value) => REPORT_CATEGORY_ALIASES[value] || value || "OTHER";
+
+export const normalizeReportStatus = (value) => REPORT_STATUS_ALIASES[value] || value || "SUBMITTED";
+
+export const normalizeReportSeverity = (value) => value || "LOW";
+
+export const normalizeReportSourceChannel = (value) => value || "UNKNOWN";
+
+export const getSubcategoryOptions = (category) => REPORT_TAXONOMY[normalizeReportCategory(category)]?.subcategories || [];
+
+export const getCategoryLabel = (category) => REPORT_TAXONOMY[normalizeReportCategory(category)]?.label || category;
 
 export const getSubcategoryLabel = (subcategory) => {
   for (const category of Object.values(REPORT_TAXONOMY)) {
@@ -147,7 +179,7 @@ export const getSubcategoryLabel = (subcategory) => {
 };
 
 export const getSourceChannelLabel = (value) =>
-  REPORT_SOURCE_CHANNEL_OPTIONS.find((option) => option.value === value)?.label || value;
+  REPORT_SOURCE_CHANNEL_OPTIONS.find((option) => option.value === normalizeReportSourceChannel(value))?.label || value;
 
 export const getStatusLabel = (value) =>
-  REPORT_STATUS_OPTIONS.find((option) => option.value === value)?.label || LEGACY_LABELS[value] || value;
+  REPORT_STATUS_OPTIONS.find((option) => option.value === normalizeReportStatus(value))?.label || LEGACY_LABELS[value] || value;
