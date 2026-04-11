@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Bot,
@@ -54,6 +55,12 @@ const supportingCards = [
 
 export default function Home() {
   const navigate = useNavigate();
+  const [quickMessage, setQuickMessage] = useState("");
+
+  const startAnalysis = () => {
+    const query = quickMessage.trim();
+    navigate(query ? `/ai?q=${encodeURIComponent(query)}` : "/ai");
+  };
 
   return (
     <PublicLayout>
@@ -86,20 +93,26 @@ export default function Home() {
               ))}
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <button className="btn btn-primary animate-fade-up" style={{ animationDelay: "120ms" }} onClick={() => navigate("/ai")}>
-                Check A Suspicious Message
-              </button>
-              <button className="btn btn-secondary animate-fade-up" style={{ animationDelay: "220ms" }} onClick={() => navigate("/ai")}>
-                View Sample Detection Flow
-              </button>
-              <button
-                className="px-1 py-2 text-sm font-semibold text-blue-700 hover:text-blue-900 transition-colors animate-fade-up"
-                style={{ animationDelay: "320ms" }}
-                onClick={() => navigate("/create-report")}
-              >
-                Report An Incident
-              </button>
+            <div className="mt-8 max-w-2xl animate-fade-up" style={{ animationDelay: "120ms" }}>
+              <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-blue-700 mb-2">
+                Quick Check
+              </label>
+              <textarea
+                value={quickMessage}
+                onChange={(event) => setQuickMessage(event.target.value)}
+                rows={3}
+                className="input bg-white/90"
+                placeholder="Paste suspicious message, email text, or URL to analyze"
+              />
+
+              <div className="mt-3 flex flex-wrap gap-3">
+                <button className="btn btn-primary" onClick={startAnalysis}>
+                  Analyze Suspicious Message
+                </button>
+                <button className="btn btn-secondary" onClick={() => navigate("/create-report")}>
+                  Report Incident
+                </button>
+              </div>
             </div>
           </div>
 

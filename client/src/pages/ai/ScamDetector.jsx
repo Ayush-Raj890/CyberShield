@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
@@ -6,6 +8,8 @@ import Button from "../../components/ui/Button";
 import PageState from "../../components/ui/PageState";
 
 export default function ScamDetector() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [text, setText] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -13,6 +17,15 @@ export default function ScamDetector() {
   const [analysisError, setAnalysisError] = useState("");
 
   const canAnalyze = text.trim().length > 0 && !loading;
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const prefill = params.get("q");
+
+    if (prefill) {
+      setText(prefill);
+    }
+  }, [location.search]);
 
   const analyze = async () => {
     if (!text.trim()) {
@@ -94,6 +107,31 @@ export default function ScamDetector() {
           >
             <h3 className="text-xl font-bold">{result.label}</h3>
             <p className="opacity-90">Confidence: {result.confidence}</p>
+            <p className="mt-3 text-sm opacity-95">
+              {result.label === "MALICIOUS"
+                ? "High risk detected. Avoid interacting with this content and file an incident report."
+                : result.label === "SUSPICIOUS"
+                  ? "Potential risk detected. Verify sender details and report if uncertain."
+                  : "Low risk detected. Stay cautious and still report if behavior appears unusual."}
+            </p>
+
+            <Button
+              className="mt-4 bg-white text-slate-900 hover:bg-slate-100"
+              onClick={() => {
+                navigate("/create-report", {
+                  state: {
+                    prefill: {
+                      title: `AI Flagged: ${result.label}`,
+                      description: text,
+                      category: result.label === "MALICIOUS" ? "SCAM" : "OTHER",
+                      severity: result.label === "MALICIOUS" ? "HIGH" : result.label === "SUSPICIOUS" ? "MEDIUM" : "LOW"
+                    }
+                  }
+                });
+              }}
+            >
+              Report This Incident
+            </Button>
           </div>
         )}
       </div>

@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
 import Button from "../../components/ui/Button";
 
 export default function CreateReport() {
+  const location = useLocation();
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -16,6 +19,19 @@ export default function CreateReport() {
     isSensitive: false
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const prefill = location.state?.prefill;
+    if (!prefill) return;
+
+    setForm((prev) => ({
+      ...prev,
+      title: prefill.title || prev.title,
+      description: prefill.description || prev.description,
+      category: prefill.category || prev.category,
+      severity: prefill.severity || prev.severity
+    }));
+  }, [location.state]);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
