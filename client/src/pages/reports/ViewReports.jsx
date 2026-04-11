@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
@@ -25,7 +25,6 @@ export default function ViewReports() {
     setFilter,
     clearFilters,
     activeChips,
-    queryString,
     categoryOptions,
     severityOptions,
     sourceOptions,
@@ -37,18 +36,25 @@ export default function ViewReports() {
   const [error, setError] = useState("");
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 0, hasNextPage: false });
   const user = JSON.parse(localStorage.getItem("user") || "null");
+  const isAuthenticated = Boolean(localStorage.getItem("token"));
   const limit = 10;
 
-  useEffect(() => {
-    fetchReports();
-  }, [queryString]);
-
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async (activeFilters) => {
     try {
       setError("");
       setLoading(true);
-      const endpoint = user ? "/reports/me" : "/reports";
-      const requestParams = new URLSearchParams(queryString);
+      const endpoint = isAuthenticated ? "/reports/me" : "/reports";
+      const requestParams = new URLSearchParams();
+      const safePage = Number.isInteger(activeFilters?.page) && activeFilters.page > 0 ? activeFilters.page : 1;
+
+      if (activeFilters?.q?.trim()) requestParams.set("q", activeFilters.q.trim());
+      if (activeFilters?.category) requestParams.set("category", activeFilters.category);
+      if (activeFilters?.subcategory) requestParams.set("subcategory", activeFilters.subcategory);
+      if (activeFilters?.status) requestParams.set("status", activeFilters.status);
+      if (activeFilters?.severity) requestParams.set("severity", activeFilters.severity);
+      if (activeFilters?.source) requestParams.set("source", activeFilters.source);
+      if (activeFilters?.sort) requestParams.set("sort", activeFilters.sort);
+      requestParams.set("page", String(safePage));
       requestParams.set("limit", String(limit));
       const response = await API.get(`${endpoint}?${requestParams.toString()}`);
       const payload = response.data;
@@ -56,21 +62,26 @@ export default function ViewReports() {
 
       setReports(items);
       setPagination(Array.isArray(payload) ? {
-        page: filters.page,
+        page: safePage,
         limit,
         total: items.length,
         totalPages: 1,
         hasNextPage: items.length === limit
-      } : (payload?.pagination || { page: filters.page, limit, total: 0, totalPages: 0, hasNextPage: false }));
+      } : (payload?.pagination || { page: safePage, limit, total: 0, totalPages: 0, hasNextPage: false }));
     } catch (error) {
       console.error(error);
+      const safePage = Number.isInteger(activeFilters?.page) && activeFilters.page > 0 ? activeFilters.page : 1;
       setReports([]);
-      setPagination({ page: filters.page, limit, total: 0, totalPages: 0, hasNextPage: false });
+      setPagination({ page: safePage, limit, total: 0, totalPages: 0, hasNextPage: false });
       setError(error.response?.data?.message || "Failed to load reports");
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAuthenticated, limit]);
+
+  useEffect(() => {
+    fetchReports(filters);
+  }, [fetchReports, filters]);
 
   const getSeverityColor = (severity) => {
     switch (severity) {
@@ -151,7 +162,7 @@ export default function ViewReports() {
             title="Reports unavailable"
             description={error}
             actionLabel="Try again"
-            onAction={fetchReports}
+            onAction={() => fetchReports(filters)}
           />
         ) : reports.length === 0 ? (
           <PageState

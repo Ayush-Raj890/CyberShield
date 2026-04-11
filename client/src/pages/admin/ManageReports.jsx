@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import API from "../../services/api";
 import AdminNavbar from "../../components/layout/AdminNavbar";
@@ -51,7 +51,6 @@ export default function ManageReports() {
     setFilter,
     clearFilters,
     activeChips,
-    queryString,
     categoryOptions,
     severityOptions,
     sourceOptions,
@@ -78,36 +77,47 @@ export default function ManageReports() {
     );
   };
 
-  useEffect(() => {
-    fetchReports();
-  }, [queryString]);
-
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async (activeFilters) => {
     try {
       setError("");
       setLoading(true);
-      const requestParams = new URLSearchParams(queryString);
+      const requestParams = new URLSearchParams();
+      const safePage = Number.isInteger(activeFilters?.page) && activeFilters.page > 0 ? activeFilters.page : 1;
+
+      if (activeFilters?.q?.trim()) requestParams.set("q", activeFilters.q.trim());
+      if (activeFilters?.category) requestParams.set("category", activeFilters.category);
+      if (activeFilters?.subcategory) requestParams.set("subcategory", activeFilters.subcategory);
+      if (activeFilters?.status) requestParams.set("status", activeFilters.status);
+      if (activeFilters?.severity) requestParams.set("severity", activeFilters.severity);
+      if (activeFilters?.source) requestParams.set("source", activeFilters.source);
+      if (activeFilters?.sort) requestParams.set("sort", activeFilters.sort);
+      requestParams.set("page", String(safePage));
       requestParams.set("limit", String(limit));
       const response = await API.get(`/admin/reports?${requestParams.toString()}`);
       const payload = response.data;
       const items = Array.isArray(payload) ? payload : (payload?.items || []);
       setReports(items);
       setPagination(Array.isArray(payload) ? {
-        page: filters.page,
+        page: safePage,
         limit,
         total: items.length,
         totalPages: 1,
         hasNextPage: items.length === limit
-      } : (payload?.pagination || { page: filters.page, limit, total: 0, totalPages: 0, hasNextPage: false }));
+      } : (payload?.pagination || { page: safePage, limit, total: 0, totalPages: 0, hasNextPage: false }));
     } catch (error) {
       console.error(error);
+      const safePage = Number.isInteger(activeFilters?.page) && activeFilters.page > 0 ? activeFilters.page : 1;
       setReports([]);
-      setPagination({ page: filters.page, limit, total: 0, totalPages: 0, hasNextPage: false });
+      setPagination({ page: safePage, limit, total: 0, totalPages: 0, hasNextPage: false });
       setError(error.response?.data?.message || "Failed to load reports");
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit]);
+
+  useEffect(() => {
+    fetchReports(filters);
+  }, [fetchReports, filters]);
 
   const updateStatus = async (id, status) => {
     if (!status) return;
@@ -116,7 +126,7 @@ export default function ManageReports() {
     try {
       await API.put(`/reports/${id}`, { status });
       toast.success("Report status updated");
-      fetchReports();
+      fetchReports(filters);
     } catch (error) {
       console.error(error);
       toast.error("Failed to update status");
@@ -159,7 +169,7 @@ export default function ManageReports() {
             title="Reports unavailable"
             description={error}
             actionLabel="Try again"
-            onAction={fetchReports}
+            onAction={() => fetchReports(filters)}
           />
         ) : reports.length === 0 ? (
           <PageState

@@ -79,13 +79,34 @@ const apiLimiter = rateLimit({
 	max: 100
 });
 
+const shouldSkipGlobalRateLimit = (req) => {
+	const path = req.originalUrl || "";
+
+	return (
+		req.method === "GET" && (
+			path.startsWith("/api/system/health") ||
+			path.startsWith("/api/system/version") ||
+			path.startsWith("/api/system/uptime") ||
+			path.startsWith("/api/reports") ||
+			path.startsWith("/api/admin/reports") ||
+			path.startsWith("/api/notifications")
+		)
+	);
+};
+
 // Security Middleware
 app.use(helmet());
 app.use(cors(corsOptions));
 app.options(/.*/, cors(corsOptions));
 app.use(xssMiddleware);
 app.use(sanitizeMiddleware);
-app.use(apiLimiter);
+app.use((req, res, next) => {
+	if (shouldSkipGlobalRateLimit(req)) {
+		return next();
+	}
+
+	return apiLimiter(req, res, next);
+});
 
 // Standard Middleware
 app.use(express.json());
