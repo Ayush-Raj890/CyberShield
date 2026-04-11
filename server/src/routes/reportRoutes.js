@@ -2,6 +2,13 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import { body } from "express-validator";
 import {
+  REPORT_CATEGORY_VALUES,
+  REPORT_SEVERITY_VALUES,
+  REPORT_SOURCE_CHANNEL_VALUES,
+  REPORT_STATUS_VALUES,
+  isValidCategorySubcategory
+} from "../constants/reportTaxonomy.js";
+import {
   createReport,
   getReports,
   getMyReports,
@@ -35,8 +42,15 @@ router.post(
   [
     body("title").trim().escape().notEmpty().withMessage("Title required"),
     body("description").trim().escape().notEmpty().withMessage("Description required"),
-    body("category").isIn(["PHISHING", "SCAM", "HARASSMENT", "OTHER"]).withMessage("Invalid category"),
-    body("severity").optional().isIn(["LOW", "MEDIUM", "HIGH"]).withMessage("Invalid severity"),
+    body("category").isIn(REPORT_CATEGORY_VALUES).withMessage("Invalid category"),
+    body("subcategory")
+      .trim()
+      .notEmpty()
+      .withMessage("Subcategory required")
+      .custom((subcategory, { req }) => isValidCategorySubcategory(req.body.category, subcategory))
+      .withMessage("Subcategory does not match selected category"),
+    body("severity").isIn(REPORT_SEVERITY_VALUES).withMessage("Invalid severity"),
+    body("sourceChannel").isIn(REPORT_SOURCE_CHANNEL_VALUES).withMessage("Invalid source channel"),
     body("contactEmail").optional().isEmail().withMessage("Invalid email"),
     body("isAnonymous").optional().isBoolean().toBoolean().withMessage("Invalid anonymous flag"),
     body("isSensitive").optional().isBoolean().toBoolean().withMessage("Invalid sensitive flag")
@@ -46,6 +60,12 @@ router.post(
 router.get("/", publicReportListLimiter, getReports);
 router.get("/user", protect, getMyReports);
 router.get("/me", protect, getMyReports);
-router.put("/:id", protect, adminOnly, updateReportStatus);
+router.put(
+  "/:id",
+  protect,
+  adminOnly,
+  [body("status").isIn(REPORT_STATUS_VALUES).withMessage("Invalid status")],
+  updateReportStatus
+);
 
 export default router;

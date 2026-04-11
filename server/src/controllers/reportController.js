@@ -6,6 +6,7 @@ import { addXP } from "../utils/gamification.js";
 import { addCoins } from "../utils/economy.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 import { incrementMetric, METRIC_KEYS } from "../utils/metrics.js";
+import { REPORT_STATUS_VALUES } from "../constants/reportTaxonomy.js";
 
 const PUBLIC_PAGE_LIMIT_MAX = 20;
 const PRIVATE_PAGE_LIMIT_MAX = 50;
@@ -32,7 +33,9 @@ const serializePublicReport = (report) => {
     title: report.title,
     description: safeDescription,
     category: report.category,
+    subcategory: report.subcategory,
     severity: report.severity,
+    sourceChannel: report.sourceChannel,
     status: report.status,
     isAnonymous: Boolean(report.isAnonymous),
     isSensitive: Boolean(report.isSensitive),
@@ -53,7 +56,9 @@ export const createReport = async (req, res) => {
       title,
       description,
       category,
+      subcategory,
       severity,
+      sourceChannel,
       contactEmail,
       isAnonymous,
       isSensitive
@@ -68,12 +73,15 @@ export const createReport = async (req, res) => {
       title,
       description: safeDescription,
       category,
+      subcategory,
       severity: severity || "LOW",
+      sourceChannel,
       contactEmail,
       evidence: evidencePath,
       isAnonymous: anonymousFlag,
       isSensitive: sensitiveFlag,
-      history: [{ status: "PENDING" }]
+      status: "SUBMITTED",
+      history: [{ status: "SUBMITTED" }]
     });
 
     if (report.isAnonymous) {
@@ -102,7 +110,7 @@ export const getReports = async (req, res) => {
     const total = await Report.countDocuments();
 
     const reports = await Report.find()
-      .select("title description category severity status isAnonymous isSensitive createdAt updatedAt")
+      .select("title description category subcategory severity sourceChannel status isAnonymous isSensitive createdAt updatedAt")
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
@@ -135,7 +143,7 @@ export const getMyReports = async (req, res) => {
     const total = await Report.countDocuments(match);
 
     const reports = await Report.find(match)
-      .select("title description category severity status contactEmail evidence isAnonymous isSensitive history createdAt updatedAt")
+      .select("title description category subcategory severity sourceChannel status contactEmail evidence isAnonymous isSensitive history createdAt updatedAt")
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
@@ -185,7 +193,16 @@ export const getMyReports = async (req, res) => {
 // Update Status (Admin only)
 export const updateReportStatus = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return sendError(res, 400, "Validation failed", errors.array());
+    }
+
     const { status: newStatus } = req.body;
+
+    if (!REPORT_STATUS_VALUES.includes(newStatus)) {
+      return sendError(res, 400, "Invalid status");
+    }
 
     const report = await Report.findById(req.params.id);
 

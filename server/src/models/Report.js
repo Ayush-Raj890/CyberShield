@@ -1,4 +1,14 @@
 import mongoose from "mongoose";
+import {
+  LEGACY_REPORT_CATEGORIES,
+  LEGACY_REPORT_STATUSES,
+  REPORT_AFFECTED_ASSET_VALUES,
+  REPORT_CATEGORY_VALUES,
+  REPORT_SEVERITY_VALUES,
+  REPORT_SOURCE_CHANNEL_VALUES,
+  REPORT_STATUS_VALUES,
+  REPORT_SUBCATEGORY_VALUES
+} from "../constants/reportTaxonomy.js";
 
 const reportSchema = new mongoose.Schema(
   {
@@ -16,17 +26,37 @@ const reportSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["PHISHING", "SCAM", "HARASSMENT", "OTHER"],
+      enum: [...REPORT_CATEGORY_VALUES, ...LEGACY_REPORT_CATEGORIES],
       default: "OTHER"
+    },
+    subcategory: {
+      type: String,
+      enum: REPORT_SUBCATEGORY_VALUES,
+      default: "SUSPICIOUS_OTHER"
     },
     evidence: {
       type: String
     },
     severity: {
       type: String,
-      enum: ["LOW", "MEDIUM", "HIGH"],
+      enum: REPORT_SEVERITY_VALUES,
       default: "LOW"
     },
+    sourceChannel: {
+      type: String,
+      enum: REPORT_SOURCE_CHANNEL_VALUES,
+      default: "UNKNOWN"
+    },
+    affectedAsset: {
+      type: String,
+      enum: REPORT_AFFECTED_ASSET_VALUES,
+      default: "OTHER"
+    },
+    estimatedLoss: {
+      type: Number,
+      min: 0
+    },
+    tags: [String],
     contactEmail: {
       type: String
     },
@@ -40,8 +70,8 @@ const reportSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["PENDING", "REVIEWED", "RESOLVED"],
-      default: "PENDING"
+      enum: [...REPORT_STATUS_VALUES, ...LEGACY_REPORT_STATUSES],
+      default: "SUBMITTED"
     },
     history: [
       {

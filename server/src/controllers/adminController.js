@@ -5,6 +5,8 @@ import { decrypt, encrypt } from "../utils/encryption.js";
 import { sendError, sendSuccess } from "../utils/response.js";
 import { getMetricsSnapshot, incrementMetric, METRIC_KEYS } from "../utils/metrics.js";
 
+const REPORT_PENDING_STATES = ["SUBMITTED", "UNDER_REVIEW", "INVESTIGATING", "NEED_MORE_INFO", "PENDING", "REVIEWED"];
+
 const ADMIN_REPORTS_PAGE_LIMIT_MAX = Number(process.env.ADMIN_REPORTS_PAGE_LIMIT_MAX) || 50;
 
 const getAdminPagination = (query) => {
@@ -28,9 +30,7 @@ export const getDashboardStats = async (req, res) => {
     const totalReports = await Report.countDocuments();
     const totalArticles = await Article.countDocuments();
 
-    const pendingReports = await Report.countDocuments({
-      status: "PENDING"
-    });
+    const pendingReports = await Report.countDocuments({ status: { $in: REPORT_PENDING_STATES } });
 
     const metrics = await getMetricsSnapshot();
 

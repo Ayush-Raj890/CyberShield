@@ -7,6 +7,7 @@ import Report from "../models/Report.js";
 import Article from "../models/Article.js";
 import ForumPost from "../models/ForumPost.js";
 import Meme from "../models/Meme.js";
+import { REPORT_CATEGORIES } from "../constants/reportTaxonomy.js";
 
 dotenv.config();
 
@@ -40,17 +41,19 @@ const DEMO_USERS = [
 ];
 
 const REPORT_SEED = [
-  ["[DEMO] Suspicious banking SMS", "SCAM", "HIGH"],
-  ["[DEMO] Fake courier delivery email", "PHISHING", "MEDIUM"],
-  ["[DEMO] OTP request from unknown caller", "SCAM", "HIGH"],
-  ["[DEMO] Spoofed support ticket", "OTHER", "LOW"],
-  ["[DEMO] Social media account takeover attempt", "HARASSMENT", "MEDIUM"],
-  ["[DEMO] Fake investment pitch", "SCAM", "HIGH"],
-  ["[DEMO] Lottery phishing page", "PHISHING", "MEDIUM"],
-  ["[DEMO] Fraud job offer", "SCAM", "MEDIUM"],
-  ["[DEMO] Fake KYC verification link", "PHISHING", "HIGH"],
-  ["[DEMO] Extortion message screenshot", "HARASSMENT", "HIGH"]
+  ["[DEMO] Suspicious banking SMS", "FINANCIAL_FRAUD", "UPI_SCAM", "HIGH", "SMS"],
+  ["[DEMO] Fake courier delivery email", "MARKETPLACE_COMMERCE", "FAKE_DELIVERY_SCAM", "MEDIUM", "EMAIL"],
+  ["[DEMO] OTP request from unknown caller", "ACCOUNT_SECURITY", "OTP_THEFT", "HIGH", "PHONE_CALL"],
+  ["[DEMO] Spoofed support ticket", "PHISHING_IMPERSONATION", "FAKE_SUPPORT_SCAM", "LOW", "WEBSITE"],
+  ["[DEMO] Social media account takeover attempt", "ACCOUNT_SECURITY", "SOCIAL_MEDIA_HACK", "MEDIUM", "INSTAGRAM"],
+  ["[DEMO] Fake investment pitch", "FINANCIAL_FRAUD", "INVESTMENT_SCAM", "HIGH", "WHATSAPP"],
+  ["[DEMO] Lottery phishing page", "FINANCIAL_FRAUD", "LOTTERY_SCAM", "MEDIUM", "WEBSITE"],
+  ["[DEMO] Fraud job offer", "EMPLOYMENT_SCAMS", "FAKE_JOB_OFFER", "MEDIUM", "TELEGRAM"],
+  ["[DEMO] Fake KYC verification link", "IDENTITY_DATA_THEFT", "KYC_FRAUD", "HIGH", "SMS"],
+  ["[DEMO] Extortion message screenshot", "HARASSMENT_ABUSE", "EXTORTION", "HIGH", "WHATSAPP"]
 ];
+
+const REPORT_STATUS_SEED = ["SUBMITTED", "UNDER_REVIEW", "INVESTIGATING", "RESOLVED", "NEED_MORE_INFO", "CLOSED"];
 
 const ARTICLE_SEED = [
   "[DEMO] How To Spot OTP Scams",
@@ -138,17 +141,19 @@ const seedDemoData = async () => {
     Meme.deleteMany({ caption: /^\[DEMO\]/ })
   ]);
 
-  const reports = REPORT_SEED.map(([title, category, severity], index) => ({
+  const reports = REPORT_SEED.map(([title, category, subcategory, severity, sourceChannel], index) => ({
     title,
     description: `${title} incident details for demo dataset ${index + 1}.`,
-    category,
+    category: REPORT_CATEGORIES[category] ? category : "OTHER",
+    subcategory: REPORT_CATEGORIES[category]?.includes(subcategory) ? subcategory : "SUSPICIOUS_OTHER",
     severity,
-    status: index % 3 === 0 ? "PENDING" : index % 3 === 1 ? "REVIEWED" : "RESOLVED",
+    sourceChannel,
+    status: REPORT_STATUS_SEED[index % REPORT_STATUS_SEED.length],
     contactEmail: user1.email,
     user: index % 2 === 0 ? user1._id : user2._id,
     isAnonymous: false,
     isSensitive: false,
-    history: [{ status: "PENDING", date: new Date() }]
+    history: [{ status: "SUBMITTED", date: new Date() }]
   }));
 
   const articles = ARTICLE_SEED.map((title, index) => ({

@@ -5,14 +5,25 @@ import toast from "react-hot-toast";
 import API from "../../services/api";
 import Navbar from "../../components/layout/Navbar";
 import Button from "../../components/ui/Button";
+import {
+  REPORT_CATEGORY_OPTIONS,
+  REPORT_SEVERITY_OPTIONS,
+  REPORT_SOURCE_CHANNEL_OPTIONS,
+  getSubcategoryOptions
+} from "../../constants/reportTaxonomy";
+
+const DEFAULT_CATEGORY = "FINANCIAL_FRAUD";
+const DEFAULT_SUBCATEGORY = "UPI_SCAM";
 
 export default function CreateReport() {
   const location = useLocation();
   const [form, setForm] = useState({
     title: "",
     description: "",
-    category: "SCAM",
+    category: DEFAULT_CATEGORY,
+    subcategory: DEFAULT_SUBCATEGORY,
     severity: "LOW",
+    sourceChannel: "UNKNOWN",
     contactEmail: "",
     evidence: null,
     isAnonymous: false,
@@ -24,13 +35,21 @@ export default function CreateReport() {
     const prefill = location.state?.prefill;
     if (!prefill) return;
 
-    setForm((prev) => ({
-      ...prev,
-      title: prefill.title || prev.title,
-      description: prefill.description || prev.description,
-      category: prefill.category || prev.category,
-      severity: prefill.severity || prev.severity
-    }));
+    setForm((prev) => {
+      const nextCategory = prefill.category || prev.category;
+      const nextSubcategories = getSubcategoryOptions(nextCategory);
+      const nextSubcategory = prefill.subcategory || nextSubcategories[0]?.value || "SUSPICIOUS_OTHER";
+
+      return {
+        ...prev,
+        title: prefill.title || prev.title,
+        description: prefill.description || prev.description,
+        category: nextCategory,
+        subcategory: nextSubcategory,
+        severity: prefill.severity || prev.severity,
+        sourceChannel: prefill.sourceChannel || prev.sourceChannel
+      };
+    });
   }, [location.state]);
 
   const handleChange = (e) => {
@@ -39,10 +58,19 @@ export default function CreateReport() {
       setForm({ ...form, [name]: files[0] });
     } else if (type === "checkbox") {
       setForm({ ...form, [name]: e.target.checked });
+    } else if (name === "category") {
+      const subcategories = getSubcategoryOptions(value);
+      setForm({
+        ...form,
+        category: value,
+        subcategory: subcategories[0]?.value || "SUSPICIOUS_OTHER"
+      });
     } else {
       setForm({ ...form, [name]: value });
     }
   };
+
+  const subcategoryOptions = getSubcategoryOptions(form.category);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,7 +81,9 @@ export default function CreateReport() {
       formData.append("title", form.title);
       formData.append("description", form.description);
       formData.append("category", form.category);
+      formData.append("subcategory", form.subcategory);
       formData.append("severity", form.severity);
+      formData.append("sourceChannel", form.sourceChannel);
       if (form.contactEmail) formData.append("contactEmail", form.contactEmail);
       if (form.evidence) formData.append("evidence", form.evidence);
       formData.append("isAnonymous", String(form.isAnonymous));
@@ -66,8 +96,10 @@ export default function CreateReport() {
       setForm({
         title: "",
         description: "",
-        category: "SCAM",
+        category: DEFAULT_CATEGORY,
+        subcategory: DEFAULT_SUBCATEGORY,
         severity: "LOW",
+        sourceChannel: "UNKNOWN",
         contactEmail: "",
         evidence: null,
         isAnonymous: false,
@@ -112,10 +144,20 @@ export default function CreateReport() {
             value={form.category}
             onChange={handleChange}
           >
-            <option value="SCAM">Scam</option>
-            <option value="PHISHING">Phishing</option>
-            <option value="HARASSMENT">Harassment</option>
-            <option value="OTHER">Other</option>
+            {REPORT_CATEGORY_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+
+          <select
+            name="subcategory"
+            className="input"
+            value={form.subcategory}
+            onChange={handleChange}
+          >
+            {subcategoryOptions.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
           </select>
 
           <select
@@ -124,9 +166,20 @@ export default function CreateReport() {
             value={form.severity}
             onChange={handleChange}
           >
-            <option value="LOW">Low</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="HIGH">High</option>
+            {REPORT_SEVERITY_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+
+          <select
+            name="sourceChannel"
+            className="input"
+            value={form.sourceChannel}
+            onChange={handleChange}
+          >
+            {REPORT_SOURCE_CHANNEL_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
           </select>
 
           <input

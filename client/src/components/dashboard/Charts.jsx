@@ -25,8 +25,9 @@ export default function Charts({ data, type }) {
     }
 
     return [
-      renderStatRow("Pending", data?.reportStatus?.pending ?? 0),
-      renderStatRow("Reviewed", data?.reportStatus?.reviewed ?? 0),
+      renderStatRow("Submitted", data?.reportStatus?.submitted ?? 0),
+      renderStatRow("Under Review", data?.reportStatus?.underReview ?? 0),
+      renderStatRow("Investigating", data?.reportStatus?.investigating ?? 0),
       renderStatRow("Resolved", data?.reportStatus?.resolved ?? 0),
       renderStatRow("Reports This Week", data?.analytics?.reportsThisWeek ?? 0),
       renderStatRow("AI Usage Trend", data?.analytics?.aiUsageTrend || "No data")

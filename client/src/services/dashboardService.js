@@ -1,6 +1,10 @@
 import API from "./api";
 
 const DEFAULT_LIMIT = 50;
+const SUBMITTED_STATUSES = new Set(["SUBMITTED", "PENDING"]);
+const UNDER_REVIEW_STATUSES = new Set(["UNDER_REVIEW", "REVIEWED"]);
+const OPEN_INVESTIGATION_STATUSES = new Set(["INVESTIGATING", "NEED_MORE_INFO"]);
+const RESOLVED_STATUSES = new Set(["RESOLVED", "CLOSED"]);
 
 const isCurrentUserRecord = (recordUser, currentUserId) => {
   if (!recordUser || !currentUserId) return false;
@@ -14,9 +18,10 @@ export const transformUserDashboard = ({ profile, reports, articles, forumPosts,
   const ownPosts = forumPosts;
   const ownMemes = memes.filter((m) => isCurrentUserRecord(m.createdBy, currentUserId));
 
-  const pending = ownReports.filter((r) => r.status === "PENDING").length;
-  const reviewed = ownReports.filter((r) => r.status === "REVIEWED").length;
-  const resolved = ownReports.filter((r) => r.status === "RESOLVED").length;
+  const submitted = ownReports.filter((r) => SUBMITTED_STATUSES.has(r.status)).length;
+  const underReview = ownReports.filter((r) => UNDER_REVIEW_STATUSES.has(r.status)).length;
+  const investigating = ownReports.filter((r) => OPEN_INVESTIGATION_STATUSES.has(r.status)).length;
+  const resolved = ownReports.filter((r) => RESOLVED_STATUSES.has(r.status)).length;
 
   const weekAgo = new Date();
   weekAgo.setDate(weekAgo.getDate() - 7);
@@ -48,8 +53,9 @@ export const transformUserDashboard = ({ profile, reports, articles, forumPosts,
       badges: profile?.user?.badges ?? []
     },
     reportStatus: {
-      pending,
-      reviewed,
+      submitted,
+      underReview,
+      investigating,
       resolved
     },
     analytics: {
@@ -76,7 +82,9 @@ export const transformAdminDashboard = ({ stats, reports, pendingArticles }) => 
     return acc;
   }, {});
 
-  const suspiciousCount = reports.filter((r) => r.isSensitive || r.category === "SCAM").length;
+  const suspiciousCount = reports.filter(
+    (r) => r.isSensitive || r.severity === "HIGH" || r.severity === "CRITICAL"
+  ).length;
 
   return {
     stats: {
@@ -96,7 +104,9 @@ export const transformAdminDashboard = ({ stats, reports, pendingArticles }) => 
       suspiciousActivityPatterns: suspiciousCount
     },
     moderation: {
-      pendingReports: reports.filter((r) => r.status === "PENDING").slice(0, 6),
+      pendingReports: reports
+        .filter((r) => SUBMITTED_STATUSES.has(r.status) || UNDER_REVIEW_STATUSES.has(r.status) || OPEN_INVESTIGATION_STATUSES.has(r.status))
+        .slice(0, 6),
       pendingArticles: pendingArticles.slice(0, 6)
     },
     recentReports: reports.slice(0, 6)

@@ -5,6 +5,12 @@ import Navbar from "../../components/layout/Navbar";
 import { AlertCircle, Shield, Mail, Image as ImageIcon, EyeOff, TriangleAlert } from "lucide-react";
 import Button from "../../components/ui/Button";
 import PageState from "../../components/ui/PageState";
+import {
+  getCategoryLabel,
+  getSourceChannelLabel,
+  getStatusLabel,
+  getSubcategoryLabel
+} from "../../constants/reportTaxonomy";
 
 const ASSET_HOST = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
 
@@ -55,6 +61,8 @@ export default function ViewReports() {
     switch (severity) {
       case "HIGH":
         return "bg-red-100 text-red-800";
+      case "CRITICAL":
+        return "bg-purple-100 text-purple-800";
       case "MEDIUM":
         return "bg-yellow-100 text-yellow-800";
       case "LOW":
@@ -66,12 +74,24 @@ export default function ViewReports() {
 
   const getStatusColor = (status) => {
     switch (status) {
+      case "SUBMITTED":
       case "PENDING":
-        return "bg-yellow-500";
+        return "bg-blue-500";
+      case "UNDER_REVIEW":
       case "REVIEWED":
         return "bg-blue-500";
+      case "INVESTIGATING":
+        return "bg-orange-500";
+      case "NEED_MORE_INFO":
+        return "bg-amber-500";
       case "RESOLVED":
         return "bg-green-500";
+      case "CLOSED":
+        return "bg-slate-700";
+      case "DISMISSED":
+      case "FALSE_POSITIVE":
+      case "DUPLICATE":
+        return "bg-gray-500";
       default:
         return "bg-gray-500";
     }
@@ -130,7 +150,7 @@ export default function ViewReports() {
                     r.status
                   )}`}
                 >
-                  {r.status}
+                  {getStatusLabel(r.status)}
                 </span>
               </div>
 
@@ -152,13 +172,21 @@ export default function ViewReports() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 text-sm">
                 <div className="flex items-center gap-2">
                   <AlertCircle size={16} className="text-gray-500" />
-                  <span>Category: <strong>{r.category}</strong></span>
+                  <span>Category: <strong>{getCategoryLabel(r.category)}</strong></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <AlertCircle size={16} className="text-gray-500" />
+                  <span>Subcategory: <strong>{getSubcategoryLabel(r.subcategory || "SUSPICIOUS_OTHER")}</strong></span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Shield size={16} className="text-gray-500" />
                   <span className={`px-2 py-1 rounded text-xs font-semibold ${getSeverityColor(r.severity)}`}>
                     {r.severity} Severity
                   </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Shield size={16} className="text-gray-500" />
+                  <span>Source: <strong>{getSourceChannelLabel(r.sourceChannel || "UNKNOWN")}</strong></span>
                 </div>
                 {r.contactEmail && (
                   <div className="flex items-center gap-2 col-span-2">

@@ -5,6 +5,42 @@ import AdminNavbar from "../../components/layout/AdminNavbar";
 import { EyeOff, TriangleAlert } from "lucide-react";
 import Button from "../../components/ui/Button";
 import PageState from "../../components/ui/PageState";
+import {
+  REPORT_STATUS_OPTIONS,
+  getCategoryLabel,
+  getStatusLabel,
+  getSubcategoryLabel
+} from "../../constants/reportTaxonomy";
+
+const getStatusBadgeClass = (status) => {
+  switch (status) {
+    case "SUBMITTED":
+    case "PENDING":
+      return "bg-blue-500";
+    case "UNDER_REVIEW":
+    case "REVIEWED":
+      return "bg-indigo-500";
+    case "INVESTIGATING":
+      return "bg-orange-500";
+    case "NEED_MORE_INFO":
+      return "bg-amber-500";
+    case "RESOLVED":
+      return "bg-green-500";
+    case "CLOSED":
+      return "bg-slate-700";
+    case "DUPLICATE":
+    case "FALSE_POSITIVE":
+      return "bg-gray-500";
+    case "ESCALATED":
+      return "bg-red-600";
+    case "SENSITIVE_HOLD":
+      return "bg-pink-600";
+    case "ARCHIVED":
+      return "bg-zinc-600";
+    default:
+      return "bg-gray-500";
+  }
+};
 
 export default function ManageReports() {
   const [reports, setReports] = useState([]);
@@ -117,21 +153,19 @@ export default function ManageReports() {
               </div>
               <p className="text-gray-600">{r.description}</p>
 
+              <p className="text-sm mt-2 text-gray-500">
+                {getCategoryLabel(r.category)} / {getSubcategoryLabel(r.subcategory || "SUSPICIOUS_OTHER")}
+              </p>
+
               <div className="flex justify-between items-center mt-2 text-sm">
                 <span className="text-gray-500">
                   Reporter: {r.isAnonymous ? "Anonymous" : renderDisplayName(r.user)}
                 </span>
 
                 <span
-                  className={`px-2 py-1 rounded text-white text-xs ${
-                    r.status === "PENDING"
-                      ? "bg-yellow-500"
-                      : r.status === "REVIEWED"
-                      ? "bg-blue-500"
-                      : "bg-green-500"
-                  }`}
+                  className={`px-2 py-1 rounded text-white text-xs ${getStatusBadgeClass(r.status)}`}
                 >
-                  {r.status}
+                  {getStatusLabel(r.status)}
                 </span>
               </div>
 
@@ -153,8 +187,9 @@ export default function ManageReports() {
                 disabled={updatingId === r._id}
               >
                 <option value="">Update Status</option>
-                <option value="REVIEWED">Reviewed</option>
-                <option value="RESOLVED">Resolved</option>
+                {REPORT_STATUS_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
               </select>
               </div>
             ))}

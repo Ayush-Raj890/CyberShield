@@ -123,8 +123,10 @@ export default function ScamDetector() {
                     prefill: {
                       title: `AI Flagged: ${result.label}`,
                       description: text,
-                      category: result.label === "MALICIOUS" ? "SCAM" : "OTHER",
-                      severity: result.label === "MALICIOUS" ? "HIGH" : result.label === "SUSPICIOUS" ? "MEDIUM" : "LOW"
+                      category: result.label === "MALICIOUS" ? "PHISHING_IMPERSONATION" : "OTHER",
+                      subcategory: result.label === "MALICIOUS" ? "IMPERSONATION_SCAM" : "SUSPICIOUS_OTHER",
+                      severity: result.label === "MALICIOUS" ? "HIGH" : result.label === "SUSPICIOUS" ? "MEDIUM" : "LOW",
+                      sourceChannel: "UNKNOWN"
                     }
                   }
                 });

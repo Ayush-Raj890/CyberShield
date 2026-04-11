@@ -12,9 +12,19 @@ const tabLabel = {
 };
 
 const statusColor = {
-  PENDING: "bg-yellow-100 text-yellow-700",
-  REVIEWED: "bg-blue-100 text-blue-700",
-  RESOLVED: "bg-green-100 text-green-700"
+  SUBMITTED: "bg-blue-100 text-blue-700",
+  PENDING: "bg-blue-100 text-blue-700",
+  UNDER_REVIEW: "bg-indigo-100 text-indigo-700",
+  REVIEWED: "bg-indigo-100 text-indigo-700",
+  INVESTIGATING: "bg-orange-100 text-orange-700",
+  NEED_MORE_INFO: "bg-amber-100 text-amber-700",
+  RESOLVED: "bg-green-100 text-green-700",
+  CLOSED: "bg-slate-200 text-slate-700",
+  DUPLICATE: "bg-gray-100 text-gray-700",
+  FALSE_POSITIVE: "bg-gray-100 text-gray-700",
+  ESCALATED: "bg-red-100 text-red-700",
+  SENSITIVE_HOLD: "bg-pink-100 text-pink-700",
+  ARCHIVED: "bg-zinc-100 text-zinc-700"
 };
 
 const formatLabel = (value) =>
