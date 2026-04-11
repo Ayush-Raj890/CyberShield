@@ -76,6 +76,12 @@ Create or update `server/.env` with these keys:
 - `AI_SERVICE_URL=http://localhost:8000`
 - `ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173`
 - `DEBUG_REQUEST_LOGS=false`
+- `AUTH_VERIFY_OTP_WINDOW_MS=900000`
+- `AUTH_VERIFY_OTP_MAX=10`
+- `AUTH_RESET_PASSWORD_WINDOW_MS=3600000`
+- `AUTH_RESET_PASSWORD_MAX=5`
+- `AI_PREDICT_WINDOW_MS=900000`
+- `AI_PREDICT_MAX=50`
 - `ENCRYPTION_KEY=<your_64_char_hex_key>`
 - `EMAIL_MOCK=true`
 
@@ -88,6 +94,12 @@ JWT_SECRET=your_secret
 AI_SERVICE_URL=http://localhost:8000
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
 DEBUG_REQUEST_LOGS=false
+AUTH_VERIFY_OTP_WINDOW_MS=900000
+AUTH_VERIFY_OTP_MAX=10
+AUTH_RESET_PASSWORD_WINDOW_MS=3600000
+AUTH_RESET_PASSWORD_MAX=5
+AI_PREDICT_WINDOW_MS=900000
+AI_PREDICT_MAX=50
 ENCRYPTION_KEY=your_64_char_hex_key
 EMAIL_MOCK=true
 ```
@@ -190,6 +202,7 @@ Optional root check:
 - Client calls Node server API.
 - Server endpoint `/api/ai/predict` forwards text to AI service `/api/predict`.
 - If AI service is down or `AI_SERVICE_URL` is wrong, server returns AI service failed.
+- Backend health and diagnostics endpoints are under `/api/system/*` (`health`, `version`, `uptime`).
 
 ## 9) Route ownership map
 

@@ -21,6 +21,7 @@ import userRoutes from "./routes/userRoutes.js";
 import { sanitizeMiddleware } from "./middlewares/sanitizeMiddleware.js";
 import { xssMiddleware } from "./middlewares/xssMiddleware.js";
 import { errorHandler } from "./middlewares/errorMiddleware.js";
+import { isDebugLogsEnabled, logInfo } from "./utils/logger.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -89,6 +90,17 @@ app.use(apiLimiter);
 // Standard Middleware
 app.use(express.json());
 app.use(morgan("dev"));
+if (isDebugLogsEnabled()) {
+	app.use((req, res, next) => {
+		const start = Date.now();
+		res.on("finish", () => {
+			logInfo("HTTP", `${req.method} ${req.originalUrl} -> ${res.statusCode}`, {
+				durationMs: Date.now() - start
+			});
+		});
+		next();
+	});
+}
 // Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 

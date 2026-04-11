@@ -7,6 +7,7 @@ import { sendError, sendSuccess } from "../utils/response.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { addXP } from "../utils/gamification.js";
 import { addCoins } from "../utils/economy.js";
+import { logError, logInfo, logWarn, maskEmail } from "../utils/logger.js";
 
 const normalizeEmail = (email) => String(email || "").trim().toLowerCase();
 const OTP_HASH_SECRET = process.env.OTP_HASH_SECRET || process.env.JWT_SECRET || "otp-fallback-secret";
@@ -52,6 +53,11 @@ export const registerUser = async (req, res) => {
       `Your OTP is: ${otp}. It expires in 10 minutes.`
     );
 
+    logInfo("AUTH", "Registration OTP dispatched", {
+      email: maskEmail(normalizedEmail),
+      userId: String(user._id)
+    });
+
     return sendSuccess(res, {
       _id: user._id,
       name: user.name,
@@ -60,7 +66,7 @@ export const registerUser = async (req, res) => {
       isVerified: user.isVerified
     }, 201);
   } catch (error) {
-    console.error("[AUTH] registerUser error:", error?.message || error);
+    logError("AUTH", "registerUser error", error?.message || error);
     return sendError(res, 500, error.message);
   }
 };
@@ -93,9 +99,14 @@ export const resendOTP = async (req, res) => {
 
     await sendEmail(normalizedEmail, "Resend OTP", `Your OTP is: ${otp}. It expires in 10 minutes.`);
 
+    logInfo("AUTH", "OTP resent", {
+      email: maskEmail(normalizedEmail),
+      userId: String(user._id)
+    });
+
     return sendSuccess(res, { resent: true }, 200, "OTP resent");
   } catch (error) {
-    console.error("[AUTH] resendOTP error:", error?.message || error);
+    logError("AUTH", "resendOTP error", error?.message || error);
     return sendError(res, 500, error.message);
   }
 };
@@ -138,6 +149,12 @@ export const verifyOTP = async (req, res) => {
 
       const attemptsRemaining = Math.max(0, maxAttempts - user.failedOtpAttempts);
 
+      logWarn("AUTH", "OTP verification failed", {
+        email: maskEmail(normalizedEmail),
+        attemptsRemaining,
+        expired: isOtpExpired
+      });
+
       if (user.failedOtpAttempts >= maxAttempts) {
         return sendError(
           res,
@@ -156,8 +173,14 @@ export const verifyOTP = async (req, res) => {
     user.failedOtpAttempts = 0;
     await user.save();
 
+    logInfo("AUTH", "OTP verified", {
+      email: maskEmail(normalizedEmail),
+      userId: String(user._id)
+    });
+
     return sendSuccess(res, { verified: true, attemptsRemaining: maxAttempts }, 200, "Account verified");
   } catch (error) {
+    logError("AUTH", "verifyOTP error", error?.message || error);
     return sendError(res, 500, error.message);
   }
 };
@@ -269,6 +292,11 @@ export const forgotPassword = async (req, res) => {
       `Use this reset token to set a new password: ${resetToken}. It expires in 15 minutes.`
     );
 
+    logInfo("AUTH", "Password reset token dispatched", {
+      email: maskEmail(normalizedEmail),
+      userId: String(user._id)
+    });
+
     return sendSuccess(
       res,
       { requested: true },
@@ -276,7 +304,7 @@ export const forgotPassword = async (req, res) => {
       "If the account exists, a reset token has been sent"
     );
   } catch (error) {
-    console.error("[AUTH] forgotPassword error:", error?.message || error);
+    logError("AUTH", "forgotPassword error", error?.message || error);
     return sendError(res, 500, error.message);
   }
 };
@@ -311,7 +339,9 @@ export const resetPassword = async (req, res) => {
     }
 
     if (user.isSuspended) {
-      console.warn("[AUTH][SECURITY] Suspended user attempted password reset:", normalizedEmail);
+      logWarn("AUTH_SECURITY", "Suspended user attempted password reset", {
+        email: maskEmail(normalizedEmail)
+      });
     }
 
     if (
@@ -329,9 +359,14 @@ export const resetPassword = async (req, res) => {
     user.failedOtpAttempts = 0;
     await user.save();
 
+    logInfo("AUTH", "Password reset successful", {
+      email: maskEmail(normalizedEmail),
+      userId: String(user._id)
+    });
+
     return sendSuccess(res, { reset: true }, 200, "Password reset successful");
   } catch (error) {
-    console.error("[AUTH] resetPassword error:", error?.message || error);
+    logError("AUTH", "resetPassword error", error?.message || error);
     return sendError(res, 500, error.message);
   }
 };

@@ -77,9 +77,12 @@ Implemented frontend modules:
 - Shared API service with auth interceptor
 - Reusable Navbar layout component
 - Domain-grouped Navbar UX (Core, Activity, Learn, Account, Admin)
+- Centralized frontend route ownership via shared route registry (`client/src/routes/routes.config.js`)
 - Reusable AdminNavbar layout component
+- Shared runtime base URL helpers (`getApiBaseUrl`, `getAiServiceBaseUrl`) for consistent environment resolution
 - Mobile responsiveness pass across primary user flows (navbars, profile, reports, forum, articles, AI)
 - Global UI design system (`.card`, `.btn`, `.btn-primary`, `.btn-danger`, `.input`)
+- Expanded reusable UI primitives (`Input`, `Badge`, `Modal`, `EmptyState`, `Loader`)
 - Polished status indicators for reports and AI prediction result cards
 - Lucide icons integrated for premium navigation and dashboard hierarchy
 - Toast notifications (`react-hot-toast`) replacing alert popups
@@ -345,6 +348,12 @@ Backend .env expected keys:
 - REPORT_PUBLIC_LIST_WINDOW_MS=60000
 - REPORT_PUBLIC_LIST_MAX=60
 - ADMIN_REPORTS_PAGE_LIMIT_MAX=50
+- AUTH_VERIFY_OTP_WINDOW_MS=900000
+- AUTH_VERIFY_OTP_MAX=10
+- AUTH_RESET_PASSWORD_WINDOW_MS=3600000
+- AUTH_RESET_PASSWORD_MAX=5
+- AI_PREDICT_WINDOW_MS=900000
+- AI_PREDICT_MAX=50
 - ENCRYPTION_KEY=your_64_char_hex_key
 - ENCRYPTION_LEGACY_KEYS=comma_separated_old_keys
 - EMAIL_USER=your_gmail_address

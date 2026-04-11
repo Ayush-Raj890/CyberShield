@@ -12,6 +12,12 @@
 - REPORT_PUBLIC_LIST_WINDOW_MS=60000
 - REPORT_PUBLIC_LIST_MAX=60
 - ADMIN_REPORTS_PAGE_LIMIT_MAX=50
+- AUTH_VERIFY_OTP_WINDOW_MS=900000
+- AUTH_VERIFY_OTP_MAX=10
+- AUTH_RESET_PASSWORD_WINDOW_MS=3600000
+- AUTH_RESET_PASSWORD_MAX=5
+- AI_PREDICT_WINDOW_MS=900000
+- AI_PREDICT_MAX=50
 - AI_PREDICT_TEXT_MAX_CHARS=10000
 - UPLOAD_MAX_FILE_SIZE_MB=50
 - OTP_HASH_SECRET=strong_random_secret_for_otp_hmac
@@ -24,6 +30,11 @@
 Encryption migration helper:
 
 - `npm --prefix server run migrate:encryption`
+
+DEBUG logging toggle:
+
+- Set `DEBUG_REQUEST_LOGS=true` in development to print structured HTTP and auth flow diagnostics.
+- Keep `DEBUG_REQUEST_LOGS=false` in production to reduce noise and avoid sensitive operational traces.
 
 ---
 
@@ -78,6 +89,7 @@ AI predict validation behavior:
 
 - `text` is required and must be a non-empty string
 - `text` length is capped by `AI_PREDICT_TEXT_MAX_CHARS` (default 10000)
+- Predict endpoint throttling is configured by `AI_PREDICT_WINDOW_MS` and `AI_PREDICT_MAX`
 
 ### Articles
 
@@ -244,8 +256,10 @@ Error pages:
 - Unverified duplicate email is overwritten on re-register
 - Verify endpoint blocks after 5 failed attempts
 - Verify error payload includes attempts remaining
+- Verify endpoint throttling is configured by `AUTH_VERIFY_OTP_WINDOW_MS` and `AUTH_VERIFY_OTP_MAX`
 - Resend OTP resets attempt counter and expiry
 - Forgot password sends reset token with 15-minute expiry
+- Reset-password endpoint throttling is configured by `AUTH_RESET_PASSWORD_WINDOW_MS` and `AUTH_RESET_PASSWORD_MAX`
 - Reset password requires email + token + newPassword
 - Email validator lowercases but preserves dot characters in local-part
 

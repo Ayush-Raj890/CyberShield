@@ -1,5 +1,13 @@
 # Development Logs
 
+## Day 55
+
+- Added shared runtime config helper (`client/src/utils/runtimeConfig.js`) and rewired API/AI URL consumers to reduce duplicate base URL logic.
+- Expanded UI primitives with reusable `Input`, `Badge`, `Modal`, `EmptyState`, and `Loader` components.
+- Improved async UX in high-traffic flows with clearer loading, error, retry, and disabled states (Home, Dashboard, AI detector, report handoff).
+- Hardened backend endpoint protections by adding dedicated throttles for OTP verify, password reset, and AI predict flows.
+- Reduced noisy auth/runtime logs and updated environment documentation to reflect new limiter controls.
+
 ## Day 54
 
 - Refactored navbar architecture into focused layout components (`NavGroup`, `NavDropdown`, `AccountMenu`, `AdminMenu`, `MobileMenu`) to reduce merge risk in `Navbar.jsx`
