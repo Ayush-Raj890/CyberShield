@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { performLogout } from "../../utils/logout";
+import NavGroup from "./navbar/NavGroup";
+import NavDropdown from "./navbar/NavDropdown";
+import AccountMenu from "./navbar/AccountMenu";
+import AdminMenu from "./navbar/AdminMenu";
+import MobileMenu from "./navbar/MobileMenu";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -42,138 +47,98 @@ export default function Navbar() {
     navigate(path);
   };
 
-  const GuestNav = () => (
-    <div className="w-full sm:w-auto flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 text-sm">
-      <details className="relative" open={activeDropdown === "guest-core"}>
-        <summary
-          className="cursor-pointer list-none text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors"
-          onClick={(e) => {
-            e.preventDefault();
-            toggleDropdown("guest-core");
-          }}
-        >
-          Core
-        </summary>
-        <div className="absolute right-0 mt-2 w-48 rounded-xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 shadow-sm z-10">
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/ai")}>AI Detector</button>
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/create-report")}>Report Incident</button>
-        </div>
-      </details>
+  const GuestNav = ({ mobile = false }) => (
+    <NavGroup className={mobile ? "pb-1" : ""}>
+      <NavDropdown
+        label="Core"
+        dropdownKey="guest-core"
+        activeDropdown={activeDropdown}
+        onToggle={toggleDropdown}
+        onNavigate={closeDropdownAndGo}
+        widthClass="w-48"
+        items={[
+          { label: "AI Detector", path: "/ai" },
+          { label: "Report Incident", path: "/create-report" }
+        ]}
+      />
 
       <button onClick={() => navigate("/articles")} className="text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors">Learn</button>
 
-      <details className="relative" open={activeDropdown === "guest-community"}>
-        <summary
-          className="cursor-pointer list-none text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors"
-          onClick={(e) => {
-            e.preventDefault();
-            toggleDropdown("guest-community");
-          }}
-        >
-          Community
-        </summary>
-        <div className="absolute right-0 mt-2 w-44 rounded-xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 shadow-sm z-10">
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/forum")}>Forum</button>
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/videos")}>Video Hub</button>
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/memes")}>Meme Hub</button>
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/games")}>Phishing Game</button>
-        </div>
-      </details>
+      <NavDropdown
+        label="Community"
+        dropdownKey="guest-community"
+        activeDropdown={activeDropdown}
+        onToggle={toggleDropdown}
+        onNavigate={closeDropdownAndGo}
+        widthClass="w-44"
+        items={[
+          { label: "Forum", path: "/forum" },
+          { label: "Video Hub", path: "/videos" },
+          { label: "Meme Hub", path: "/memes" },
+          { label: "Phishing Game", path: "/games" }
+        ]}
+      />
 
       <button onClick={() => navigate("/login")} className="text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors">Login</button>
       <button onClick={() => navigate("/register")} className="btn btn-primary text-sm">Get Started</button>
-    </div>
+    </NavGroup>
   );
 
-  const UserNav = () => (
-    <div className="w-full sm:w-auto flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 text-sm">
-      <details className="relative" open={activeDropdown === "core"}>
-        <summary
-          className="cursor-pointer list-none text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors"
-          onClick={(e) => {
-            e.preventDefault();
-            toggleDropdown("core");
-          }}
-        >
-          Core
-        </summary>
-        <div className="absolute right-0 mt-2 w-48 rounded-xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 shadow-sm z-10">
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/ai")}>AI Detector</button>
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/reports")}>Reports</button>
-        </div>
-      </details>
+  const UserNav = ({ mobile = false }) => (
+    <NavGroup className={mobile ? "pb-1" : ""}>
+      <NavDropdown
+        label="Core"
+        dropdownKey="core"
+        activeDropdown={activeDropdown}
+        onToggle={toggleDropdown}
+        onNavigate={closeDropdownAndGo}
+        widthClass="w-48"
+        items={[
+          { label: "AI Detector", path: "/ai" },
+          { label: "Reports", path: "/reports" }
+        ]}
+      />
 
-      <details className="relative" open={activeDropdown === "learn"}>
-        <summary
-          className="cursor-pointer list-none text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors"
-          onClick={(e) => {
-            e.preventDefault();
-            toggleDropdown("learn");
-          }}
-        >
-          Learn
-        </summary>
-        <div className="absolute right-0 mt-2 w-44 rounded-xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 shadow-sm z-10">
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/articles")}>Knowledge Hub</button>
-        </div>
-      </details>
+      <NavDropdown
+        label="Learn"
+        dropdownKey="learn"
+        activeDropdown={activeDropdown}
+        onToggle={toggleDropdown}
+        onNavigate={closeDropdownAndGo}
+        widthClass="w-44"
+        items={[{ label: "Knowledge Hub", path: "/articles" }]}
+      />
 
-      <details className="relative" open={activeDropdown === "community"}>
-        <summary
-          className="cursor-pointer list-none text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors"
-          onClick={(e) => {
-            e.preventDefault();
-            toggleDropdown("community");
-          }}
-        >
-          Community
-        </summary>
-        <div className="absolute right-0 mt-2 w-44 rounded-xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 shadow-sm z-10">
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/forum")}>Forum</button>
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/videos")}>Video Hub</button>
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/memes")}>Meme Hub</button>
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/games")}>Phishing Game</button>
-        </div>
-      </details>
+      <NavDropdown
+        label="Community"
+        dropdownKey="community"
+        activeDropdown={activeDropdown}
+        onToggle={toggleDropdown}
+        onNavigate={closeDropdownAndGo}
+        widthClass="w-44"
+        items={[
+          { label: "Forum", path: "/forum" },
+          { label: "Video Hub", path: "/videos" },
+          { label: "Meme Hub", path: "/memes" },
+          { label: "Phishing Game", path: "/games" }
+        ]}
+      />
 
-      <details className="relative" open={activeDropdown === "account"}>
-        <summary
-          className="cursor-pointer list-none text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors"
-          onClick={(e) => {
-            e.preventDefault();
-            toggleDropdown("account");
-          }}
-        >
-          Account
-        </summary>
-        <div className="absolute right-0 mt-2 w-40 rounded-xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 shadow-sm z-10">
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/dashboard")}>Dashboard</button>
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/profile")}>Profile</button>
-          <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/settings")}>Settings</button>
-          <button className="block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30" onClick={() => performLogout(navigate)}>Logout</button>
-        </div>
-      </details>
+      <AccountMenu
+        activeDropdown={activeDropdown}
+        onToggle={toggleDropdown}
+        onNavigate={closeDropdownAndGo}
+        onLogout={() => performLogout(navigate)}
+      />
 
       {isAdmin && (
-        <details className="relative" open={activeDropdown === "admin"}>
-          <summary
-            className="cursor-pointer list-none text-neutral-700 dark:text-neutral-200 hover:text-primary-600 dark:hover:text-primary-100 transition-colors"
-            onClick={(e) => {
-              e.preventDefault();
-              toggleDropdown("admin");
-            }}
-          >
-            Admin
-          </summary>
-          <div className="absolute right-0 mt-2 w-44 rounded-xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 shadow-sm z-10">
-            <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/admin")}>Admin Dashboard</button>
-            <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/admin/users")}>Manage Users</button>
-            <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/admin/reports")}>Moderation</button>
-            <button className="block w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-700" onClick={() => closeDropdownAndGo("/admin/videos")}>Video Moderation</button>
-          </div>
-        </details>
+        <AdminMenu
+          activeDropdown={activeDropdown}
+          onToggle={toggleDropdown}
+          onNavigate={closeDropdownAndGo}
+        />
       )}
-    </div>
+    </NavGroup>
   );
 
   return (
@@ -183,7 +148,11 @@ export default function Navbar() {
           CyberShield
         </button>
 
-        {!user ? <GuestNav /> : <UserNav />}
+        <div className="hidden sm:block">{!user ? <GuestNav /> : <UserNav />}</div>
+
+        <MobileMenu>
+          {!user ? <GuestNav mobile /> : <UserNav mobile />}
+        </MobileMenu>
       </div>
     </header>
   );
