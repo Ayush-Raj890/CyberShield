@@ -1,253 +1,270 @@
 # CyberShield
 
-CyberShield is a full-stack cybersecurity platform for reporting threats, triaging suspicious messages with AI, moderating community content, and managing users through role-based admin tools.
+CyberShield is an AI-powered cyber awareness and incident reporting platform that helps users detect scams, report threats, and learn safe digital practices.
 
 ## Live Deployments
 
-- Frontend: [https://cyber-shield-eight.vercel.app](https://cyber-shield-eight.vercel.app)
-- Frontend preview: [https://cyber-shield-nzeoni1oj-mystifys-projects.vercel.app](https://cyber-shield-nzeoni1oj-mystifys-projects.vercel.app)
-- Backend API: [https://cybershield-backend-inx9.onrender.com](https://cybershield-backend-inx9.onrender.com)
-- AI service: [https://cybershield-ai-sm3o.onrender.com](https://cybershield-ai-sm3o.onrender.com)
+| Service | Link |
+| --- | --- |
+| Frontend | [cyber-shield-eight.vercel.app](https://cyber-shield-eight.vercel.app) |
+| Preview Frontend | [cyber-shield-nzeoni1oj-mystifys-projects.vercel.app](https://cyber-shield-nzeoni1oj-mystifys-projects.vercel.app) |
+| Backend API | [cybershield-backend-inx9.onrender.com](https://cybershield-backend-inx9.onrender.com) |
+| AI Service | [cybershield-ai-sm3o.onrender.com](https://cybershield-ai-sm3o.onrender.com) |
 
-## What It Does
+## Overview
 
-- Public threat reporting and safe public feeds
-- OTP-based authentication and password recovery
-- Role-based user governance: USER, ADMIN, SUPER_ADMIN
-- AI-based scam detection with backend proxying to a FastAPI service
-- Community forum with authenticated posting and replies
-- Knowledge Hub with moderation workflow
-- Video Hub and Meme Hub with admin moderation
-- XP, streak, badges, and coin economy systems
-- Error observability with client-side error capture and admin logs
+CyberShield helps users:
 
-## Current Status
+- Detect suspicious messages using AI-assisted triage
+- Report cyber incidents with evidence
+- Learn cybersecurity best practices
+- Participate in moderated community content
+- Enable admins to govern users, content, and platform safety
 
-The project is in release-ready state:
+It combines React, Node.js, MongoDB, and FastAPI in a multi-service architecture.
 
-- Core product modules are implemented
-- Security hardening is in place
-- Forum pagination is implemented
-- Role-specific user data endpoints are implemented
-- Protected route token validation is implemented
-- Production builds succeed
-- Live backend, AI service, and frontend deployments are available
+## Core Features
 
-## Tech Stack
+### AI Scam Detection
 
-- Frontend: React, Vite, Tailwind CSS
-- Backend: Node.js, Express, MongoDB, Mongoose
-- AI service: FastAPI
-- Auth: JWT + OTP email verification
-- File upload: Multer
-- UI feedback: react-hot-toast
+- Analyze suspicious text and messages
+- Risk labels: `SAFE`, `SUSPICIOUS`, `MALICIOUS`
+- Confidence scoring and explanation
+- Direct handoff to report flow
+
+### Incident Reporting
+
+- Structured threat reporting
+- File evidence upload for images and PDFs
+- Severity levels
+- Status lifecycle tracking
+
+### Authentication and Security
+
+- JWT auth
+- OTP email verification
+- Password reset flow
+- Role-based access for `USER`, `ADMIN`, and `SUPER_ADMIN`
+- Abuse throttling and rate limits
+
+### Knowledge Hub
+
+- Moderated educational articles
+- Public reading and authenticated submissions
+- Admin approval pipeline
+
+### Community Modules
+
+- Forum discussions
+- Video Hub
+- Meme Hub with moderation controls
+
+### Admin Governance
+
+- User management
+- Suspend, unsuspend, promote, and demote actions
+- Report moderation
+- Content moderation
+- Error observability dashboard
+
+## Screenshots
+
+Store public screenshots in [assets](assets).
+
+- [Home page](assets/homepage.png)
+- [AI detector](assets/ai-detector.png)
+- [User dashboard](assets/user-dashboard.png)
+- [Admin panel](assets/admin-dashboard.png)
+- [Reports](assets/report-page.png)
 
 ## Architecture
 
-CyberShield uses a split-service architecture:
+```text
+Browser (React + Vite)
+      ↓
+Express Backend API
+      ↓
+MongoDB Atlas
 
-- `client` handles UX and route-level access control.
-- `server` handles auth, validation, moderation, reporting, and observability.
-- `ai-service` isolates prediction logic behind a backend proxy.
+Express Backend
+      ↓
+FastAPI AI Service
+```
 
-Request flow:
+### Service Responsibilities
 
-1. Client sends requests to backend (`/api/*`).
-2. Backend enforces auth, sanitization, validation, and rate limits.
-3. AI requests are proxied from backend to FastAPI (`/api/predict`).
-4. Backend returns normalized response payloads to the client.
+| Service | Responsibility |
+| --- | --- |
+| client | UI, routing, UX |
+| server | auth, validation, APIs, moderation |
+| ai-service | threat classification |
 
-## Repository Layout
+## Tech Stack
 
-- `client/` - React frontend
-- `server/` - Express backend
-- `ai-service/` - FastAPI AI service
-- `docs/` - project docs, logs, TODOs, onboarding, and variables
-- `scripts/` - startup helpers
+### Frontend
 
-## Local Development
+- React
+- Vite
+- Tailwind CSS
+- Axios
+- React Router
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- Multer
+
+### AI Layer
+
+- FastAPI
+- Python
+
+### Security
+
+- JWT
+- Helmet
+- CORS allowlist
+- Sanitization middleware
+- Rate limiting
+
+## Security Highlights
+
+- OTP verification during signup
+- Password reset token flow
+- Protected admin routes
+- Input validation and sanitization
+- Upload restrictions
+- Rate limiting on sensitive endpoints
+- Role-based authorization
+
+More details: [docs/public/SECURITY.md](docs/public/SECURITY.md)
+
+## Repository Structure
+
+```text
+CyberShield/
+├── client/        # React frontend
+├── server/        # Express backend
+├── ai-service/    # FastAPI ML service
+├── docs/public/   # Public-facing documentation
+├── docs/internal/ # Internal docs and QA notes
+├── scripts/       # Startup scripts
+└── assets/        # README images
+```
+
+## Quick Start
 
 ### Prerequisites
 
 - Node.js 18+
 - Python 3.10+
-- MongoDB connection string
+- MongoDB URI
 
-### Start everything
+### Install
 
-From the repository root:
+```bash
+npm install
+```
 
-```powershell
+### Run Full Stack
+
+```bash
 npm run dev
 ```
 
-That launches the backend, frontend, and AI service through the root startup script.
+### Or Run Individually
 
-### Run individual services
+#### Backend Setup
 
-Backend:
-
-```powershell
+```bash
 cd server
 npm install
 npm run dev
 ```
 
-Frontend:
+#### Frontend Setup
 
-```powershell
+```bash
 cd client
 npm install
 npm run dev
 ```
 
-AI service:
+#### AI Service Setup
 
-```powershell
+```bash
 cd ai-service
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload
 ```
 
 ## Environment Variables
 
 ### Server
 
-Use `server/.env` or deploy-time environment variables.
-
 ```env
 PORT=5000
 MONGO_URI=your_mongodb_uri
-JWT_SECRET=strong_secret
-JWT_EXPIRES_IN=24h
-AI_SERVICE_URL=https://your-ai-service-url
-ALLOWED_ORIGINS=https://your-frontend-url
-DEBUG_REQUEST_LOGS=false
-AUTH_VERIFY_OTP_WINDOW_MS=900000
-AUTH_VERIFY_OTP_MAX=10
-AUTH_RESET_PASSWORD_WINDOW_MS=3600000
-AUTH_RESET_PASSWORD_MAX=5
-AI_PREDICT_WINDOW_MS=900000
-AI_PREDICT_MAX=50
-ENCRYPTION_KEY=32+_char_strong_key
+JWT_SECRET=your_secret
+AI_SERVICE_URL=http://localhost:8000
+ALLOWED_ORIGINS=http://localhost:3000
 EMAIL_USER=your_email
-EMAIL_PASS=app_password
-EMAIL_MOCK=true
+EMAIL_PASS=your_app_password
+DEBUG_REQUEST_LOGS=false
 ```
 
 ### Client
 
 ```env
-VITE_API_URL=https://your-backend-url
+VITE_API_URL=http://localhost:5000/api
 ```
 
-### AI Service
+## Why This Project Matters
 
-```env
-PORT=8000
-```
+CyberShield demonstrates:
 
-## Production Notes
-
-- Backend uses `AI_SERVICE_URL` to call the AI prediction endpoint.
-- Frontend uses `VITE_API_URL` to call the deployed backend.
-- The backend expects production origins to be listed in `ALLOWED_ORIGINS`.
-- System runtime endpoints are `GET /api/system/health`, `GET /api/system/version`, and `GET /api/system/uptime`.
-- Keep `DEBUG_REQUEST_LOGS=true` for local debugging and `false` in production.
-
-## Key API Routes
-
-### Auth
-
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `POST /api/auth/verify-otp`
-- `POST /api/auth/resend-otp`
-- `POST /api/auth/forgot-password`
-- `POST /api/auth/reset-password`
-- `GET /api/auth/validate`
-
-### Reports
-
-- `GET /api/reports`
-- `GET /api/reports/me`
-- `POST /api/reports`
-- `PUT /api/reports/:id`
-
-### AI
-
-- `POST /api/ai/predict`
-
-### Forum
-
-- `GET /api/forum`
-- `GET /api/forum/user`
-- `POST /api/forum`
-- `POST /api/forum/:id/reply`
-
-### Articles
-
-- `GET /api/articles`
-- `GET /api/articles/user`
-- `GET /api/articles/admin/pending`
-- `POST /api/articles`
-- `PUT /api/articles/:id/status`
-
-### Admin / Observability
-
-- `GET /api/admin/stats`
-- `GET /api/admin/users`
-- `GET /api/admin/reports`
-- `GET /api/system/client-errors`
-- `GET /api/system/client-errors/export`
-
-## Build And Verification
-
-Frontend production build:
-
-```bash
-npm --prefix client run build
-```
-
-Backend smoke check:
-
-```bash
-npm --prefix server run dev
-```
+- Full-stack architecture design
+- Security-focused engineering
+- Real deployment workflow
+- Multi-service integration
+- Role-based systems
+- Product thinking
+- Moderation tooling
+- Scalable documentation discipline
 
 ## Documentation
 
-- [docs/README.md](docs/README.md)
-- [docs/qa-checklist.md](docs/qa-checklist.md)
-- [docs/qa-report.md](docs/qa-report.md)
-- [docs/SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md)
-- [docs/SECURITY.md](docs/SECURITY.md)
-- [docs/ROADMAP.md](docs/ROADMAP.md)
-- [docs/interview-pack.md](docs/interview-pack.md)
-- [docs/demo-showcase.md](docs/demo-showcase.md)
-- [docs/onboarding.md](docs/onboarding.md)
-- [docs/context.md](docs/context.md)
-- [docs/todo.md](docs/todo.md)
-- [docs/variables.md](docs/variables.md)
-- [docs/logs.md](docs/logs.md)
-- [docs/bugs.md](docs/bugs.md)
-
-## Screenshots
-
-Add screenshots under `docs/screenshots/` and link them here for recruiter/demo review:
-
-- Landing + AI quick-analyze
-- User dashboard
-- Admin dashboard
-- Report submission flow
-- Moderation panels
+| File | Purpose |
+| --- | --- |
+| [docs/public/DEMO.md](docs/public/DEMO.md) | Demo walkthrough |
+| [docs/public/SYSTEM_DESIGN.md](docs/public/SYSTEM_DESIGN.md) | Architecture |
+| [docs/public/SECURITY.md](docs/public/SECURITY.md) | Security model |
+| [docs/internal/README.md](docs/internal/README.md) | Internal docs index |
 
 ## Resume Summary
 
-Built and deployed a full-stack cybersecurity platform with AI-based phishing detection, role-based access control, and real-time reporting features.
+Built and deployed a multi-service cybersecurity platform using React, Express, MongoDB, and FastAPI with AI scam detection, role-based governance, reporting workflows, and production deployment.
 
 ## Interview Pitch
 
-CyberShield is an AI-powered cyber awareness and incident reporting platform that helps users detect scams, report threats, and learn safe digital practices through an interactive ecosystem.
+CyberShield is an AI-powered cyber awareness platform that helps users identify scams, report incidents, and learn safer digital behavior through an integrated ecosystem.
+
+## Roadmap
+
+- Analytics trends
+- Better observability
+- Search and filtering
+- Stronger moderation tooling
+- ML model upgrades
+- Dark mode
+
+## License
+
+MIT
+
+## Author
+
+Built by @Mystify7777.

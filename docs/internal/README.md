@@ -8,10 +8,10 @@ Quick links:
 
 Live deployments:
 
-- Frontend (primary): https://cyber-shield-eight.vercel.app
-- Frontend (alternate): https://cyber-shield-nzeoni1oj-mystifys-projects.vercel.app
-- Backend API: https://cybershield-backend-inx9.onrender.com
-- AI service: https://cybershield-ai-sm3o.onrender.com
+- Frontend (primary): [cyber-shield-eight.vercel.app](https://cyber-shield-eight.vercel.app)
+- Frontend (alternate): [cyber-shield-nzeoni1oj-mystifys-projects.vercel.app](https://cyber-shield-nzeoni1oj-mystifys-projects.vercel.app)
+- Backend API: [cybershield-backend-inx9.onrender.com](https://cybershield-backend-inx9.onrender.com)
+- AI service: [cybershield-ai-sm3o.onrender.com](https://cybershield-ai-sm3o.onrender.com)
 
 Startup shortcuts:
 
