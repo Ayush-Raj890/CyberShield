@@ -176,6 +176,9 @@ export default function Home() {
           <p className="mt-2 text-slate-700 max-w-3xl">
             Run an instant website risk assessment with TLS checks, explainable scoring, and a scan report you can act on.
           </p>
+          <p className="mt-2 text-sm text-slate-600">
+            Instantly assess trust signals, HTTPS posture, and website security hygiene.
+          </p>
           <div className="mt-5">
             <button className="btn btn-primary" onClick={() => navigate("/trustscan")}>
               Open TrustScan

@@ -2,7 +2,7 @@ import { sendError, sendSuccess } from "../utils/response.js";
 import { validationResult } from "express-validator";
 import TrustScanJob from "../models/TrustScanJob.js";
 import TrustScanReport from "../models/TrustScanReport.js";
-import { runSslTlsCheck } from "../services/trustScanSignals.js";
+import { checkSecurityHeaders, runSslTlsCheck } from "../services/trustScanSignals.js";
 
 const MOCK_SCAN_DURATION_MS = 4500;
 
@@ -10,6 +10,11 @@ const getNormalizedDomain = (rawUrl) => {
   try {
     const hasProtocol = /^https?:\/\//i.test(rawUrl);
     const parsed = new URL(hasProtocol ? rawUrl : `https://${rawUrl}`);
+
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      return null;
+    }
+
     return {
       url: parsed.toString(),
       normalizedDomain: parsed.hostname.toLowerCase()
@@ -43,10 +48,12 @@ const createPlaceholderFactors = () => [
   }
 ];
 
-const getMockVerdict = (score) => {
-  if (score >= 80) return "LOW_RISK";
-  if (score >= 50) return "MEDIUM_RISK";
-  return "HIGH_RISK";
+const getVerdictBand = (score) => {
+  if (score <= 30) return "DANGEROUS";
+  if (score <= 55) return "RISKY";
+  if (score <= 75) return "CAUTION";
+  if (score <= 89) return "SAFE";
+  return "STRONG";
 };
 
 const buildSslFactor = (ssl) => {
@@ -57,7 +64,7 @@ const buildSslFactor = (ssl) => {
 
     return {
       key: "ssl",
-      label: "SSL Certificate",
+      label: "Transport Security",
       impact: 15,
       status: "pass",
       detail: `Valid certificate from ${ssl.issuer}. Expires at ${ssl.expiresAt || "unknown"} (${expiryText}).`
@@ -66,17 +73,47 @@ const buildSslFactor = (ssl) => {
 
   return {
     key: "ssl",
-    label: "SSL Certificate",
+      label: "Transport Security",
     impact: -35,
     status: "fail",
     detail: `Certificate check failed: ${ssl.error || "invalid or expired certificate"}. Issuer: ${ssl.issuer}.`
   };
 };
 
-const buildMockReportPayload = async (job) => {
+  const buildHeadersFactor = (headers) => {
+    const isStrong = headers.grade === "Strong";
+    const isGood = headers.grade === "Good";
+
+    return {
+      key: "headers",
+      label: "Browser Protection Controls",
+      impact: headers.scoreDelta,
+      status: isStrong || isGood ? "pass" : headers.missing.length <= 3 ? "warn" : "fail",
+      detail: `${headers.grade} browser protection posture. Present: ${headers.present.join(", ") || "none"}. Missing: ${headers.missing.join(", ") || "none"}.`,
+      present: headers.present,
+      missing: headers.missing,
+      grade: headers.grade
+    };
+  };
+
+  const buildSummary = ({ ssl, headers }) => {
+    const tlsClause = ssl.valid
+      ? `valid TLS from ${ssl.issuer}`
+      : `TLS validation failed (${ssl.error || "invalid or expired certificate"})`;
+
+    if (headers.missing.length === 0) {
+      return `Site has ${tlsClause} and strong browser protection controls.`;
+    }
+
+    return `Site has ${tlsClause} but is missing ${headers.missing.slice(0, 3).join(", ")} browser protections.`;
+  };
+
+  const buildMockReportPayload = async (job) => {
   const ssl = await runSslTlsCheck(job.url);
-  const factors = [buildSslFactor(ssl), ...createPlaceholderFactors()];
-  const score = Math.max(0, Math.min(100, 70 + factors.reduce((sum, item) => sum + item.impact, 0)));
+    const headers = await checkSecurityHeaders(job.url);
+    const factors = [buildSslFactor(ssl), buildHeadersFactor(headers), ...createPlaceholderFactors()];
+    const baseScore = 70;
+    const score = Math.max(0, Math.min(100, baseScore + factors.reduce((sum, item) => sum + item.impact, 0)));
 
   return {
     jobId: job._id,
@@ -84,11 +121,9 @@ const buildMockReportPayload = async (job) => {
     url: job.url,
     normalizedDomain: job.normalizedDomain,
     score,
-    verdict: getMockVerdict(score),
+      verdict: getVerdictBand(score),
     factors,
-    summary: ssl.valid
-      ? "Site uses a valid TLS certificate. Additional DNS, headers, and reputation factors will be layered next."
-      : "TLS certificate validation failed, which is a strong risk signal. Additional factors will be layered next."
+      summary: buildSummary({ ssl, headers })
   };
 };
 
