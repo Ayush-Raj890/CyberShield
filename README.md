@@ -26,6 +26,15 @@ CyberShield is now documentation-first around TrustScan V3:
 - Admin governance and system observability
 - TrustScan architecture and policy framework (V3)
 
+## TrustScan Proof
+
+- Real TLS certificate checks
+- Security header analysis
+- DNS and domain intelligence
+- Historical scan reports
+- 39 automated backend tests passing
+- Route, signal, and scoring coverage
+
 ## Architecture Snapshot
 
 ```text
