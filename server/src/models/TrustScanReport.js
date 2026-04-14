@@ -55,6 +55,20 @@ const trustScanReportSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
+    scanEvidence: {
+      type: [
+        {
+          key: { type: String, required: true },
+          label: { type: String, required: true },
+          message: { type: String, required: true },
+          reason: { type: String, default: "success" },
+          status: { type: String, required: true },
+          durationMs: { type: Number, default: 0 },
+          occurredAt: { type: String, required: true }
+        }
+      ],
+      default: []
+    },
     scanMetadata: {
       ssl: { reason: { type: String, default: "success" } },
       headers: { reason: { type: String, default: "success" } },

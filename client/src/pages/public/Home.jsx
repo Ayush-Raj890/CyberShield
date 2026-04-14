@@ -71,14 +71,14 @@ export default function Home() {
         <div className="relative container-page grid lg:grid-cols-2 gap-10 items-center">
           <div className="animate-fade-up">
             <p className="uppercase tracking-[0.24em] text-blue-700 text-xs mb-4 font-semibold">
-              AI-Powered Threat Reporting
+              Trust Intelligence First
             </p>
             <h1 className="text-4xl md:text-6xl font-black leading-tight text-slate-900 mb-5">
-              Detect Scams Early. Report Incidents Fast.
+              Analyze websites instantly with TrustScan.
             </h1>
             <p className="text-slate-700 md:text-lg leading-relaxed max-w-2xl">
-              CyberShield helps you verify suspicious messages, understand risk signals, and take immediate action
-              with structured incident reporting and practical awareness guidance.
+              Real TLS, DNS, security header, and reputation intelligence in seconds. CyberShield helps you verify
+              suspicious messages, understand risk signals, and take immediate action with structured reporting.
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2 text-xs sm:text-sm text-blue-800">
@@ -172,9 +172,9 @@ export default function Home() {
       <section className="container-page py-2 pb-12">
         <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50 p-6 md:p-8 shadow-sm">
           <p className="text-xs uppercase tracking-[0.18em] text-blue-700 font-semibold">Trust Intelligence</p>
-          <h2 className="mt-2 text-2xl md:text-3xl font-black text-slate-900">Analyze a website instantly with TrustScan</h2>
+          <h2 className="mt-2 text-2xl md:text-3xl font-black text-slate-900">Analyze websites instantly with TrustScan</h2>
           <p className="mt-2 text-slate-700 max-w-3xl">
-            Run an instant website risk assessment with TLS checks, explainable scoring, and a scan report you can act on.
+            Run an instant website risk assessment with TLS checks, explainable scoring, public reputation data, and a scan report you can act on.
           </p>
           <p className="mt-2 text-sm text-slate-600">
             Instantly assess trust signals, HTTPS posture, and website security hygiene.

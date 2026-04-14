@@ -38,15 +38,73 @@ const getNormalizedDomain = (rawUrl) => {
   }
 };
 
+const buildEvidenceEvent = ({ key, label, result, startedAtMs, endedAtMs }) => {
+  let message = `${label} completed`;
+
+  if (key === "ssl") {
+    message = result.reason === "success" ? "TLS handshake passed" : "TLS handshake failed";
+  } else if (key === "headers") {
+    message = result.reason === "success" ? "Headers analyzed" : "Headers analysis failed";
+  } else if (key === "dns") {
+    message = result.reason === "success" ? "DNS resolved" : "DNS lookup failed";
+  } else if (key === "reputation") {
+    if (result.reason === "service_unavailable") {
+      message = "Reputation source unavailable";
+    } else if (result.reason === "api_error") {
+      message = "Reputation lookup returned an API error";
+    } else if (result.reason === "network_error") {
+      message = "Reputation lookup encountered a network error";
+    } else if (result.listed) {
+      message = "Reputation flagged by public feeds";
+    } else {
+      message = "Reputation checked";
+    }
+  }
+
+  return {
+    key,
+    label,
+    message,
+    reason: result.reason || "success",
+    status: result.grade || result.status || "success",
+    durationMs: endedAtMs - startedAtMs,
+    occurredAt: new Date(endedAtMs).toISOString()
+  };
+};
+
+const runTimedSignal = async (key, label, signalRunner, scanStartTimeMs) => {
+  const startedAtMs = Date.now();
+  const result = await signalRunner();
+  const endedAtMs = Date.now();
+
+  return {
+    result,
+    evidence: buildEvidenceEvent({
+      key,
+      label,
+      result,
+      startedAtMs: scanStartTimeMs + (startedAtMs - scanStartTimeMs),
+      endedAtMs: scanStartTimeMs + (endedAtMs - scanStartTimeMs)
+    })
+  };
+};
+
 const buildMockReportPayload = async (job) => {
   const scanStartTime = Date.now();
 
-  const [ssl, headers, domain, reputation] = await Promise.all([
-    runSslTlsCheck(job.url),
-    checkSecurityHeaders(job.url),
-    checkDomainSignals(job.url),
-    checkReputationSignals(job.url)
+  const [sslResult, headersResult, domainResult, reputationResult] = await Promise.all([
+    runTimedSignal("ssl", "TLS handshake", () => runSslTlsCheck(job.url), scanStartTime),
+    runTimedSignal("headers", "Headers analyzed", () => checkSecurityHeaders(job.url), scanStartTime),
+    runTimedSignal("dns", "DNS resolved", () => checkDomainSignals(job.url), scanStartTime),
+    runTimedSignal("reputation", "Reputation source", () => checkReputationSignals(job.url), scanStartTime)
   ]);
+
+  const ssl = sslResult.result;
+  const headers = headersResult.result;
+  const domain = domainResult.result;
+  const reputation = reputationResult.result;
+  const scanEvidence = [sslResult.evidence, headersResult.evidence, domainResult.evidence, reputationResult.evidence]
+    .sort((left, right) => new Date(left.occurredAt).getTime() - new Date(right.occurredAt).getTime());
 
   const scanEndTime = Date.now();
   const scanDurationMs = scanEndTime - scanStartTime;
@@ -71,6 +129,7 @@ const buildMockReportPayload = async (job) => {
     factors,
     summary: buildTrustScanSummary({ ssl, headers, domain, reputation }),
     scanDurationMs,
+    scanEvidence,
     scanMetadata: {
       ssl: { reason: ssl?.reason || "success" },
       headers: { reason: headers?.reason || "success" },
