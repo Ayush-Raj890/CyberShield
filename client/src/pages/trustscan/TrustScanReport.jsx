@@ -6,6 +6,7 @@ import Button from "../../components/ui/Button";
 import ConfidenceBadge from "../../components/trustscan/ConfidenceBadge";
 import DomainCard from "../../components/trustscan/DomainCard";
 import HeadersCard from "../../components/trustscan/HeadersCard";
+import ReputationCard from "../../components/trustscan/ReputationCard";
 import ReportActions from "../../components/trustscan/ReportActions";
 import ScoreRing from "../../components/trustscan/ScoreRing";
 import API from "../../services/api";
@@ -87,7 +88,7 @@ export default function TrustScanReport() {
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-4 lg:grid-cols-3">
+              <div className="mt-6 grid gap-4 lg:grid-cols-4">
                 <div className="rounded-2xl border border-slate-200 bg-white p-5">
                   <p className="text-xs uppercase tracking-[0.18em] text-blue-700 font-semibold">Transport Security</p>
                   <h2 className="mt-2 text-lg font-bold text-slate-900">SSL / TLS</h2>
@@ -99,6 +100,8 @@ export default function TrustScanReport() {
                 <HeadersCard factor={headersFactor} />
 
                 <DomainCard factor={dnsFactor} />
+
+                <ReputationCard factor={reputationFactor} />
               </div>
 
               <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
@@ -112,20 +115,6 @@ export default function TrustScanReport() {
                       </div>
                       <p className="mt-1 text-sm text-slate-600">Status: {factor.status}</p>
                       <p className="mt-1 text-sm text-slate-600">{factor.detail}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
-                <h2 className="text-lg font-bold text-slate-900">Additional Signals</h2>
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  {[
-                    { label: "Reputation", factor: reputationFactor }
-                  ].map(({ label, factor }) => (
-                    <div key={label} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="font-semibold text-slate-900">{label}</p>
-                      <p className="mt-1 text-sm text-slate-600">{factor?.detail || "Coming soon."}</p>
                     </div>
                   ))}
                 </div>

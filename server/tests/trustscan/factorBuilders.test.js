@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildDomainFactor,
   buildHeadersFactor,
+  buildReputationFactor,
   buildSslFactor
 } from "../../src/services/trustscan/factorBuilders.js";
 
@@ -74,5 +75,33 @@ describe("factor builders", () => {
     expect(result.status).toBe("warn");
     expect(result.impact).toBe(-22);
     expect(result.detail).toContain("19 days old");
+  });
+
+  it("builds failed reputation factor when target is flagged", () => {
+    const result = buildReputationFactor({
+      listed: true,
+      source: "Google Safe Browsing",
+      scoreDelta: -60,
+      grade: "Flagged",
+      checkedUrl: "https://example.com"
+    });
+
+    expect(result.status).toBe("fail");
+    expect(result.impact).toBe(-60);
+    expect(result.detail).toContain("flagged");
+  });
+
+  it("builds pass reputation factor when source is clean", () => {
+    const result = buildReputationFactor({
+      listed: false,
+      source: "Google Safe Browsing",
+      scoreDelta: 0,
+      grade: "Clean",
+      checkedUrl: "https://example.com"
+    });
+
+    expect(result.status).toBe("pass");
+    expect(result.impact).toBe(0);
+    expect(result.detail).toContain("no public threat feed matches");
   });
 });

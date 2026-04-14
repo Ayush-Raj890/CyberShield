@@ -31,8 +31,9 @@ CyberShield is now documentation-first around TrustScan V3:
 - Real TLS certificate checks
 - Security header analysis
 - DNS and domain intelligence
+- Reputation signal checks (Google Safe Browsing)
 - Historical scan reports
-- 39 automated backend tests passing
+- 45 automated backend tests passing
 - Route, signal, and scoring coverage
 
 ## Architecture Snapshot

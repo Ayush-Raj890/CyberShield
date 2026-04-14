@@ -2,12 +2,18 @@ import { sendError, sendSuccess } from "../utils/response.js";
 import { validationResult } from "express-validator";
 import TrustScanJob from "../models/TrustScanJob.js";
 import TrustScanReport from "../models/TrustScanReport.js";
-import { checkDomainSignals, checkSecurityHeaders, runSslTlsCheck } from "../services/trustScanSignals.js";
+import {
+  checkDomainSignals,
+  checkReputationSignals,
+  checkSecurityHeaders,
+  runSslTlsCheck
+} from "../services/trustScanSignals.js";
 import { MOCK_SCAN_DURATION_MS } from "../services/trustscan/constants.js";
 import { getTrustScanConfidence } from "../services/trustscan/confidenceService.js";
 import {
   buildDomainFactor,
   buildHeadersFactor,
+  buildReputationFactor,
   buildSslFactor,
   createPlaceholderFactors
 } from "../services/trustscan/factorBuilders.js";
@@ -33,16 +39,18 @@ const getNormalizedDomain = (rawUrl) => {
 };
 
 const buildMockReportPayload = async (job) => {
-  const [ssl, headers, domain] = await Promise.all([
+  const [ssl, headers, domain, reputation] = await Promise.all([
     runSslTlsCheck(job.url),
     checkSecurityHeaders(job.url),
-    checkDomainSignals(job.url)
+    checkDomainSignals(job.url),
+    checkReputationSignals(job.url)
   ]);
 
   const factors = [
     buildSslFactor(ssl),
     buildHeadersFactor(headers),
     buildDomainFactor(domain),
+    buildReputationFactor(reputation),
     ...createPlaceholderFactors()
   ];
   const { score, verdict } = calculateScoreAndVerdict(factors);
@@ -56,7 +64,7 @@ const buildMockReportPayload = async (job) => {
     verdict,
     confidence: getTrustScanConfidence({ ssl, headers, domain }),
     factors,
-    summary: buildTrustScanSummary({ ssl, headers, domain })
+    summary: buildTrustScanSummary({ ssl, headers, domain, reputation })
   };
 };
 

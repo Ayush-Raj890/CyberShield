@@ -1,4 +1,5 @@
 export {
+  checkReputationSignals,
   checkDomainSignals,
   checkSecurityHeaders,
   runSslTlsCheck

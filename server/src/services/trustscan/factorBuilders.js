@@ -70,19 +70,47 @@ export const buildDomainFactor = (domain) => {
   };
 };
 
-export const createPlaceholderFactors = () => [
-  {
-    key: "headers",
-    label: "Security Headers",
-    impact: 0,
-    status: "pending",
-    detail: "Security headers signal is queued for implementation."
-  },
-  {
-    key: "reputation",
-    label: "Reputation",
-    impact: 0,
-    status: "pending",
-    detail: "Reputation signal is queued for implementation."
+export const buildReputationFactor = (reputation) => {
+  if (reputation.listed) {
+    return {
+      key: "reputation",
+      label: "Reputation Signals",
+      impact: reputation.scoreDelta,
+      status: "fail",
+      detail: `${reputation.source}: flagged in public threat feeds.`,
+      listed: true,
+      source: reputation.source,
+      grade: reputation.grade,
+      checkedUrl: reputation.checkedUrl
+    };
   }
-];
+
+  if (reputation.grade === "Clean") {
+    return {
+      key: "reputation",
+      label: "Reputation Signals",
+      impact: reputation.scoreDelta,
+      status: "pass",
+      detail: `${reputation.source}: no public threat feed matches found.`,
+      listed: false,
+      source: reputation.source,
+      grade: reputation.grade,
+      checkedUrl: reputation.checkedUrl
+    };
+  }
+
+  return {
+    key: "reputation",
+    label: "Reputation Signals",
+    impact: 0,
+    status: "warn",
+    detail: reputation.detail || `${reputation.source}: reputation lookup unavailable.`,
+    listed: false,
+    source: reputation.source,
+    grade: reputation.grade || "Unknown",
+    checkedUrl: reputation.checkedUrl,
+    error: reputation.error || null
+  };
+};
+
+export const createPlaceholderFactors = () => [];

@@ -1,4 +1,4 @@
-export const buildTrustScanSummary = ({ ssl, headers, domain }) => {
+export const buildTrustScanSummary = ({ ssl, headers, domain, reputation }) => {
   const tlsClause = ssl.valid
     ? `valid TLS from ${ssl.issuer}`
     : `TLS validation failed (${ssl.error || "invalid or expired certificate"})`;
@@ -21,5 +21,13 @@ export const buildTrustScanSummary = ({ ssl, headers, domain }) => {
     domainClause = "partial domain intelligence coverage";
   }
 
-  return `Site has ${tlsClause}, ${headerClause}, and ${domainClause}.`;
+  let reputationClause = "public reputation feeds were unavailable";
+
+  if (reputation?.listed) {
+    reputationClause = `${reputation.source} flagged this target`;
+  } else if (reputation?.grade === "Clean") {
+    reputationClause = `${reputation.source} found no known public listings`;
+  }
+
+  return `Site has ${tlsClause}, ${headerClause}, ${domainClause}, and ${reputationClause}.`;
 };
