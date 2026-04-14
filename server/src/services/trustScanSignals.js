@@ -1,10 +1,18 @@
 import http from "http";
 import https from "https";
+import { promises as dns } from "dns";
+import { isIP } from "net";
 import tls from "tls";
 
 const HEADER_TIMEOUT_MS = 7000;
 
 const SSL_TIMEOUT_MS = 6000;
+
+const DNS_TIMEOUT_MS = 3500;
+
+const AGE_LOOKUP_TIMEOUT_MS = 5000;
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
 const normalizeTarget = (rawUrl) => {
   const hasProtocol = /^https?:\/\//i.test(rawUrl);
@@ -21,6 +29,20 @@ const normalizeTarget = (rawUrl) => {
     port: parsed.port ? Number(parsed.port) : parsed.protocol === "http:" ? 80 : 443
   };
 };
+
+const withTimeout = (promise, timeoutMs) => new Promise((resolve, reject) => {
+  const timer = setTimeout(() => {
+    reject(new Error("Operation timed out"));
+  }, timeoutMs);
+
+  promise.then((value) => {
+    clearTimeout(timer);
+    resolve(value);
+  }).catch((error) => {
+    clearTimeout(timer);
+    reject(error);
+  });
+});
 
 export const runSslTlsCheck = async (rawUrl) => {
   try {
@@ -249,6 +271,207 @@ export const checkSecurityHeaders = async (rawUrl) => {
       statusCode: null,
       checkedUrl: null,
       error: error.message || "Header check failed"
+    };
+  }
+};
+
+const getAgeLookupDomain = (hostname) => {
+  if (!hostname || isIP(hostname)) {
+    return null;
+  }
+
+  const parts = hostname.toLowerCase().split(".").filter(Boolean);
+
+  if (parts.length < 2) {
+    return null;
+  }
+
+  if (parts.length === 2) {
+    return parts.join(".");
+  }
+
+  const commonSecondLevelTlds = new Set([
+    "co.uk",
+    "org.uk",
+    "ac.uk",
+    "gov.uk",
+    "co.jp",
+    "com.au",
+    "net.au",
+    "org.au",
+    "co.nz",
+    "com.br",
+    "com.mx",
+    "com.tr",
+    "co.in",
+    "firm.in",
+    "net.in",
+    "org.in",
+    "gen.in"
+  ]);
+
+  const lastTwo = parts.slice(-2).join(".");
+  if (commonSecondLevelTlds.has(lastTwo) && parts.length >= 3) {
+    return parts.slice(-3).join(".");
+  }
+
+  if (parts[0] === "www" && parts.length >= 3) {
+    return parts.slice(-2).join(".");
+  }
+
+  return lastTwo;
+};
+
+const lookupDomainAgeDays = async (hostname) => {
+  const lookupDomain = getAgeLookupDomain(hostname);
+
+  if (!lookupDomain || typeof fetch !== "function") {
+    return null;
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), AGE_LOOKUP_TIMEOUT_MS);
+
+    try {
+      const response = await fetch(`https://rdap.org/domain/${encodeURIComponent(lookupDomain)}`, {
+        signal: controller.signal,
+        headers: {
+          accept: "application/rdap+json, application/json"
+        }
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const payload = await response.json();
+      const events = Array.isArray(payload?.events) ? payload.events : [];
+      const registrationEvent = events.find((event) => {
+        const action = String(event?.eventAction || "").toLowerCase();
+        return action === "registration" || action === "registered" || action === "creation";
+      });
+
+      const eventDate = registrationEvent?.eventDate ? new Date(registrationEvent.eventDate) : null;
+
+      if (!eventDate || Number.isNaN(eventDate.getTime())) {
+        return null;
+      }
+
+      return Math.max(0, Math.floor((Date.now() - eventDate.getTime()) / MS_PER_DAY));
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  } catch {
+    return null;
+  }
+};
+
+const safeDnsLookup = async (lookupPromise) => {
+  try {
+    return await withTimeout(lookupPromise, DNS_TIMEOUT_MS);
+  } catch {
+    return [];
+  }
+};
+
+const getDnsRecords = async (hostname) => {
+  const lookupDomain = getAgeLookupDomain(hostname) || hostname;
+
+  const [aRecords, aaaaRecords, cnameRecords, mxRecords, nsRecords, ageDays] = await Promise.all([
+    safeDnsLookup(dns.resolve4(hostname)),
+    safeDnsLookup(dns.resolve6(hostname)),
+    safeDnsLookup(dns.resolveCname(hostname)),
+    safeDnsLookup(dns.resolveMx(lookupDomain)),
+    safeDnsLookup(dns.resolveNs(lookupDomain)),
+    lookupDomainAgeDays(lookupDomain)
+  ]);
+
+  return {
+    resolves: [...aRecords, ...aaaaRecords, ...cnameRecords].length > 0,
+    mx: mxRecords.length > 0,
+    ageDays,
+    nameservers: nsRecords.length,
+    aRecords,
+    aaaaRecords,
+    cnameRecords,
+    mxRecords,
+    nsRecords
+  };
+};
+
+export const checkDomainSignals = async (rawUrl) => {
+  try {
+    const { hostname } = normalizeTarget(rawUrl);
+    const records = await getDnsRecords(hostname);
+
+    let scoreDelta = 0;
+
+    if (!records.resolves) {
+      scoreDelta -= 40;
+    }
+
+    if (!records.mx) {
+      scoreDelta -= 5;
+    }
+
+    if (records.nameservers <= 0) {
+      scoreDelta -= 10;
+    }
+
+    if (typeof records.ageDays === "number") {
+      if (records.ageDays < 30) {
+        scoreDelta -= 25;
+      } else if (records.ageDays < 180) {
+        scoreDelta -= 12;
+      } else if (records.ageDays >= 730) {
+        scoreDelta += 10;
+      } else {
+        scoreDelta += 5;
+      }
+    }
+
+    scoreDelta = Math.max(-55, Math.min(20, scoreDelta));
+
+    let grade = "Neutral";
+    if (!records.resolves) {
+      grade = "Broken";
+    } else if (scoreDelta <= -20) {
+      grade = "Suspicious";
+    } else if (scoreDelta <= -1) {
+      grade = "Weak";
+    } else if (scoreDelta >= 10) {
+      grade = "Strong";
+    } else {
+      grade = "Fair";
+    }
+
+    return {
+      resolves: records.resolves,
+      mx: records.mx,
+      ageDays: records.ageDays,
+      nameservers: records.nameservers,
+      scoreDelta,
+      grade,
+      checkedDomain: lookupDomain.toLowerCase(),
+      records: {
+        a: records.aRecords,
+        aaaa: records.aaaaRecords,
+        cname: records.cnameRecords,
+        mx: records.mxRecords,
+        ns: records.nsRecords
+      }
+    };
+  } catch (error) {
+    return {
+      resolves: false,
+      mx: false,
+      ageDays: null,
+      nameservers: 0,
+      scoreDelta: -55,
+      grade: "Broken",
+      checkedDomain: null,
+      error: error.message || "Domain signal check failed"
     };
   }
 };

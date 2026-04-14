@@ -2,7 +2,7 @@ import { sendError, sendSuccess } from "../utils/response.js";
 import { validationResult } from "express-validator";
 import TrustScanJob from "../models/TrustScanJob.js";
 import TrustScanReport from "../models/TrustScanReport.js";
-import { checkSecurityHeaders, runSslTlsCheck } from "../services/trustScanSignals.js";
+import { checkDomainSignals, checkSecurityHeaders, runSslTlsCheck } from "../services/trustScanSignals.js";
 
 const MOCK_SCAN_DURATION_MS = 4500;
 
@@ -25,13 +25,6 @@ const getNormalizedDomain = (rawUrl) => {
 };
 
 const createPlaceholderFactors = () => [
-  {
-    key: "dns",
-    label: "DNS Resolve",
-    impact: 0,
-    status: "pending",
-    detail: "DNS signal is queued for implementation."
-  },
   {
     key: "headers",
     label: "Security Headers",
@@ -73,47 +66,120 @@ const buildSslFactor = (ssl) => {
 
   return {
     key: "ssl",
-      label: "Transport Security",
+    label: "Transport Security",
     impact: -35,
     status: "fail",
     detail: `Certificate check failed: ${ssl.error || "invalid or expired certificate"}. Issuer: ${ssl.issuer}.`
   };
 };
 
-  const buildHeadersFactor = (headers) => {
-    const isStrong = headers.grade === "Strong";
-    const isGood = headers.grade === "Good";
+const buildHeadersFactor = (headers) => {
+  const isStrong = headers.grade === "Strong";
+  const isGood = headers.grade === "Good";
 
-    return {
-      key: "headers",
-      label: "Browser Protection Controls",
-      impact: headers.scoreDelta,
-      status: isStrong || isGood ? "pass" : headers.missing.length <= 3 ? "warn" : "fail",
-      detail: `${headers.grade} browser protection posture. Present: ${headers.present.join(", ") || "none"}. Missing: ${headers.missing.join(", ") || "none"}.`,
-      present: headers.present,
-      missing: headers.missing,
-      grade: headers.grade
-    };
+  return {
+    key: "headers",
+    label: "Browser Protection Controls",
+    impact: headers.scoreDelta,
+    status: isStrong || isGood ? "pass" : headers.missing.length <= 3 ? "warn" : "fail",
+    detail: `${headers.grade} browser protection posture. Present: ${headers.present.join(", ") || "none"}. Missing: ${headers.missing.join(", ") || "none"}.`,
+    present: headers.present,
+    missing: headers.missing,
+    grade: headers.grade
   };
+};
 
-  const buildSummary = ({ ssl, headers }) => {
-    const tlsClause = ssl.valid
-      ? `valid TLS from ${ssl.issuer}`
-      : `TLS validation failed (${ssl.error || "invalid or expired certificate"})`;
+const buildDomainFactor = (domain) => {
+  const ageText = typeof domain.ageDays === "number"
+    ? `${domain.ageDays} days old`
+    : "domain age unavailable";
+  const resolvesText = domain.resolves ? "DNS resolves cleanly" : "DNS resolution failed";
+  const mxText = domain.mx ? "MX records present" : "No MX records detected";
+  const nameserverText = domain.nameservers > 0
+    ? `${domain.nameservers} nameserver${domain.nameservers === 1 ? "" : "s"}`
+    : "No nameservers detected";
 
-    if (headers.missing.length === 0) {
-      return `Site has ${tlsClause} and strong browser protection controls.`;
-    }
+  let status = "pass";
+  if (!domain.resolves) {
+    status = "fail";
+  } else if (domain.grade === "Suspicious" || domain.scoreDelta < -15) {
+    status = "warn";
+  }
 
-    return `Site has ${tlsClause} but is missing ${headers.missing.slice(0, 3).join(", ")} browser protections.`;
+  return {
+    key: "dns",
+    label: "Domain Intelligence",
+    impact: domain.scoreDelta,
+    status,
+    detail: `${resolvesText}. ${mxText}. ${nameserverText}. ${ageText}.`,
+    resolves: domain.resolves,
+    mx: domain.mx,
+    ageDays: domain.ageDays,
+    nameservers: domain.nameservers,
+    grade: domain.grade,
+    checkedDomain: domain.checkedDomain
   };
+};
 
-  const buildMockReportPayload = async (job) => {
-  const ssl = await runSslTlsCheck(job.url);
-    const headers = await checkSecurityHeaders(job.url);
-    const factors = [buildSslFactor(ssl), buildHeadersFactor(headers), ...createPlaceholderFactors()];
-    const baseScore = 70;
-    const score = Math.max(0, Math.min(100, baseScore + factors.reduce((sum, item) => sum + item.impact, 0)));
+const buildSummary = ({ ssl, headers, domain }) => {
+  const tlsClause = ssl.valid
+    ? `valid TLS from ${ssl.issuer}`
+    : `TLS validation failed (${ssl.error || "invalid or expired certificate"})`;
+
+  const headerClause = headers.missing.length === 0
+    ? "strong browser protection controls"
+    : `${headers.missing.slice(0, 3).join(", ")} browser protections missing`;
+
+  let domainClause = "domain intelligence is inconclusive";
+
+  if (!domain.resolves) {
+    domainClause = "the domain fails DNS resolution";
+  } else if (typeof domain.ageDays === "number" && domain.ageDays < 30) {
+    domainClause = `a newly registered domain (${domain.ageDays} days old)`;
+  } else if (typeof domain.ageDays === "number" && domain.ageDays < 180) {
+    domainClause = `a relatively new domain (${domain.ageDays} days old)`;
+  } else if (typeof domain.ageDays === "number") {
+    domainClause = `an established domain (${domain.ageDays} days old)`;
+  } else {
+    domainClause = "partial domain intelligence coverage";
+  }
+
+  return `Site has ${tlsClause}, ${headerClause}, and ${domainClause}.`;
+};
+
+const buildConfidenceLabel = ({ ssl, headers, domain }) => {
+  const sslReady = Boolean(ssl) && (ssl.issuer !== "Unknown" || ssl.expiresAt !== null || typeof ssl.daysRemaining === "number");
+  const headersReady = Boolean(headers) && Boolean(headers.checkedUrl);
+  const domainReady = Boolean(domain) && Boolean(domain.checkedDomain);
+  const ageReady = typeof domain?.ageDays === "number";
+
+  if (sslReady && headersReady && domainReady && ageReady) {
+    return "High";
+  }
+
+  if ((sslReady && headersReady && domainReady) || ((sslReady || headersReady) && domainReady)) {
+    return "Medium";
+  }
+
+  return "Low";
+};
+
+const buildMockReportPayload = async (job) => {
+  const [ssl, headers, domain] = await Promise.all([
+    runSslTlsCheck(job.url),
+    checkSecurityHeaders(job.url),
+    checkDomainSignals(job.url)
+  ]);
+
+  const factors = [
+    buildSslFactor(ssl),
+    buildHeadersFactor(headers),
+    buildDomainFactor(domain),
+    ...createPlaceholderFactors()
+  ];
+
+  const baseScore = 70;
+  const score = Math.max(0, Math.min(100, baseScore + factors.reduce((sum, item) => sum + item.impact, 0)));
 
   return {
     jobId: job._id,
@@ -121,9 +187,10 @@ const buildSslFactor = (ssl) => {
     url: job.url,
     normalizedDomain: job.normalizedDomain,
     score,
-      verdict: getVerdictBand(score),
+    verdict: getVerdictBand(score),
+    confidence: buildConfidenceLabel({ ssl, headers, domain }),
     factors,
-      summary: buildSummary({ ssl, headers })
+    summary: buildSummary({ ssl, headers, domain })
   };
 };
 

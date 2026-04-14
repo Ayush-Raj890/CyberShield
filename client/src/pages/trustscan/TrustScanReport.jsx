@@ -1,17 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import PublicLayout from "../../components/layout/PublicLayout";
 import Button from "../../components/ui/Button";
+import ConfidenceBadge from "../../components/trustscan/ConfidenceBadge";
+import DomainCard from "../../components/trustscan/DomainCard";
+import HeadersCard from "../../components/trustscan/HeadersCard";
+import ReportActions from "../../components/trustscan/ReportActions";
+import ScoreRing from "../../components/trustscan/ScoreRing";
 import API from "../../services/api";
-
-const verdictClasses = {
-  DANGEROUS: "text-red-700",
-  RISKY: "text-red-600",
-  CAUTION: "text-amber-600",
-  SAFE: "text-emerald-600",
-  STRONG: "text-blue-700"
-};
 
 export default function TrustScanReport() {
   const { id } = useParams();
@@ -34,14 +31,6 @@ export default function TrustScanReport() {
 
     load();
   }, [id]);
-
-  const scoreStyle = useMemo(() => {
-    const score = report?.score ?? 0;
-    const safeScore = Math.max(0, Math.min(100, score));
-    return {
-      background: `conic-gradient(#2563eb ${safeScore * 3.6}deg, #e2e8f0 0deg)`
-    };
-  }, [report]);
 
   const sslFactor = report?.factors?.find((factor) => factor.key === "ssl") || null;
   const headersFactor = report?.factors?.find((factor) => factor.key === "headers") || null;
@@ -83,16 +72,7 @@ export default function TrustScanReport() {
           {report && (
             <>
               <div className="mt-6 grid gap-6 md:grid-cols-[220px_1fr]">
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center">
-                  <div className="mx-auto grid h-36 w-36 place-items-center rounded-full p-2" style={scoreStyle}>
-                    <div className="grid h-full w-full place-items-center rounded-full bg-white text-3xl font-black text-slate-900">
-                      {report.score}
-                    </div>
-                  </div>
-                  <p className={`mt-4 text-sm font-bold ${verdictClasses[report.verdict] || "text-slate-700"}`}>
-                    {report.verdict.replaceAll("_", " ")}
-                  </p>
-                </div>
+                <ScoreRing score={report.score} verdict={report.verdict} />
 
                 <div className="rounded-2xl border border-slate-200 bg-white p-5">
                   <p className="text-sm text-slate-600"><span className="font-semibold text-slate-800">Target:</span> {report.url}</p>
@@ -100,11 +80,14 @@ export default function TrustScanReport() {
                   <p className="mt-1 text-sm text-slate-600">
                     <span className="font-semibold text-slate-800">Scanned:</span> {new Date(report.createdAt).toLocaleString()}
                   </p>
+                  <div className="mt-4">
+                    <ConfidenceBadge confidence={report.confidence || "Medium"} />
+                  </div>
                   <p className="mt-4 text-sm text-slate-700 leading-6">{report.summary}</p>
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="mt-6 grid gap-4 lg:grid-cols-3">
                 <div className="rounded-2xl border border-slate-200 bg-white p-5">
                   <p className="text-xs uppercase tracking-[0.18em] text-blue-700 font-semibold">Transport Security</p>
                   <h2 className="mt-2 text-lg font-bold text-slate-900">SSL / TLS</h2>
@@ -113,38 +96,9 @@ export default function TrustScanReport() {
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-5">
-                  <p className="text-xs uppercase tracking-[0.18em] text-blue-700 font-semibold">Browser Protection Controls</p>
-                  <h2 className="mt-2 text-lg font-bold text-slate-900">Security Headers</h2>
+                <HeadersCard factor={headersFactor} />
 
-                  {headersFactor ? (
-                    <>
-                      <div className="mt-3 grid gap-2 text-sm">
-                        {[
-                          ["CSP", headersFactor.present?.includes("CSP")],
-                          ["HSTS", headersFactor.present?.includes("HSTS")],
-                          ["X-Frame-Options", headersFactor.present?.includes("XFO")],
-                          ["Referrer-Policy", headersFactor.present?.includes("Referrer-Policy")],
-                          ["X-Content-Type-Options", headersFactor.present?.includes("XCTO")],
-                          ["Permissions-Policy", headersFactor.present?.includes("Permissions-Policy")]
-                        ].map(([label, present]) => (
-                          <div key={label} className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                            <span className="font-medium text-slate-800">{label}</span>
-                            <span className={present ? "text-emerald-600 font-semibold" : "text-red-600 font-semibold"}>
-                              {present ? "Present" : "Missing"}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-
-                      <p className="mt-3 text-sm text-slate-700">
-                        {headersFactor.detail}
-                      </p>
-                    </>
-                  ) : (
-                    <p className="mt-3 text-sm text-slate-600">Security headers factor unavailable.</p>
-                  )}
-                </div>
+                <DomainCard factor={dnsFactor} />
               </div>
 
               <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
@@ -167,7 +121,6 @@ export default function TrustScanReport() {
                 <h2 className="text-lg font-bold text-slate-900">Additional Signals</h2>
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
                   {[
-                    { label: "DNS", factor: dnsFactor },
                     { label: "Reputation", factor: reputationFactor }
                   ].map(({ label, factor }) => (
                     <div key={label} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -178,11 +131,11 @@ export default function TrustScanReport() {
                 </div>
               </div>
 
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Button onClick={() => navigate("/trustscan")}>Run Another Scan</Button>
-                <Button variant="outline" onClick={shareReport}>Share Report</Button>
-                <Button variant="secondary" onClick={() => navigate("/trustscan/history")}>View History</Button>
-              </div>
+              <ReportActions
+                onRunAgain={() => navigate("/trustscan")}
+                onShare={shareReport}
+                onViewHistory={() => navigate("/trustscan/history")}
+              />
             </>
           )}
         </div>
