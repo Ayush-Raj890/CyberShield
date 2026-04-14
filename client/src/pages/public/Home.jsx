@@ -169,6 +169,21 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="container-page py-2 pb-12">
+        <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50 p-6 md:p-8 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.18em] text-blue-700 font-semibold">Trust Intelligence</p>
+          <h2 className="mt-2 text-2xl md:text-3xl font-black text-slate-900">Analyze a website instantly with TrustScan</h2>
+          <p className="mt-2 text-slate-700 max-w-3xl">
+            Run an instant website risk assessment with TLS checks, explainable scoring, and a scan report you can act on.
+          </p>
+          <div className="mt-5">
+            <button className="btn btn-primary" onClick={() => navigate("/trustscan")}>
+              Open TrustScan
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section className="container-page py-14">
         <h2 className="text-3xl font-black text-center text-slate-900 mb-3">Core Systems</h2>
         <p className="text-center text-slate-600 max-w-2xl mx-auto mb-10">

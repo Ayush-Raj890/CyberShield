@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 import PublicLayout from "../../components/layout/PublicLayout";
 import Button from "../../components/ui/Button";
 import API from "../../services/api";
@@ -39,6 +40,15 @@ export default function TrustScanReport() {
       background: `conic-gradient(#2563eb ${safeScore * 3.6}deg, #e2e8f0 0deg)`
     };
   }, [report]);
+
+  const shareReport = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Report link copied");
+    } catch {
+      toast.error("Unable to copy report link");
+    }
+  };
 
   return (
     <PublicLayout>
@@ -80,6 +90,9 @@ export default function TrustScanReport() {
                 <div className="rounded-2xl border border-slate-200 bg-white p-5">
                   <p className="text-sm text-slate-600"><span className="font-semibold text-slate-800">Target:</span> {report.url}</p>
                   <p className="mt-1 text-sm text-slate-600"><span className="font-semibold text-slate-800">Domain:</span> {report.normalizedDomain}</p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    <span className="font-semibold text-slate-800">Scanned:</span> {new Date(report.createdAt).toLocaleString()}
+                  </p>
                   <p className="mt-4 text-sm text-slate-700 leading-6">{report.summary}</p>
                 </div>
               </div>
@@ -102,6 +115,7 @@ export default function TrustScanReport() {
 
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button onClick={() => navigate("/trustscan")}>Run Another Scan</Button>
+                <Button variant="outline" onClick={shareReport}>Share Report</Button>
                 <Button variant="secondary" onClick={() => navigate("/reports")}>Back to Reports</Button>
                 {job?.status !== "completed" && (
                   <Button variant="outline" onClick={() => navigate(`/trustscan/${id}`)}>Open Progress</Button>

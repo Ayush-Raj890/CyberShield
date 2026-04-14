@@ -2,6 +2,7 @@ import { sendError, sendSuccess } from "../utils/response.js";
 import { validationResult } from "express-validator";
 import TrustScanJob from "../models/TrustScanJob.js";
 import TrustScanReport from "../models/TrustScanReport.js";
+import { runSslTlsCheck } from "../services/trustScanSignals.js";
 
 const MOCK_SCAN_DURATION_MS = 4500;
 
@@ -18,34 +19,27 @@ const getNormalizedDomain = (rawUrl) => {
   }
 };
 
-const createMockFactors = () => [
-  {
-    key: "ssl",
-    label: "SSL Certificate",
-    impact: 10,
-    status: "pass",
-    detail: "Certificate is currently valid in mock check."
-  },
+const createPlaceholderFactors = () => [
   {
     key: "dns",
     label: "DNS Resolve",
-    impact: 5,
-    status: "pass",
-    detail: "Domain resolves successfully in mock check."
+    impact: 0,
+    status: "pending",
+    detail: "DNS signal is queued for implementation."
   },
   {
     key: "headers",
     label: "Security Headers",
-    impact: -8,
-    status: "warn",
-    detail: "CSP header appears missing in mock response."
+    impact: 0,
+    status: "pending",
+    detail: "Security headers signal is queued for implementation."
   },
   {
     key: "reputation",
     label: "Reputation",
-    impact: 12,
-    status: "pass",
-    detail: "No high-risk blacklist entries found in mock source."
+    impact: 0,
+    status: "pending",
+    detail: "Reputation signal is queued for implementation."
   }
 ];
 
@@ -55,8 +49,33 @@ const getMockVerdict = (score) => {
   return "HIGH_RISK";
 };
 
-const buildMockReportPayload = (job) => {
-  const factors = createMockFactors();
+const buildSslFactor = (ssl) => {
+  if (ssl.valid) {
+    const expiryText = typeof ssl.daysRemaining === "number"
+      ? `${ssl.daysRemaining} days remaining`
+      : "expiry unknown";
+
+    return {
+      key: "ssl",
+      label: "SSL Certificate",
+      impact: 15,
+      status: "pass",
+      detail: `Valid certificate from ${ssl.issuer}. Expires at ${ssl.expiresAt || "unknown"} (${expiryText}).`
+    };
+  }
+
+  return {
+    key: "ssl",
+    label: "SSL Certificate",
+    impact: -35,
+    status: "fail",
+    detail: `Certificate check failed: ${ssl.error || "invalid or expired certificate"}. Issuer: ${ssl.issuer}.`
+  };
+};
+
+const buildMockReportPayload = async (job) => {
+  const ssl = await runSslTlsCheck(job.url);
+  const factors = [buildSslFactor(ssl), ...createPlaceholderFactors()];
   const score = Math.max(0, Math.min(100, 70 + factors.reduce((sum, item) => sum + item.impact, 0)));
 
   return {
@@ -67,7 +86,9 @@ const buildMockReportPayload = (job) => {
     score,
     verdict: getMockVerdict(score),
     factors,
-    summary: "Mock summary: This URL appears moderately safe, but missing security headers reduce trust."
+    summary: ssl.valid
+      ? "Site uses a valid TLS certificate. Additional DNS, headers, and reputation factors will be layered next."
+      : "TLS certificate validation failed, which is a strong risk signal. Additional factors will be layered next."
   };
 };
 
@@ -108,7 +129,8 @@ const ensureReportForCompletedJob = async (job) => {
     return existing;
   }
 
-  return TrustScanReport.create(buildMockReportPayload(job));
+  const payload = await buildMockReportPayload(job);
+  return TrustScanReport.create(payload);
 };
 
 export const createTrustScan = async (req, res) => {
