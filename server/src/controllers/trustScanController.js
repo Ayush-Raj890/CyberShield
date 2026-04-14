@@ -3,6 +3,8 @@ import { validationResult } from "express-validator";
 import TrustScanJob from "../models/TrustScanJob.js";
 import TrustScanReport from "../models/TrustScanReport.js";
 
+const MOCK_SCAN_DURATION_MS = 4500;
+
 const getNormalizedDomain = (rawUrl) => {
   try {
     const hasProtocol = /^https?:\/\//i.test(rawUrl);
@@ -53,6 +55,62 @@ const getMockVerdict = (score) => {
   return "HIGH_RISK";
 };
 
+const buildMockReportPayload = (job) => {
+  const factors = createMockFactors();
+  const score = Math.max(0, Math.min(100, 70 + factors.reduce((sum, item) => sum + item.impact, 0)));
+
+  return {
+    jobId: job._id,
+    userId: job.userId,
+    url: job.url,
+    normalizedDomain: job.normalizedDomain,
+    score,
+    verdict: getMockVerdict(score),
+    factors,
+    summary: "Mock summary: This URL appears moderately safe, but missing security headers reduce trust."
+  };
+};
+
+const maybeAdvanceJobState = async (job) => {
+  if (!job) return job;
+  if (job.status === "completed" || job.status === "failed") return job;
+
+  const startedAtMs = job.startedAt ? new Date(job.startedAt).getTime() : Date.now();
+  const elapsedMs = Date.now() - startedAtMs;
+
+  if (elapsedMs >= MOCK_SCAN_DURATION_MS) {
+    job.status = "completed";
+    job.completedAt = new Date();
+    await job.save();
+    return job;
+  }
+
+  if (job.status === "queued") {
+    job.status = "running";
+    job.startedAt = new Date();
+    await job.save();
+  }
+
+  return job;
+};
+
+const ensureReportForCompletedJob = async (job) => {
+  if (!job || job.status !== "completed") {
+    return null;
+  }
+
+  const existing = await TrustScanReport.findOne({
+    jobId: job._id,
+    userId: job.userId
+  });
+
+  if (existing) {
+    return existing;
+  }
+
+  return TrustScanReport.create(buildMockReportPayload(job));
+};
+
 export const createTrustScan = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -77,35 +135,16 @@ export const createTrustScan = async (req, res) => {
       userId: req.user._id,
       url: normalized.url,
       normalizedDomain: normalized.normalizedDomain,
-      status: "completed",
-      startedAt: now,
-      completedAt: now
-    });
-
-    const factors = createMockFactors();
-    const score = Math.max(0, Math.min(100, 70 + factors.reduce((sum, item) => sum + item.impact, 0)));
-    const verdict = getMockVerdict(score);
-
-    const report = await TrustScanReport.create({
-      jobId: job._id,
-      userId: req.user._id,
-      url: normalized.url,
-      normalizedDomain: normalized.normalizedDomain,
-      score,
-      verdict,
-      factors,
-      summary: "Mock summary: This URL appears moderately safe, but missing security headers reduce trust."
+      status: "running",
+      startedAt: now
     });
 
     return sendSuccess(res, {
       jobId: job._id,
       status: job.status,
-      reportId: report._id,
-      url: report.url,
-      normalizedDomain: report.normalizedDomain,
-      score: report.score,
-      verdict: report.verdict,
-      summary: report.summary
+      url: job.url,
+      normalizedDomain: job.normalizedDomain,
+      etaSeconds: Math.ceil(MOCK_SCAN_DURATION_MS / 1000)
     }, 201, "TrustScan job created");
   } catch (error) {
     return sendError(res, 500, error.message);
@@ -117,17 +156,18 @@ export const getTrustScanById = async (req, res) => {
     const job = await TrustScanJob.findOne({
       _id: req.params.id,
       userId: req.user._id
-    }).lean();
+    });
 
     if (!job) {
       return sendError(res, 404, "TrustScan job not found");
     }
 
-    const report = await TrustScanReport.findOne({ jobId: job._id, userId: req.user._id }).lean();
+    const updatedJob = await maybeAdvanceJobState(job);
+    const report = await ensureReportForCompletedJob(updatedJob);
 
     return sendSuccess(res, {
-      job,
-      report
+      job: updatedJob.toObject(),
+      report: report ? report.toObject() : null
     });
   } catch (error) {
     return sendError(res, 500, error.message);

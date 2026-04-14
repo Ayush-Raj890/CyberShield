@@ -10,6 +10,9 @@ export const PATHS = {
   CREATE_REPORT: "/create-report",
   REPORTS: "/reports",
   AI: "/ai",
+  TRUSTSCAN: "/trustscan",
+  TRUSTSCAN_PROGRESS: "/trustscan/:id",
+  TRUSTSCAN_REPORT: "/trustscan/:id/report",
   ARTICLES: "/articles",
   ARTICLE_DETAIL: "/articles/:id",
   FORUM: "/forum",
@@ -33,6 +36,7 @@ export const PATHS = {
 export const NAV_SECTIONS = {
   guestCore: [
     { label: "AI Detector", path: PATHS.AI },
+    { label: "TrustScan", path: PATHS.TRUSTSCAN },
     { label: "Report Incident", path: PATHS.CREATE_REPORT }
   ],
   guestCommunity: [
@@ -43,6 +47,7 @@ export const NAV_SECTIONS = {
   ],
   core: [
     { label: "AI Detector", path: PATHS.AI },
+    { label: "TrustScan", path: PATHS.TRUSTSCAN },
     { label: "Reports", path: PATHS.REPORTS }
   ],
   learn: [{ label: "Knowledge Hub", path: PATHS.ARTICLES }],

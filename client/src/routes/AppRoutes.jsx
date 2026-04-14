@@ -11,6 +11,9 @@ import Settings from "../pages/account/Settings";
 import CreateReport from "../pages/reports/CreateReport";
 import ViewReports from "../pages/reports/ViewReports";
 import ScamDetector from "../pages/ai/ScamDetector";
+import TrustScanLanding from "../pages/trustscan/TrustScanLanding";
+import TrustScanProgress from "../pages/trustscan/TrustScanProgress";
+import TrustScanReport from "../pages/trustscan/TrustScanReport";
 import Articles from "../pages/knowledge/Articles";
 import ArticleDetail from "../pages/knowledge/ArticleDetail";
 import Forum from "../pages/forum/Forum";
@@ -64,6 +67,18 @@ export default function AppRoutes() {
         <Route
           path={PATHS.AI}
           element={<ScamDetector />}
+        />
+        <Route
+          path={PATHS.TRUSTSCAN}
+          element={<PrivateRoute><TrustScanLanding /></PrivateRoute>}
+        />
+        <Route
+          path={PATHS.TRUSTSCAN_PROGRESS}
+          element={<PrivateRoute><TrustScanProgress /></PrivateRoute>}
+        />
+        <Route
+          path={PATHS.TRUSTSCAN_REPORT}
+          element={<PrivateRoute><TrustScanReport /></PrivateRoute>}
         />
         <Route
           path={PATHS.ARTICLES}
