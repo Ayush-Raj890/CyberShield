@@ -13,6 +13,7 @@ export const PATHS = {
   TRUSTSCAN: "/trustscan",
   TRUSTSCAN_PROGRESS: "/trustscan/:id",
   TRUSTSCAN_REPORT: "/trustscan/:id/report",
+  TRUSTSCAN_PUBLIC_REPORT: "/trustscan/report/:id/public",
   TRUSTSCAN_HISTORY: "/trustscan/history",
   ARTICLES: "/articles",
   ARTICLE_DETAIL: "/articles/:id",

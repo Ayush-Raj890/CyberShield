@@ -4,9 +4,10 @@ import { getTrustScanConfidence } from "../../src/services/trustscan/confidenceS
 describe("getTrustScanConfidence", () => {
   it("returns High when all signals including age are present", () => {
     const result = getTrustScanConfidence({
-      ssl: { issuer: "Lets Encrypt", expiresAt: "2030-01-01T00:00:00.000Z", daysRemaining: 120 },
-      headers: { checkedUrl: "https://example.com" },
-      domain: { checkedDomain: "example.com", ageDays: 600 }
+      ssl: { reason: "success" },
+      headers: { reason: "success" },
+      domain: { reason: "success" },
+      reputation: { reason: "success" }
     });
 
     expect(result).toBe("High");
@@ -14,9 +15,10 @@ describe("getTrustScanConfidence", () => {
 
   it("returns Medium for partial signal coverage", () => {
     const result = getTrustScanConfidence({
-      ssl: { issuer: "Unknown", expiresAt: null, daysRemaining: null },
-      headers: { checkedUrl: "https://example.com" },
-      domain: { checkedDomain: "example.com", ageDays: null }
+      ssl: { reason: "success" },
+      headers: { reason: "network_error" },
+      domain: { reason: "success" },
+      reputation: { reason: "success" }
     });
 
     expect(result).toBe("Medium");
@@ -24,9 +26,10 @@ describe("getTrustScanConfidence", () => {
 
   it("returns Low for minimal usable signals", () => {
     const result = getTrustScanConfidence({
-      ssl: { issuer: "Unknown", expiresAt: null, daysRemaining: null },
-      headers: { checkedUrl: "" },
-      domain: { checkedDomain: null, ageDays: null }
+      ssl: { reason: "network_error" },
+      headers: { reason: "network_error" },
+      domain: { reason: "success" },
+      reputation: { reason: "network_error" }
     });
 
     expect(result).toBe("Low");

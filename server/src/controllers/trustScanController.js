@@ -39,12 +39,17 @@ const getNormalizedDomain = (rawUrl) => {
 };
 
 const buildMockReportPayload = async (job) => {
+  const scanStartTime = Date.now();
+
   const [ssl, headers, domain, reputation] = await Promise.all([
     runSslTlsCheck(job.url),
     checkSecurityHeaders(job.url),
     checkDomainSignals(job.url),
     checkReputationSignals(job.url)
   ]);
+
+  const scanEndTime = Date.now();
+  const scanDurationMs = scanEndTime - scanStartTime;
 
   const factors = [
     buildSslFactor(ssl),
@@ -62,9 +67,16 @@ const buildMockReportPayload = async (job) => {
     normalizedDomain: job.normalizedDomain,
     score,
     verdict,
-    confidence: getTrustScanConfidence({ ssl, headers, domain }),
+    confidence: getTrustScanConfidence({ ssl, headers, domain, reputation }),
     factors,
-    summary: buildTrustScanSummary({ ssl, headers, domain, reputation })
+    summary: buildTrustScanSummary({ ssl, headers, domain, reputation }),
+    scanDurationMs,
+    scanMetadata: {
+      ssl: { reason: ssl?.reason || "success" },
+      headers: { reason: headers?.reason || "success" },
+      domain: { reason: domain?.reason || "success" },
+      reputation: { reason: reputation?.reason || "success" }
+    }
   };
 };
 
@@ -202,6 +214,22 @@ export const getTrustScanHistory = async (req, res) => {
         totalPages,
         hasNextPage: page * limit < total
       }
+    });
+  } catch (error) {
+    return sendError(res, 500, error.message);
+  }
+};
+
+export const getPublicTrustScanReport = async (req, res) => {
+  try {
+    const report = await TrustScanReport.findById(req.params.id);
+
+    if (!report) {
+      return sendError(res, 404, "Report not found");
+    }
+
+    return sendSuccess(res, {
+      report: report.toObject()
     });
   } catch (error) {
     return sendError(res, 500, error.message);

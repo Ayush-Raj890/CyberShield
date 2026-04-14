@@ -1,52 +1,77 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
 import PublicLayout from "../../components/layout/PublicLayout";
-import Button from "../../components/ui/Button";
 import ConfidenceBadge from "../../components/trustscan/ConfidenceBadge";
 import DomainCard from "../../components/trustscan/DomainCard";
 import HeadersCard from "../../components/trustscan/HeadersCard";
 import ReputationCard from "../../components/trustscan/ReputationCard";
-import ReportActions from "../../components/trustscan/ReportActions";
 import ScoreRing from "../../components/trustscan/ScoreRing";
 import API from "../../services/api";
 
-export default function TrustScanReport() {
+export default function PublicTrustScanReport() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const [job, setJob] = useState(null);
   const [report, setReport] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const payload = await API.get(`/trustscan/${id}`);
-        setJob(payload.data.job);
+        const payload = await API.get(`/trustscan/report/${id}/public`);
         setReport(payload.data.report);
         setError("");
       } catch (err) {
-        setError(err?.response?.data?.message || "Unable to load TrustScan report");
+        setError(err?.response?.data?.message || "Unable to load public report");
+      } finally {
+        setLoading(false);
       }
     };
 
     load();
   }, [id]);
 
+  if (loading) {
+    return (
+      <PublicLayout>
+        <section className="container-page py-12 sm:py-16">
+          <div className="mx-auto max-w-4xl card">
+            <div className="h-64 animate-pulse bg-slate-200 rounded-lg"></div>
+          </div>
+        </section>
+      </PublicLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <PublicLayout>
+        <section className="container-page py-12 sm:py-16">
+          <div className="mx-auto max-w-4xl card">
+            <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              {error}
+            </div>
+          </div>
+        </section>
+      </PublicLayout>
+    );
+  }
+
+  if (!report) {
+    return (
+      <PublicLayout>
+        <section className="container-page py-12 sm:py-16">
+          <div className="mx-auto max-w-4xl card">
+            <p className="text-slate-600">Report not found.</p>
+          </div>
+        </section>
+      </PublicLayout>
+    );
+  }
+
   const sslFactor = report?.factors?.find((factor) => factor.key === "ssl") || null;
   const headersFactor = report?.factors?.find((factor) => factor.key === "headers") || null;
   const dnsFactor = report?.factors?.find((factor) => factor.key === "dns") || null;
   const reputationFactor = report?.factors?.find((factor) => factor.key === "reputation") || null;
-
-  const shareReport = async () => {
-    try {
-      const publicUrl = `${window.location.origin}/trustscan/report/${report._id}/public`;
-      await navigator.clipboard.writeText(publicUrl);
-      toast.success("Public report link copied");
-    } catch {
-      toast.error("Unable to copy report link");
-    }
-  };
 
   return (
     <PublicLayout>
@@ -55,21 +80,10 @@ export default function TrustScanReport() {
           <p className="text-xs uppercase tracking-[0.2em] text-blue-700 font-semibold">TrustScan Report</p>
           <h1 className="mt-3 text-3xl font-black text-slate-900">Final Assessment</h1>
 
-          {error && (
-            <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-              {error}
-            </div>
-          )}
-
-          {!error && !report && (
-            <div className="mt-5 rounded-xl border border-blue-200 bg-blue-50 p-4 text-blue-700">
-              <p className="font-semibold">Scan is not complete yet.</p>
-              <p className="mt-1 text-sm">Open progress view to continue tracking checks.</p>
-              <div className="mt-3">
-                <Button onClick={() => navigate(`/trustscan/${id}`)}>Go to Progress</Button>
-              </div>
-            </div>
-          )}
+          <div className="mt-3 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">
+            <p className="font-semibold">This is a public shareable report.</p>
+            <p className="mt-1">Anyone with this link can view this assessment.</p>
+          </div>
 
           {report && (
             <>
@@ -129,12 +143,6 @@ export default function TrustScanReport() {
                   ))}
                 </div>
               </div>
-
-              <ReportActions
-                onRunAgain={() => navigate("/trustscan")}
-                onShare={shareReport}
-                onViewHistory={() => navigate("/trustscan/history")}
-              />
             </>
           )}
         </div>

@@ -1,14 +1,12 @@
-export const getTrustScanConfidence = ({ ssl, headers, domain }) => {
-  const sslReady = Boolean(ssl) && (ssl.issuer !== "Unknown" || ssl.expiresAt !== null || typeof ssl.daysRemaining === "number");
-  const headersReady = Boolean(headers) && Boolean(headers.checkedUrl);
-  const domainReady = Boolean(domain) && Boolean(domain.checkedDomain);
-  const ageReady = typeof domain?.ageDays === "number";
+export const getTrustScanConfidence = ({ ssl, headers, domain, reputation }) => {
+  const sources = [ssl, headers, domain, reputation].filter(Boolean);
+  const degradedSources = sources.filter((signal) => signal.reason && signal.reason !== "success").length;
 
-  if (sslReady && headersReady && domainReady && ageReady) {
+  if (sources.length === 4 && degradedSources === 0) {
     return "High";
   }
 
-  if ((sslReady && headersReady && domainReady) || ((sslReady || headersReady) && domainReady)) {
+  if (degradedSources <= 1 && sources.length >= 3) {
     return "Medium";
   }
 

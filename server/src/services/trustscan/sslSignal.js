@@ -25,7 +25,8 @@ export const runSslTlsCheck = async (rawUrl) => {
               issuer: "Unknown",
               expiresAt: null,
               daysRemaining: null,
-              error: "No certificate returned"
+              error: "No certificate returned",
+              reason: "network_error"
             });
             return;
           }
@@ -43,7 +44,8 @@ export const runSslTlsCheck = async (rawUrl) => {
             issuer: cert.issuer?.CN || cert.issuer?.O || "Unknown",
             expiresAt: expiresAt ? expiresAt.toISOString() : null,
             daysRemaining,
-            error: socket.authorizationError || null
+            error: socket.authorizationError || null,
+            reason: "success"
           });
 
           socket.end();
@@ -57,7 +59,8 @@ export const runSslTlsCheck = async (rawUrl) => {
           issuer: "Unknown",
           expiresAt: null,
           daysRemaining: null,
-          error: "TLS handshake timed out"
+          error: "TLS handshake timed out",
+          reason: "network_error"
         });
       });
 
@@ -67,7 +70,8 @@ export const runSslTlsCheck = async (rawUrl) => {
           issuer: "Unknown",
           expiresAt: null,
           daysRemaining: null,
-          error: error.message || "TLS handshake failed"
+          error: error.message || "TLS handshake failed",
+          reason: "network_error"
         });
       });
     });
@@ -77,7 +81,8 @@ export const runSslTlsCheck = async (rawUrl) => {
       issuer: "Unknown",
       expiresAt: null,
       daysRemaining: null,
-      error: error.message || "Invalid target"
+      error: error.message || "Invalid target",
+      reason: "network_error"
     };
   }
 };

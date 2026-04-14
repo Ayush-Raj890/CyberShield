@@ -1,8 +1,26 @@
-export default function ReputationCard({ factor }) {
+export default function ReputationCard({ factor, scanMetadata }) {
+  const reputation = scanMetadata?.reputation || {};
+  const failureReason = reputation.reason;
+
+  const reasonDisplay = {
+    service_unavailable: "Service was unavailable during this scan.",
+    api_error: "API error occurred while checking reputation.",
+    network_error: "Network error occurred during reputation check.",
+    success: null
+  };
+
+  const failureMessage = reasonDisplay[failureReason] || null;
+
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5">
       <p className="text-xs uppercase tracking-[0.18em] text-blue-700 font-semibold">Reputation Signals</p>
       <h2 className="mt-2 text-lg font-bold text-slate-900">Public Blocklists</h2>
+
+      {failureMessage && (
+        <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3">
+          <p className="text-sm text-amber-900">{failureMessage}</p>
+        </div>
+      )}
 
       {factor ? (
         <>

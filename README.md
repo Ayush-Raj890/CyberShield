@@ -5,6 +5,7 @@ CyberShield is a trust intelligence platform that helps users assess suspicious 
 ## V3 Focus
 
 CyberShield is now documentation-first around TrustScan V3:
+
 - passive URL trust scanning
 - explainable risk scoring
 - async scan lifecycle
@@ -33,8 +34,10 @@ CyberShield is now documentation-first around TrustScan V3:
 - DNS and domain intelligence
 - Reputation signal checks (Google Safe Browsing)
 - Historical scan reports
-- 45 automated backend tests passing
-- Route, signal, and scoring coverage
+- Public shareable reports
+- Explainable scoring
+- 46 automated backend tests passing
+- CI on push / PR
 
 ## Architecture Snapshot
 
@@ -56,31 +59,37 @@ Frontend (React + Vite)
 ## Documentation Map
 
 ### Product
+
 - docs/product/VISION.md
 - docs/product/ROADMAP.md
 - docs/product/TRUSTSCAN_PRODUCT_SPEC.md
 
 ### Engineering
+
 - docs/engineering/SYSTEM_DESIGN.md
 - docs/engineering/API_REFERENCE.md
 - docs/engineering/DB_SCHEMA.md
 - docs/engineering/TRUSTSCAN_ARCHITECTURE.md
 
 ### Security
+
 - docs/security/SECURITY.md
 - docs/security/TRUSTSCAN_POLICY.md
 - docs/security/TRUSTSCAN_SCORING.md
 
 ### Operations
+
 - docs/ops/DEPLOYMENT.md
 - docs/ops/TESTING.md
 
 ### Archive
+
 - docs/archive (historical and legacy documents)
 
 ## Quick Start
 
 Prerequisites:
+
 - Node.js 18+
 - Python 3.10+
 - MongoDB URI

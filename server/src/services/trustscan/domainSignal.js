@@ -99,7 +99,8 @@ export const checkDomainSignals = async (rawUrl) => {
         cname: records.cnameRecords,
         mx: records.mxRecords,
         ns: records.nsRecords
-      }
+      },
+      reason: "success"
     };
   } catch (error) {
     return {
@@ -110,7 +111,8 @@ export const checkDomainSignals = async (rawUrl) => {
       scoreDelta: -55,
       grade: "Broken",
       checkedDomain: null,
-      error: error.message || "Domain signal check failed"
+      error: error.message || "Domain signal check failed",
+      reason: "network_error"
     };
   }
 };

@@ -4,7 +4,8 @@ import { protect } from "../middlewares/authMiddleware.js";
 import {
   createTrustScan,
   getTrustScanById,
-  getTrustScanHistory
+  getTrustScanHistory,
+  getPublicTrustScanReport
 } from "../controllers/trustScanController.js";
 
 const router = express.Router();
@@ -22,6 +23,9 @@ router.post(
   ],
   createTrustScan
 );
+
+// Public readonly endpoint (no auth required) - must come before /:id
+router.get("/report/:id/public", getPublicTrustScanReport);
 
 router.get("/history", protect, getTrustScanHistory);
 router.get("/:id", protect, getTrustScanById);

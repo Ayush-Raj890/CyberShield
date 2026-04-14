@@ -141,7 +141,8 @@ export const checkSecurityHeaders = async (rawUrl) => {
     return {
       ...report,
       statusCode: response.statusCode ?? response.status ?? null,
-      checkedUrl: url
+      checkedUrl: url,
+      reason: "success"
     };
   } catch (error) {
     return {
@@ -151,7 +152,8 @@ export const checkSecurityHeaders = async (rawUrl) => {
       grade: "Poor",
       statusCode: null,
       checkedUrl: null,
-      error: error.message || "Header check failed"
+      error: error.message || "Header check failed",
+      reason: "network_error"
     };
   }
 };

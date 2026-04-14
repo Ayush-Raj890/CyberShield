@@ -14,6 +14,7 @@ import ScamDetector from "../pages/ai/ScamDetector";
 import TrustScanLanding from "../pages/trustscan/TrustScanLanding";
 import TrustScanProgress from "../pages/trustscan/TrustScanProgress";
 import TrustScanReport from "../pages/trustscan/TrustScanReport";
+import PublicTrustScanReport from "../pages/trustscan/PublicTrustScanReport";
 import TrustScanHistory from "../pages/trustscan/TrustScanHistory";
 import Articles from "../pages/knowledge/Articles";
 import ArticleDetail from "../pages/knowledge/ArticleDetail";
@@ -78,12 +79,16 @@ export default function AppRoutes() {
           element={<PrivateRoute><TrustScanProgress /></PrivateRoute>}
         />
         <Route
-          path={PATHS.TRUSTSCAN_HISTORY}
-          element={<PrivateRoute><TrustScanHistory /></PrivateRoute>}
-        />
-        <Route
           path={PATHS.TRUSTSCAN_REPORT}
           element={<PrivateRoute><TrustScanReport /></PrivateRoute>}
+        />
+        <Route
+          path={PATHS.TRUSTSCAN_PUBLIC_REPORT}
+          element={<PublicTrustScanReport />}
+        />
+        <Route
+          path={PATHS.TRUSTSCAN_HISTORY}
+          element={<PrivateRoute><TrustScanHistory /></PrivateRoute>}
         />
         <Route
           path={PATHS.ARTICLES}
@@ -159,3 +164,4 @@ export default function AppRoutes() {
     </BrowserRouter>
   );
 }
+        <Route

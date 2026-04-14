@@ -9,6 +9,7 @@ export const buildSslFactor = (ssl) => {
       label: "Transport Security",
       impact: 15,
       status: "pass",
+      reason: ssl.reason || "success",
       detail: `Valid certificate from ${ssl.issuer}. Expires at ${ssl.expiresAt || "unknown"} (${expiryText}).`
     };
   }
@@ -18,6 +19,7 @@ export const buildSslFactor = (ssl) => {
     label: "Transport Security",
     impact: -35,
     status: "fail",
+    reason: ssl.reason || "network_error",
     detail: `Certificate check failed: ${ssl.error || "invalid or expired certificate"}. Issuer: ${ssl.issuer}.`
   };
 };
@@ -31,6 +33,7 @@ export const buildHeadersFactor = (headers) => {
     label: "Browser Protection Controls",
     impact: headers.scoreDelta,
     status: isStrong || isGood ? "pass" : headers.missing.length <= 3 ? "warn" : "fail",
+    reason: headers.reason || "success",
     detail: `${headers.grade} browser protection posture. Present: ${headers.present.join(", ") || "none"}. Missing: ${headers.missing.join(", ") || "none"}.`,
     present: headers.present,
     missing: headers.missing,
@@ -60,6 +63,7 @@ export const buildDomainFactor = (domain) => {
     label: "Domain Intelligence",
     impact: domain.scoreDelta,
     status,
+    reason: domain.reason || "success",
     detail: `${resolvesText}. ${mxText}. ${nameserverText}. ${ageText}.`,
     resolves: domain.resolves,
     mx: domain.mx,
@@ -77,6 +81,7 @@ export const buildReputationFactor = (reputation) => {
       label: "Reputation Signals",
       impact: reputation.scoreDelta,
       status: "fail",
+      reason: reputation.reason || "success",
       detail: `${reputation.source}: flagged in public threat feeds.`,
       listed: true,
       source: reputation.source,
@@ -91,6 +96,7 @@ export const buildReputationFactor = (reputation) => {
       label: "Reputation Signals",
       impact: reputation.scoreDelta,
       status: "pass",
+      reason: reputation.reason || "success",
       detail: `${reputation.source}: no public threat feed matches found.`,
       listed: false,
       source: reputation.source,
@@ -104,6 +110,7 @@ export const buildReputationFactor = (reputation) => {
     label: "Reputation Signals",
     impact: 0,
     status: "warn",
+    reason: reputation.reason || "service_unavailable",
     detail: reputation.detail || `${reputation.source}: reputation lookup unavailable.`,
     listed: false,
     source: reputation.source,

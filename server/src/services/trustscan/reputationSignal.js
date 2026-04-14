@@ -33,7 +33,8 @@ export const checkReputationSignals = async (rawUrl) => {
         scoreDelta: 0,
         grade: "Unknown",
         checkedUrl: url,
-        detail: "Google Safe Browsing API key is not configured."
+        detail: "Google Safe Browsing API key is not configured.",
+        reason: "service_unavailable"
       };
     }
 
@@ -52,7 +53,8 @@ export const checkReputationSignals = async (rawUrl) => {
         scoreDelta: 0,
         grade: "Unknown",
         checkedUrl: url,
-        detail: `Google Safe Browsing lookup failed with status ${response.status}.`
+        detail: `Google Safe Browsing lookup failed with status ${response.status}.`,
+        reason: "api_error"
       };
     }
 
@@ -66,7 +68,8 @@ export const checkReputationSignals = async (rawUrl) => {
         scoreDelta: -60,
         grade: "Flagged",
         checkedUrl: url,
-        detail: `${matches.length} threat match(es) reported by Google Safe Browsing.`
+        detail: `${matches.length} threat match(es) reported by Google Safe Browsing.`,
+        reason: "success"
       };
     }
 
@@ -76,7 +79,8 @@ export const checkReputationSignals = async (rawUrl) => {
       scoreDelta: 0,
       grade: "Clean",
       checkedUrl: url,
-      detail: "No Google Safe Browsing matches found."
+      detail: "No Google Safe Browsing matches found.",
+      reason: "success"
     };
   } catch (error) {
     return {
@@ -86,6 +90,7 @@ export const checkReputationSignals = async (rawUrl) => {
       grade: "Unknown",
       checkedUrl: null,
       detail: "Reputation lookup failed.",
+      reason: "network_error",
       error: error.message || "Reputation lookup failed"
     };
   }

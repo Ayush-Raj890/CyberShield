@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   jobCreate: vi.fn(),
   jobFindOne: vi.fn(),
   reportFindOne: vi.fn(),
+  reportFindById: vi.fn(),
   reportCreate: vi.fn(),
   reportFind: vi.fn(),
   reportCountDocuments: vi.fn()
@@ -36,6 +37,7 @@ vi.mock("../../src/models/TrustScanJob.js", () => ({
 vi.mock("../../src/models/TrustScanReport.js", () => ({
   default: {
     findOne: mocks.reportFindOne,
+    findById: mocks.reportFindById,
     create: mocks.reportCreate,
     find: mocks.reportFind,
     countDocuments: mocks.reportCountDocuments
@@ -74,8 +76,31 @@ describe("TrustScan Routes", () => {
     });
 
     mocks.reportFindOne.mockResolvedValue(null);
+    mocks.reportFindById.mockResolvedValue(null);
     mocks.reportCreate.mockResolvedValue(null);
     mocks.reportCountDocuments.mockResolvedValue(0);
+  });
+
+  describe("GET /api/trustscan/report/:id/public", () => {
+    it("returns a public report without auth", async () => {
+      mocks.reportFindById.mockResolvedValue({
+        toObject: vi.fn(() => ({
+          _id: "report_public",
+          score: 90,
+          verdict: "SAFE"
+        }))
+      });
+
+      const res = await request(app).get("/api/trustscan/report/report_public/public");
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.report).toMatchObject({
+        _id: "report_public",
+        score: 90,
+        verdict: "SAFE"
+      });
+    });
   });
 
   describe("POST /api/trustscan", () => {

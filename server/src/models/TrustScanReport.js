@@ -41,6 +41,7 @@ const trustScanReportSchema = new mongoose.Schema(
           label: { type: String, required: true },
           impact: { type: Number, required: true },
           status: { type: String, required: true },
+          reason: { type: String, default: "success" },
           detail: { type: String, required: true }
         }
       ],
@@ -49,6 +50,16 @@ const trustScanReportSchema = new mongoose.Schema(
     summary: {
       type: String,
       required: true
+    },
+    scanDurationMs: {
+      type: Number,
+      default: 0
+    },
+    scanMetadata: {
+      ssl: { reason: { type: String, default: "success" } },
+      headers: { reason: { type: String, default: "success" } },
+      domain: { reason: { type: String, default: "success" } },
+      reputation: { reason: { type: String, default: "success" } }
     }
   },
   { timestamps: true }
