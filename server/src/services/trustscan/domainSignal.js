@@ -4,6 +4,32 @@ import { lookupDomainAgeDays } from "./rdapService.js";
 import { getRegistrableDomain, normalizeTarget } from "./urlUtils.js";
 
 const DNS_TIMEOUT_MS = 3500;
+const NX_DOMAIN_ERROR_CODES = new Set(["ENOTFOUND", "ENODATA", "EAI_NONAME"]);
+
+const safePrimaryLookup = async (hostname) => {
+  try {
+    const result = await withTimeout(dns.lookup(hostname, { all: true }), DNS_TIMEOUT_MS);
+    const addresses = Array.isArray(result) ? result : result ? [result] : [];
+
+    return {
+      resolves: addresses.length > 0,
+      addresses,
+      errorType: null,
+      errorCode: null
+    };
+  } catch (error) {
+    const message = String(error?.message || "").toLowerCase();
+    const errorCode = typeof error?.code === "string" ? error.code : null;
+    const isTimeout = message.includes("timed out") || errorCode === "EAI_AGAIN";
+
+    return {
+      resolves: false,
+      addresses: [],
+      errorType: isTimeout ? "resolver_unavailable" : "lookup_error",
+      errorCode
+    };
+  }
+};
 
 const safeDnsLookup = async (lookupPromise) => {
   try {
@@ -28,29 +54,20 @@ const safeDnsLookup = async (lookupPromise) => {
 const getDnsRecords = async (hostname) => {
   const lookupDomain = getRegistrableDomain(hostname) || hostname;
 
-  const [aResult, aaaaResult, cnameResult, mxResult, nsResult, ageDays] = await Promise.all([
-    safeDnsLookup(dns.resolve4(hostname)),
-    safeDnsLookup(dns.resolve6(hostname)),
-    safeDnsLookup(dns.resolveCname(hostname)),
+  const [lookupResult, mxResult, nsResult, ageDays] = await Promise.all([
+    safePrimaryLookup(hostname),
     safeDnsLookup(dns.resolveMx(lookupDomain)),
     safeDnsLookup(dns.resolveNs(lookupDomain)),
     lookupDomainAgeDays(lookupDomain)
   ]);
 
-  const aRecords = aResult.records;
-  const aaaaRecords = aaaaResult.records;
-  const cnameRecords = cnameResult.records;
+  const lookupAddresses = lookupResult.addresses;
   const mxRecords = mxResult.records;
   const nsRecords = nsResult.records;
-  const resolves = [...aRecords, ...aaaaRecords, ...cnameRecords].length > 0;
+  const resolves = lookupResult.resolves;
 
-  const resolutionResults = [aResult, aaaaResult, cnameResult];
-  const resolutionCodes = resolutionResults
-    .map((result) => result.errorCode)
-    .filter((code) => Boolean(code));
-  const hasResolutionLookupErrors = resolutionResults.some((result) => Boolean(result.errorType));
-  const isNxDomain = !resolves && resolutionCodes.some((code) => ["ENOTFOUND", "ENODATA", "EAI_NONAME"].includes(code));
-  const hasTransientResolutionIssue = !resolves && hasResolutionLookupErrors && !isNxDomain;
+  const isNxDomain = !resolves && NX_DOMAIN_ERROR_CODES.has(lookupResult.errorCode);
+  const hasEnvironmentDnsIssue = !resolves && Boolean(lookupResult.errorType) && !isNxDomain;
 
   return {
     lookupDomain,
@@ -59,10 +76,8 @@ const getDnsRecords = async (hostname) => {
     ageDays,
     nameservers: nsRecords.length,
     isNxDomain,
-    hasTransientResolutionIssue,
-    aRecords,
-    aaaaRecords,
-    cnameRecords,
+    hasEnvironmentDnsIssue,
+    lookupAddresses,
     mxRecords,
     nsRecords
   };
@@ -83,12 +98,16 @@ export const checkDomainSignals = async (rawUrl) => {
       scoreDelta -= 40;
     }
 
-    if (typeof records.ageDays === "number") {
+    if (!records.hasEnvironmentDnsIssue && typeof records.ageDays === "number") {
       if (records.ageDays < 30) {
         scoreDelta -= 20;
       } else if (records.ageDays >= 730) {
         scoreDelta += 10;
       }
+    }
+
+    if (records.hasEnvironmentDnsIssue) {
+      scoreDelta = 0;
     }
 
     scoreDelta = Math.max(-40, Math.min(20, scoreDelta));
@@ -104,7 +123,7 @@ export const checkDomainSignals = async (rawUrl) => {
       grade = "Strong";
     } else if (scoreDelta >= 5) {
       grade = "Fair";
-    } else if (!records.resolves && records.hasTransientResolutionIssue) {
+    } else if (!records.resolves && records.hasEnvironmentDnsIssue) {
       grade = "Neutral";
     } else {
       grade = "Fair";
@@ -119,13 +138,15 @@ export const checkDomainSignals = async (rawUrl) => {
       grade,
       checkedDomain: records.lookupDomain.toLowerCase(),
       records: {
-        a: records.aRecords,
-        aaaa: records.aaaaRecords,
-        cname: records.cnameRecords,
+        lookup: records.lookupAddresses,
         mx: records.mxRecords,
         ns: records.nsRecords
       },
-      reason: records.hasTransientResolutionIssue ? "network_error" : "success"
+      reason: records.hasEnvironmentDnsIssue
+        ? "environment_dns_unavailable"
+        : records.isNxDomain
+          ? "nxdomain"
+          : "success"
     };
   } catch (error) {
     return {

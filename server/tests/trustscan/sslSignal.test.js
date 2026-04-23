@@ -97,6 +97,28 @@ describe("runSslTlsCheck", () => {
     expect(result.error).toBe("CERT_HAS_EXPIRED");
   });
 
+  it("returns invalid result for self-signed or untrusted cert chain", async () => {
+    const socket = createSocket({
+      cert: {
+        valid_to: "Jan 01 2035 GMT",
+        issuer: { CN: "Self-Signed" }
+      },
+      authorized: false,
+      authorizationError: "SELF_SIGNED_CERT_IN_CHAIN"
+    });
+
+    mocks.connect.mockImplementation((options, callback) => {
+      queueMicrotask(() => callback());
+      return socket;
+    });
+
+    const result = await runSslTlsCheck("https://self-signed.badssl.com");
+
+    expect(result.valid).toBe(false);
+    expect(result.issuer).toBe("Self-Signed");
+    expect(result.error).toBe("SELF_SIGNED_CERT_IN_CHAIN");
+  });
+
   it("returns no certificate error when peer cert is missing", async () => {
     const socket = createSocket({ cert: {} });
 

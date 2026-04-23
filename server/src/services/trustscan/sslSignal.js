@@ -37,7 +37,9 @@ export const runSslTlsCheck = async (rawUrl) => {
             : null;
 
           const validByDate = typeof daysRemaining === "number" ? daysRemaining >= 0 : false;
-          const valid = socket.authorized || validByDate;
+          const hasAuthorizationError = Boolean(socket.authorizationError);
+          const hasTrustedChain = Boolean(socket.authorized) && !hasAuthorizationError;
+          const valid = hasTrustedChain && validByDate;
 
           resolve({
             valid,
