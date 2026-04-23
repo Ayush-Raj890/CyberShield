@@ -90,27 +90,42 @@ Core fields:
 - route/context metadata
 - timestamps
 
-## trustscan_jobs (planned)
-Purpose: async TrustScan execution lifecycle.
+## trustscan_jobs
+Purpose: TrustScan execution lifecycle.
 
-Planned fields:
-- user reference
-- normalizedUrl
-- status (QUEUED, RUNNING, COMPLETED, FAILED)
-- progress and stage markers
+Fields:
+- userId reference
+- url
+- normalizedDomain
+- status (queued, running, completed, failed)
 - startedAt, completedAt
 - error metadata
 
-## trustscan_reports (planned)
+Indexes/constraints:
+- userId index
+- normalizedDomain index
+- status index
+
+## trustscan_reports
 Purpose: persisted TrustScan findings and scorecards.
 
-Planned fields:
-- job reference
-- riskScore
-- factor breakdown
-- evidence snapshot (TLS, DNS, headers, reputation)
-- aiSummary
-- generatedAt
+Fields:
+- jobId reference
+- userId reference
+- url
+- normalizedDomain
+- score
+- verdict
+- factors array (key, label, impact, status, reason, detail)
+- summary
+- scanDurationMs
+- scanEvidence array (key, label, message, reason, status, durationMs, occurredAt)
+- scanMetadata (ssl, headers, domain, reputation reasons)
+
+Indexes/constraints:
+- jobId index
+- userId index
+- normalizedDomain index
 
 ## trustscan_watchlists (future)
 Purpose: track high-risk domains or patterns for monitoring.

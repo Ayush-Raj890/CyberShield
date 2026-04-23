@@ -35,8 +35,11 @@ CyberShield is now documentation-first around TrustScan V3:
 - Reputation signal checks (Google Safe Browsing)
 - Historical scan reports
 - Public shareable reports
+- PDF export for finished TrustScan reports
+- Confidence-aware score calibration
+- Evidence timeline and factor breakdown
 - Explainable scoring
-- 46 automated backend tests passing
+- 55 automated backend tests passing
 - CI on push / PR
 
 ## Architecture Snapshot
@@ -122,6 +125,7 @@ MONGO_URI=your_mongodb_uri
 JWT_SECRET=your_secret
 AI_SERVICE_URL=http://localhost:8000
 ALLOWED_ORIGINS=http://localhost:5173
+GOOGLE_SAFE_BROWSING_API_KEY=your_google_safe_browsing_api_key
 DEBUG_REQUEST_LOGS=false
 ```
 

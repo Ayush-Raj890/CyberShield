@@ -23,7 +23,7 @@ Responsibilities:
 - report lifecycle management
 - moderation and admin operations
 - policy and rate-limit enforcement
-- API aggregation for AI and future TrustScan workers
+- API aggregation for AI and TrustScan report orchestration
 
 ## AI Service
 
@@ -38,13 +38,13 @@ Responsibilities:
 ## TrustScan Worker
 
 Status:
-- planned for V3 implementation
+- current implementation is controller-driven during TrustScan status polling; dedicated worker remains planned
 
 Responsibilities:
-- consume scan jobs from queue
 - run passive URL checks (TLS, DNS, headers, reputation)
-- persist factor evidence and progress
-- trigger AI summary generation for final reports
+- persist factor evidence, scan metadata, and summary payloads
+- cache repeated normalized URL scans for short windows
+- keep completion behavior aligned with the public report route and history views
 
 ## MongoDB
 
@@ -53,7 +53,7 @@ Primary persistence layer for:
 - reports and moderation state
 - community content
 - notification and observability records
-- future TrustScan jobs and reports
+- TrustScan jobs and reports
 
 ## Redis (Planned)
 

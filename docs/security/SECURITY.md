@@ -41,6 +41,7 @@ Operational guidance:
 ## Secrets Handling
 
 - secrets are environment-managed, never hardcoded
+- Google Safe Browsing requires `GOOGLE_SAFE_BROWSING_API_KEY` in the backend environment for reputation lookups
 - production secrets must be strong and rotated periodically
 - debug logging must stay redacted and disabled by default in production
 - verify frontend API base URL and backend targets at release time

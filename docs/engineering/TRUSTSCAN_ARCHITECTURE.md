@@ -3,11 +3,11 @@
 ## Pipeline Overview
 1. URL Input
 2. Normalize
-3. Queue Job
-4. Worker Executes Checks
-5. Store Results
-6. AI Summary
-7. Frontend Polling
+3. Create Job
+4. Poll Job Status
+5. Completion Path Runs Passive Checks
+6. Store Results
+7. AI Summary and Report Rendering
 
 ## Component Responsibilities
 
@@ -20,22 +20,22 @@
 ### Backend API
 - validates request and enforces rate limits
 - normalizes URL and creates job record
-- exposes job status and report retrieval APIs
+- advances job state during status polling and materializes reports on completion
+- exposes job status, report retrieval, and public read-only report APIs
 - enforces access control and policy checks
 
-### TrustScan Worker
-- consumes queued jobs
-- runs passive checks (DNS, TLS, headers, reputation)
-- writes factor results and intermediate progress
-- produces final score input payload
+### TrustScan Execution Layer
+- runs passive checks (DNS, TLS, headers, reputation) in the completion path
+- writes factor results, scan evidence, and metadata into the report payload
+- caches repeated report payloads by normalized URL for short-term reuse
 
 ### AI Service
 - converts factor payload into readable summary
 - returns concise explanation and confidence framing
 
 ### Data Layer
-- trustscan_jobs: lifecycle state
-- trustscan_reports: completed analysis artifact
+- trustscan_jobs: lifecycle state and progress markers
+- trustscan_reports: completed analysis artifact with factors, evidence, metadata, and summary
 - optional cache (Redis planned) for hot lookups and throttling support
 
 ## Reliability Considerations
@@ -43,12 +43,13 @@
 - retries for transient external lookup failures
 - timeout guards per check stage
 - latest-state persistence for crash recovery
+- short-lived in-memory cache for repeated scans of the same normalized URL
 
 ## Security and Safety Controls
 - passive scanning only
 - target validation and deny rules for prohibited ranges
 - per-user and per-IP throttling
-- auditable policy gate before worker execution
+- auditable policy gate before completion-path execution
 
 ## Future Scale Direction
 - dedicated queue backend

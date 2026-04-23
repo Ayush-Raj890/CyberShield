@@ -7,10 +7,11 @@ Enable users to submit a URL and receive a safe, explainable trust report withou
 1. User enters a URL.
 2. Frontend validates basic format and submits scan request.
 3. Backend creates async scan job.
-4. Worker executes passive checks.
+4. Backend completes passive checks during the job completion path.
 5. Results are stored and scored.
 6. Frontend polls for job completion.
-7. User sees scorecard and detailed report.
+7. User sees scorecard, evidence timeline, and detailed report.
+8. User can share a public read-only report link or export the report as PDF.
 
 ## User Experience Requirements
 - Fast submission feedback (job accepted or rejected)
@@ -19,6 +20,8 @@ Enable users to submit a URL and receive a safe, explainable trust report withou
 - Report detail sections for evidence and reasoning
 - Scan history for authenticated users
 - Clear messaging for limits and temporary throttling
+- Public shareable report view with read-only access
+- PDF export for finished reports
 
 ## Functional Scope
 - URL normalization and canonicalization
@@ -26,6 +29,8 @@ Enable users to submit a URL and receive a safe, explainable trust report withou
 - weighted scoring model
 - AI summary overlay for non-technical users
 - report persistence and retrieval
+- scan evidence timeline and confidence framing
+- public report sharing
 
 ## Non-Goals (V3)
 - exploit execution

@@ -10,6 +10,9 @@ Deliverables:
 - policy-constrained passive checks only
 - history and basic usage limits
 - baseline worker design for scan execution
+- public shareable report view and PDF export
+- evidence timeline and reputation signal card
+- confidence-aware score calibration
 
 Exit criteria:
 - stable scan lifecycle from input to report
@@ -20,11 +23,12 @@ Exit criteria:
 Focus: improve signal quality, explainability, and operator value.
 
 Deliverables:
-- richer reputation aggregation
+- richer reputation aggregation and configuration-aware fallback states
 - domain age, TLS detail, and DNS insight expansion
 - explainable factor cards per score component
 - trend surfaces for repeat suspicious domains
 - watchlist-ready data structures and admin views
+- trust score confidence caps and safer score calibration for sparse evidence
 
 Exit criteria:
 - measurable improvement in scan explainability

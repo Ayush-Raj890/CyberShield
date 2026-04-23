@@ -4,6 +4,14 @@ This file is the active, canonical development changelog for CyberShield.
 
 Legacy and overlapping logs were archived to docs/archive.
 
+## Day 61
+
+- Added TrustScan completion-path stack logging and hardened report generation against malformed signal payloads.
+- Calibrated TrustScan DNS scoring to avoid over-penalizing legitimate domains when MX/NS are absent or DNS is transiently unavailable.
+- Added confidence-based score caps and softened header penalties to reduce false STRONG verdicts on medium/low-confidence scans.
+- Updated TrustScan documentation, deployment notes, and security references to match the current public report and Safe Browsing configuration.
+- Verified backend TrustScan test suite passes with 55 tests.
+
 ## Day 60
 
 - Stabilized My Reports filtering under rapid multi-filter changes.

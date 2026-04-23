@@ -29,13 +29,16 @@ Auth legend:
 
 ## TrustScan
 Current state:
-- V3 TrustScan endpoints are planned and will be documented here once introduced.
-
-Planned endpoint shape (subject to implementation):
-- POST /trustscan/jobs (Protected)
-- GET /trustscan/jobs/:id (Protected)
-- GET /trustscan/reports/:id (Protected)
+- POST /trustscan (Protected)
+- GET /trustscan/:id (Protected)
+- GET /trustscan/report/:id/public (Public)
 - GET /trustscan/history (Protected)
+
+Behavior notes:
+- POST /trustscan normalizes the URL and creates a TrustScan job.
+- GET /trustscan/:id advances job state and returns the job plus report when completed.
+- GET /trustscan/report/:id/public exposes a read-only report view for shared links.
+- GET /trustscan/history returns authenticated report history.
 
 ## Articles
 - GET /articles (Public)

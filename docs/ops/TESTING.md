@@ -36,6 +36,8 @@ Validate minimum checks:
 - job status transition accuracy
 - scorecard factor consistency
 - polling behavior under slow scans
+- public shareable report route returns read-only content
+- PDF export action works from the TrustScan report page
 
 ## Release Gate
 A release is green only if:
