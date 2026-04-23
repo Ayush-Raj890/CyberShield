@@ -25,19 +25,23 @@ export const buildSslFactor = (ssl) => {
 };
 
 export const buildHeadersFactor = (headers) => {
-  const isStrong = headers.grade === "Strong";
-  const isGood = headers.grade === "Good";
+  const present = Array.isArray(headers?.present) ? headers.present : [];
+  const missing = Array.isArray(headers?.missing) ? headers.missing : [];
+  const grade = typeof headers?.grade === "string" ? headers.grade : "Poor";
+  const scoreDelta = typeof headers?.scoreDelta === "number" ? headers.scoreDelta : -25;
+  const isStrong = grade === "Strong";
+  const isGood = grade === "Good";
 
   return {
     key: "headers",
     label: "Browser Protection Controls",
-    impact: headers.scoreDelta,
-    status: isStrong || isGood ? "pass" : headers.missing.length <= 3 ? "warn" : "fail",
-    reason: headers.reason || "success",
-    detail: `${headers.grade} browser protection posture. Present: ${headers.present.join(", ") || "none"}. Missing: ${headers.missing.join(", ") || "none"}.`,
-    present: headers.present,
-    missing: headers.missing,
-    grade: headers.grade
+    impact: scoreDelta,
+    status: isStrong || isGood ? "pass" : missing.length <= 3 ? "warn" : "fail",
+    reason: headers?.reason || "success",
+    detail: `${grade} browser protection posture. Present: ${present.join(", ") || "none"}. Missing: ${missing.join(", ") || "none"}.`,
+    present,
+    missing,
+    grade
   };
 };
 

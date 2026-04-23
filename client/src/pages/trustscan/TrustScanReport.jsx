@@ -63,10 +63,10 @@ export default function TrustScanReport() {
 
   return (
     <PublicLayout>
-      <section className="container-page py-12 sm:py-16">
-        <div className="mx-auto max-w-4xl card">
+      <section className="container-page py-8 sm:py-12 md:py-16">
+        <div className="mx-auto max-w-5xl card px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-8">
           <p className="text-xs uppercase tracking-[0.2em] text-blue-700 font-semibold">TrustScan Report</p>
-          <h1 className="mt-3 text-3xl font-black text-slate-900">Final Assessment</h1>
+          <h1 className="mt-3 text-3xl font-black text-slate-900 sm:text-4xl">Final Assessment</h1>
 
           {error && (
             <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
@@ -87,12 +87,12 @@ export default function TrustScanReport() {
           {report && (
             <>
               <div ref={reportRef} className="space-y-6">
-                <div className="mt-6 grid gap-6 md:grid-cols-[220px_1fr]">
+                <div className="mt-6 grid gap-5 md:grid-cols-[220px_minmax(0,1fr)] md:items-start">
                   <ScoreRing score={report.score} verdict={report.verdict} />
 
-                  <div className="rounded-2xl border border-slate-200 bg-white p-5">
-                    <p className="text-sm text-slate-600"><span className="font-semibold text-slate-800">Target:</span> {report.url}</p>
-                    <p className="mt-1 text-sm text-slate-600"><span className="font-semibold text-slate-800">Domain:</span> {report.normalizedDomain}</p>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+                    <p className="text-sm text-slate-600 break-words"><span className="font-semibold text-slate-800">Target:</span> {report.url}</p>
+                    <p className="mt-1 text-sm text-slate-600 break-words"><span className="font-semibold text-slate-800">Domain:</span> {report.normalizedDomain}</p>
                     <p className="mt-1 text-sm text-slate-600">
                       <span className="font-semibold text-slate-800">Scanned:</span> {new Date(report.createdAt).toLocaleString()}
                     </p>
@@ -105,8 +105,8 @@ export default function TrustScanReport() {
 
                 <EvidenceTimeline events={evidence} />
 
-                <div className="grid gap-4 lg:grid-cols-4">
-                  <div className="rounded-2xl border border-slate-200 bg-white p-5">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                     <p className="text-xs uppercase tracking-[0.18em] text-blue-700 font-semibold">Transport Security</p>
                     <h2 className="mt-2 text-lg font-bold text-slate-900">SSL / TLS</h2>
                     <p className="mt-3 text-sm text-slate-700">
@@ -122,19 +122,19 @@ export default function TrustScanReport() {
                 </div>
 
                 {report.scanDurationMs && (
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
                     <p className="text-sm text-slate-700">
                       <span className="font-semibold text-slate-900">Completed in</span> {(report.scanDurationMs / 1000).toFixed(2)}s
                     </p>
                   </div>
                 )}
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-5">
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                   <h2 className="text-lg font-bold text-slate-900">Factor Breakdown</h2>
                   <div className="mt-4 space-y-3">
                     {(report.factors || []).map((factor) => (
                       <div key={factor.key} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                        <div className="flex items-center justify-between gap-3">
+                        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                           <p className="font-semibold text-slate-900">{factor.label}</p>
                           <span className="text-sm font-semibold text-slate-700">Impact: {factor.impact > 0 ? `+${factor.impact}` : factor.impact}</span>
                         </div>

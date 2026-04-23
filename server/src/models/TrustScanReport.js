@@ -31,7 +31,7 @@ const trustScanReportSchema = new mongoose.Schema(
     },
     verdict: {
       type: String,
-      enum: ["LOW_RISK", "MEDIUM_RISK", "HIGH_RISK"],
+      enum: ["LOW_RISK", "MEDIUM_RISK", "HIGH_RISK", "DANGEROUS", "RISKY", "CAUTION", "SAFE", "STRONG"],
       required: true
     },
     factors: {

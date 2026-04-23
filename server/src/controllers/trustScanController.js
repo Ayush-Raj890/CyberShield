@@ -20,6 +20,49 @@ import {
 import { calculateScoreAndVerdict } from "../services/trustscan/scoringService.js";
 import { buildTrustScanSummary } from "../services/trustscan/summaryService.js";
 
+const TRUSTSCAN_CACHE_TTL_MS = 10 * 60 * 1000;
+const trustScanReportCache = new Map();
+
+const getTrustScanCacheKey = (url) => url.toLowerCase();
+
+const getCachedTrustScanReport = (url) => {
+  const cacheKey = getTrustScanCacheKey(url);
+  const cachedEntry = trustScanReportCache.get(cacheKey);
+
+  if (!cachedEntry) {
+    return null;
+  }
+
+  if (Date.now() - cachedEntry.cachedAt > TRUSTSCAN_CACHE_TTL_MS) {
+    trustScanReportCache.delete(cacheKey);
+    return null;
+  }
+
+  return cachedEntry.report;
+};
+
+const setCachedTrustScanReport = (url, report) => {
+  trustScanReportCache.set(getTrustScanCacheKey(url), {
+    cachedAt: Date.now(),
+    report
+  });
+};
+
+const cloneTrustScanReportForJob = (job, report) => ({
+  jobId: job._id,
+  userId: job.userId,
+  url: job.url,
+  normalizedDomain: job.normalizedDomain,
+  score: report.score,
+  verdict: report.verdict,
+  confidence: report.confidence,
+  factors: report.factors,
+  summary: report.summary,
+  scanDurationMs: report.scanDurationMs,
+  scanEvidence: report.scanEvidence,
+  scanMetadata: report.scanMetadata
+});
+
 const getNormalizedDomain = (rawUrl) => {
   try {
     const hasProtocol = /^https?:\/\//i.test(rawUrl);
@@ -89,6 +132,47 @@ const runTimedSignal = async (key, label, signalRunner, scanStartTimeMs) => {
   };
 };
 
+const getSafeSslResult = (result) => ({
+  valid: Boolean(result?.valid),
+  issuer: typeof result?.issuer === "string" ? result.issuer : "unknown",
+  expiresAt: result?.expiresAt || null,
+  daysRemaining: typeof result?.daysRemaining === "number" ? result.daysRemaining : null,
+  reason: typeof result?.reason === "string" ? result.reason : "network_error",
+  error: typeof result?.error === "string" ? result.error : null
+});
+
+const getSafeHeadersResult = (result) => ({
+  present: Array.isArray(result?.present) ? result.present : [],
+  missing: Array.isArray(result?.missing)
+    ? result.missing
+    : ["Content-Security-Policy", "Strict-Transport-Security", "X-Frame-Options", "Referrer-Policy", "X-Content-Type-Options"],
+  scoreDelta: typeof result?.scoreDelta === "number" ? result.scoreDelta : -25,
+  grade: typeof result?.grade === "string" ? result.grade : "Poor",
+  reason: typeof result?.reason === "string" ? result.reason : "network_error"
+});
+
+const getSafeDomainResult = (result) => ({
+  resolves: Boolean(result?.resolves),
+  mx: Boolean(result?.mx),
+  ageDays: typeof result?.ageDays === "number" ? result.ageDays : null,
+  nameservers: typeof result?.nameservers === "number" ? result.nameservers : 0,
+  scoreDelta: typeof result?.scoreDelta === "number" ? result.scoreDelta : -15,
+  grade: typeof result?.grade === "string" ? result.grade : "Suspicious",
+  reason: typeof result?.reason === "string" ? result.reason : "network_error",
+  checkedDomain: typeof result?.checkedDomain === "string" ? result.checkedDomain : null
+});
+
+const getSafeReputationResult = (result, url) => ({
+  listed: Boolean(result?.listed),
+  scoreDelta: typeof result?.scoreDelta === "number" ? result.scoreDelta : 0,
+  source: typeof result?.source === "string" ? result.source : "Google Safe Browsing",
+  grade: typeof result?.grade === "string" ? result.grade : "Unknown",
+  reason: typeof result?.reason === "string" ? result.reason : "service_unavailable",
+  detail: typeof result?.detail === "string" ? result.detail : "Reputation lookup unavailable.",
+  checkedUrl: typeof result?.checkedUrl === "string" ? result.checkedUrl : url,
+  error: typeof result?.error === "string" ? result.error : null
+});
+
 const buildMockReportPayload = async (job) => {
   const scanStartTime = Date.now();
 
@@ -99,10 +183,10 @@ const buildMockReportPayload = async (job) => {
     runTimedSignal("reputation", "Reputation source", () => checkReputationSignals(job.url), scanStartTime)
   ]);
 
-  const ssl = sslResult.result;
-  const headers = headersResult.result;
-  const domain = domainResult.result;
-  const reputation = reputationResult.result;
+  const ssl = getSafeSslResult(sslResult?.result);
+  const headers = getSafeHeadersResult(headersResult?.result);
+  const domain = getSafeDomainResult(domainResult?.result);
+  const reputation = getSafeReputationResult(reputationResult?.result, job.url);
   const scanEvidence = [sslResult.evidence, headersResult.evidence, domainResult.evidence, reputationResult.evidence]
     .sort((left, right) => new Date(left.occurredAt).getTime() - new Date(right.occurredAt).getTime());
 
@@ -143,6 +227,13 @@ const maybeAdvanceJobState = async (job) => {
   if (!job) return job;
   if (job.status === "completed" || job.status === "failed") return job;
 
+  if (getCachedTrustScanReport(job.url)) {
+    job.status = "completed";
+    job.completedAt = new Date();
+    await job.save();
+    return job;
+  }
+
   const startedAtMs = job.startedAt ? new Date(job.startedAt).getTime() : Date.now();
   const elapsedMs = Date.now() - startedAtMs;
 
@@ -176,8 +267,20 @@ const ensureReportForCompletedJob = async (job) => {
     return existing;
   }
 
-  const payload = await buildMockReportPayload(job);
-  return TrustScanReport.create(payload);
+  const cachedReport = getCachedTrustScanReport(job.url);
+  if (cachedReport) {
+    return TrustScanReport.create(cloneTrustScanReportForJob(job, cachedReport));
+  }
+
+  try {
+    const payload = await buildMockReportPayload(job);
+    setCachedTrustScanReport(job.url, payload);
+    return TrustScanReport.create(payload);
+  } catch (err) {
+    console.error("TRUSTSCAN REPORT BUILD FAILED", err);
+    console.error(err.stack);
+    throw err;
+  }
 };
 
 export const createTrustScan = async (req, res) => {
@@ -231,8 +334,17 @@ export const getTrustScanById = async (req, res) => {
       return sendError(res, 404, "TrustScan job not found");
     }
 
-    const updatedJob = await maybeAdvanceJobState(job);
-    const report = await ensureReportForCompletedJob(updatedJob);
+    let updatedJob;
+    let report;
+
+    try {
+      updatedJob = await maybeAdvanceJobState(job);
+      report = await ensureReportForCompletedJob(updatedJob);
+    } catch (err) {
+      console.error("TRUSTSCAN COMPLETE ERROR:", err);
+      console.error(err.stack);
+      return res.status(500).json({ message: err.message });
+    }
 
     return sendSuccess(res, {
       job: updatedJob.toObject(),
