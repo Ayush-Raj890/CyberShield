@@ -63,16 +63,28 @@ describe("checkDomainSignals", () => {
 
     expect(result.resolves).toBe(true);
     expect(result.mx).toBe(true);
-    expect(result.scoreDelta).toBe(10);
+    expect(result.scoreDelta).toBe(15);
     expect(result.grade).toBe("Strong");
     expect(result.checkedDomain).toBe("example.com");
   });
 
-  it("returns broken with max penalty when domain does not resolve", async () => {
+  it("returns broken when resolvers indicate NXDOMAIN", async () => {
+    const nxDomainError = Object.assign(new Error("getaddrinfo ENOTFOUND"), { code: "ENOTFOUND" });
+    mocks.resolve4.mockRejectedValue(nxDomainError);
+    mocks.resolve6.mockRejectedValue(nxDomainError);
+    mocks.resolveCname.mockRejectedValue(nxDomainError);
+    mocks.withTimeout.mockImplementation(async (promise) => {
+      try {
+        return await promise;
+      } catch (error) {
+        throw error;
+      }
+    });
+
     const result = await checkDomainSignals("https://www.example.com");
 
     expect(result.resolves).toBe(false);
-    expect(result.scoreDelta).toBe(-55);
+    expect(result.scoreDelta).toBe(-40);
     expect(result.grade).toBe("Broken");
   });
 
@@ -85,22 +97,44 @@ describe("checkDomainSignals", () => {
 
     expect(result.resolves).toBe(true);
     expect(result.mx).toBe(false);
-    expect(result.scoreDelta).toBe(-30);
+    expect(result.scoreDelta).toBe(-15);
     expect(result.grade).toBe("Suspicious");
   });
 
-  it("applies only mild penalty when MX is missing", async () => {
+  it("does not penalize missing MX records when domain resolves", async () => {
     mocks.resolve4.mockResolvedValue(["8.8.8.8"]);
     mocks.resolveNs.mockResolvedValue(["ns1.example.com"]);
     mocks.lookupDomainAgeDays.mockResolvedValue(400);
 
     const result = await checkDomainSignals("https://www.example.com");
 
-    expect(result.scoreDelta).toBe(0);
+    expect(result.mx).toBe(false);
+    expect(result.scoreDelta).toBe(5);
     expect(result.grade).toBe("Fair");
   });
 
-  it("handles RDAP age lookup failures gracefully", async () => {
+  it("treats transient DNS failures as neutral network issues", async () => {
+    const timeoutError = new Error("Operation timed out");
+    mocks.resolve4.mockRejectedValue(timeoutError);
+    mocks.resolve6.mockRejectedValue(timeoutError);
+    mocks.resolveCname.mockRejectedValue(timeoutError);
+    mocks.withTimeout.mockImplementation(async (promise) => {
+      try {
+        return await promise;
+      } catch (error) {
+        throw error;
+      }
+    });
+
+    const result = await checkDomainSignals("https://www.example.com");
+
+    expect(result.resolves).toBe(false);
+    expect(result.scoreDelta).toBe(0);
+    expect(result.grade).toBe("Neutral");
+    expect(result.reason).toBe("network_error");
+  });
+
+  it("keeps RDAP age lookup failures neutral", async () => {
     mocks.resolve4.mockResolvedValue(["8.8.8.8"]);
     mocks.resolveMx.mockResolvedValue([{ exchange: "mail.example.com", priority: 10 }]);
     mocks.resolveNs.mockResolvedValue(["ns1.example.com", "ns2.example.com"]);
@@ -109,7 +143,19 @@ describe("checkDomainSignals", () => {
     const result = await checkDomainSignals("https://www.example.com");
 
     expect(result.ageDays).toBeNull();
-    expect(result.scoreDelta).toBe(0);
+    expect(result.scoreDelta).toBe(5);
     expect(result.grade).toBe("Fair");
+  });
+
+  it("penalizes newly registered domains when they do resolve", async () => {
+    mocks.resolve4.mockResolvedValue(["8.8.8.8"]);
+    mocks.resolveNs.mockResolvedValue(["ns1.example.com", "ns2.example.com"]);
+    mocks.lookupDomainAgeDays.mockResolvedValue(10);
+
+    const result = await checkDomainSignals("https://www.example.com");
+
+    expect(result.resolves).toBe(true);
+    expect(result.scoreDelta).toBe(-15);
+    expect(result.grade).toBe("Suspicious");
   });
 });

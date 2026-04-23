@@ -31,12 +31,13 @@ export const buildHeadersFactor = (headers) => {
   const scoreDelta = typeof headers?.scoreDelta === "number" ? headers.scoreDelta : -25;
   const isStrong = grade === "Strong";
   const isGood = grade === "Good";
+  const softenedImpact = scoreDelta < 0 ? Math.max(Math.round(scoreDelta * 0.6), -15) : scoreDelta;
 
   return {
     key: "headers",
     label: "Browser Protection Controls",
-    impact: scoreDelta,
-    status: isStrong || isGood ? "pass" : missing.length <= 3 ? "warn" : "fail",
+    impact: softenedImpact,
+    status: isStrong || isGood ? "pass" : missing.length <= 4 ? "warn" : "fail",
     reason: headers?.reason || "success",
     detail: `${grade} browser protection posture. Present: ${present.join(", ") || "none"}. Missing: ${missing.join(", ") || "none"}.`,
     present,
@@ -49,15 +50,21 @@ export const buildDomainFactor = (domain) => {
   const ageText = typeof domain.ageDays === "number"
     ? `${domain.ageDays} days old`
     : "domain age unavailable";
-  const resolvesText = domain.resolves ? "DNS resolves cleanly" : "DNS resolution failed";
+  const resolvesText = !domain.resolves && domain.reason === "network_error"
+    ? "DNS lookup timed out or was unavailable"
+    : domain.resolves
+      ? "DNS resolves cleanly"
+      : "DNS resolution failed";
   const mxText = domain.mx ? "MX records present" : "No MX records detected";
   const nameserverText = domain.nameservers > 0
     ? `${domain.nameservers} nameserver${domain.nameservers === 1 ? "" : "s"}`
     : "No nameservers detected";
 
   let status = "pass";
-  if (!domain.resolves) {
+  if (domain.grade === "Broken") {
     status = "fail";
+  } else if (!domain.resolves && domain.reason === "network_error") {
+    status = "warn";
   } else if (domain.grade === "Suspicious" || domain.scoreDelta < -15) {
     status = "warn";
   }

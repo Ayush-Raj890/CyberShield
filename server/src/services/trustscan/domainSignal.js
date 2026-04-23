@@ -7,16 +7,28 @@ const DNS_TIMEOUT_MS = 3500;
 
 const safeDnsLookup = async (lookupPromise) => {
   try {
-    return await withTimeout(lookupPromise, DNS_TIMEOUT_MS);
-  } catch {
-    return [];
+    const records = await withTimeout(lookupPromise, DNS_TIMEOUT_MS);
+    return {
+      records: Array.isArray(records) ? records : [],
+      errorType: null,
+      errorCode: null
+    };
+  } catch (error) {
+    const message = String(error?.message || "").toLowerCase();
+    const isTimeout = message.includes("timed out");
+
+    return {
+      records: [],
+      errorType: isTimeout ? "timeout" : "lookup_error",
+      errorCode: typeof error?.code === "string" ? error.code : null
+    };
   }
 };
 
 const getDnsRecords = async (hostname) => {
   const lookupDomain = getRegistrableDomain(hostname) || hostname;
 
-  const [aRecords, aaaaRecords, cnameRecords, mxRecords, nsRecords, ageDays] = await Promise.all([
+  const [aResult, aaaaResult, cnameResult, mxResult, nsResult, ageDays] = await Promise.all([
     safeDnsLookup(dns.resolve4(hostname)),
     safeDnsLookup(dns.resolve6(hostname)),
     safeDnsLookup(dns.resolveCname(hostname)),
@@ -25,12 +37,29 @@ const getDnsRecords = async (hostname) => {
     lookupDomainAgeDays(lookupDomain)
   ]);
 
+  const aRecords = aResult.records;
+  const aaaaRecords = aaaaResult.records;
+  const cnameRecords = cnameResult.records;
+  const mxRecords = mxResult.records;
+  const nsRecords = nsResult.records;
+  const resolves = [...aRecords, ...aaaaRecords, ...cnameRecords].length > 0;
+
+  const resolutionResults = [aResult, aaaaResult, cnameResult];
+  const resolutionCodes = resolutionResults
+    .map((result) => result.errorCode)
+    .filter((code) => Boolean(code));
+  const hasResolutionLookupErrors = resolutionResults.some((result) => Boolean(result.errorType));
+  const isNxDomain = !resolves && resolutionCodes.some((code) => ["ENOTFOUND", "ENODATA", "EAI_NONAME"].includes(code));
+  const hasTransientResolutionIssue = !resolves && hasResolutionLookupErrors && !isNxDomain;
+
   return {
     lookupDomain,
-    resolves: [...aRecords, ...aaaaRecords, ...cnameRecords].length > 0,
+    resolves,
     mx: mxRecords.length > 0,
     ageDays,
     nameservers: nsRecords.length,
+    isNxDomain,
+    hasTransientResolutionIssue,
     aRecords,
     aaaaRecords,
     cnameRecords,
@@ -46,41 +75,37 @@ export const checkDomainSignals = async (rawUrl) => {
 
     let scoreDelta = 0;
 
-    if (!records.resolves) {
+    if (records.resolves) {
+      scoreDelta += 5;
+    }
+
+    if (records.isNxDomain) {
       scoreDelta -= 40;
-    }
-
-    if (!records.mx) {
-      scoreDelta -= 5;
-    }
-
-    if (records.nameservers <= 0) {
-      scoreDelta -= 10;
     }
 
     if (typeof records.ageDays === "number") {
       if (records.ageDays < 30) {
-        scoreDelta -= 25;
-      } else if (records.ageDays < 180) {
-        scoreDelta -= 12;
+        scoreDelta -= 20;
       } else if (records.ageDays >= 730) {
         scoreDelta += 10;
-      } else {
-        scoreDelta += 5;
       }
     }
 
-    scoreDelta = Math.max(-55, Math.min(20, scoreDelta));
+    scoreDelta = Math.max(-40, Math.min(20, scoreDelta));
 
     let grade = "Neutral";
-    if (!records.resolves) {
+    if (records.isNxDomain) {
       grade = "Broken";
+    } else if (typeof records.ageDays === "number" && records.ageDays < 30) {
+      grade = "Suspicious";
     } else if (scoreDelta <= -20) {
       grade = "Suspicious";
-    } else if (scoreDelta <= -1) {
-      grade = "Weak";
     } else if (scoreDelta >= 10) {
       grade = "Strong";
+    } else if (scoreDelta >= 5) {
+      grade = "Fair";
+    } else if (!records.resolves && records.hasTransientResolutionIssue) {
+      grade = "Neutral";
     } else {
       grade = "Fair";
     }
@@ -100,7 +125,7 @@ export const checkDomainSignals = async (rawUrl) => {
         mx: records.mxRecords,
         ns: records.nsRecords
       },
-      reason: "success"
+      reason: records.hasTransientResolutionIssue ? "network_error" : "success"
     };
   } catch (error) {
     return {

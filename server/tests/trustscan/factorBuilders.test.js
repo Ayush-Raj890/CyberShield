@@ -40,8 +40,8 @@ describe("factor builders", () => {
       missing: ["CSP", "HSTS", "XFO", "XCTO"]
     });
 
-    expect(result.impact).toBe(-24);
-    expect(result.status).toBe("fail");
+    expect(result.impact).toBe(-14);
+    expect(result.status).toBe("warn");
     expect(result.detail).toContain("Poor browser protection posture");
   });
 
@@ -59,6 +59,22 @@ describe("factor builders", () => {
     expect(result.status).toBe("fail");
     expect(result.impact).toBe(-40);
     expect(result.detail).toContain("DNS resolution failed");
+  });
+
+  it("builds warning domain factor for transient DNS issues", () => {
+    const result = buildDomainFactor({
+      resolves: false,
+      mx: false,
+      ageDays: null,
+      nameservers: 0,
+      scoreDelta: 0,
+      grade: "Neutral",
+      reason: "network_error",
+      checkedDomain: "example.com"
+    });
+
+    expect(result.status).toBe("warn");
+    expect(result.detail).toContain("timed out or was unavailable");
   });
 
   it("builds warning domain factor for suspicious new domains", () => {
